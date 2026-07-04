@@ -7,8 +7,15 @@ import {
   Bell, Share2, Heart, Activity, Sparkles, Send, Upload,
   TrendingUp, Award, Calendar, Users, User, ArrowRight,
   Droplet, ShoppingBag, Trophy, Smile, Coffee, Edit3, PlusCircle,
-  Youtube, Sparkle
+  Youtube, Sparkle, Zap, Target, Brain, Scan
 } from "lucide-react";
+
+// Component Library
+import Button from "./components/Button";
+import Card from "./components/Card";
+import ProgressRing from "./components/ProgressRing";
+import Sheet from "./components/Sheet";
+import IconBadge from "./components/IconBadge";
 
 /* ═══════════════════════════════════════════════════════════
    DESIGN SYSTEM & COLOR SYSTEM (FITVA 2.0 LIGHT MODE STYLING)
@@ -33,6 +40,18 @@ const C = {
 };
 
 export default function App() {
+  // ── App flow: splash → onboarding → avatar_creation → app ──
+  const [appFlow, setAppFlow] = useState("splash"); // "splash" | "onboarding" | "avatar_creation" | "app"
+  const [onboardingStep, setOnboardingStep] = useState(0);
+  const [avatarPhase, setAvatarPhase] = useState("capture"); // "capture" | "processing" | "reveal"
+
+  // Shared spring transition preset
+  const SPRING = { type: "spring", stiffness: 300, damping: 30 };
+
+  // Staggered grid entrance variants
+  const staggerContainer = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
+  const staggerItem = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: SPRING } };
+
   const [tab, setTab] = useState("home"); // home, plan, community, profile
   const [activeOverlay, setActiveOverlay] = useState(null); // 'rex_coach', 'active_workout', 'quick_log', 'nutrition'
   
@@ -458,6 +477,22 @@ export default function App() {
     };
   };
 
+  // ── Splash auto-advance timer ──
+  useEffect(() => {
+    if (appFlow === "splash") {
+      const t = setTimeout(() => setAppFlow("onboarding"), 2500);
+      return () => clearTimeout(t);
+    }
+  }, [appFlow]);
+
+  // ── Onboarding step data ──
+  const onboardingSteps = [
+    { icon: <Dumbbell size={36} color="#00E5A8" />, title: "Personalised Workouts", desc: "AI-powered routines tailored to your body, goals, and recovery." },
+    { icon: <Salad size={36} color="#00E5A8" />, title: "Smart Nutrition", desc: "Scan meals, track macros, and get real-time diet coaching from Rex." },
+    { icon: <Brain size={36} color="#5B8CFF" />, title: "Mind & Recovery", desc: "Yoga, skincare, mood check-ins — your holistic wellness companion." },
+    { icon: <Target size={36} color="#00E5A8" />, title: "Compete & Progress", desc: "Track streaks, climb leaderboards, and unlock achievements daily." },
+  ];
+
   return (
     <div className="main-wrapper">
       <style>{`
@@ -802,6 +837,320 @@ export default function App() {
         }
       `}</style>
 
+      <AnimatePresence mode="wait">
+        {/* ══════ SPLASH SCREEN ══════ */}
+        {appFlow === "splash" && (
+          <motion.div
+            key="splash"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.1 }}
+            transition={{ duration: 0.6 }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 9999,
+              background: "linear-gradient(160deg, #0B1020 0%, #101935 40%, #0B1020 100%)",
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              gap: 24, overflow: "hidden"
+            }}
+          >
+            {/* Glowing orb behind logo */}
+            <motion.div
+              animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
+              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+              style={{
+                position: "absolute", width: 260, height: 260, borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(0,229,168,0.25) 0%, transparent 70%)",
+                pointerEvents: "none"
+              }}
+            />
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+            >
+              <div style={{ width: 80, height: 80, borderRadius: 24, background: "linear-gradient(135deg, #00E5A8 0%, #5B8CFF 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 12px 40px rgba(0,229,168,0.4)" }}>
+                <Zap size={36} color="#fff" />
+              </div>
+            </motion.div>
+            <motion.h1
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              style={{ fontSize: 32, fontWeight: 900, color: "#fff", margin: 0, letterSpacing: 4 }}
+            >
+              FITVA
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              transition={{ delay: 0.8 }}
+              style={{ fontSize: 12, color: "#AAB0C0", fontWeight: 600, letterSpacing: 2, margin: 0 }}
+            >
+              YOUR AI FITNESS COMPANION
+            </motion.p>
+          </motion.div>
+        )}
+
+        {/* ══════ ONBOARDING (4 steps) ══════ */}
+        {appFlow === "onboarding" && (
+          <motion.div
+            key="onboarding"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, x: -60 }}
+            transition={{ duration: 0.4 }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 9998,
+              background: "linear-gradient(160deg, #0B1020 0%, #101935 40%, #0B1020 100%)",
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              padding: "60px 32px 48px", boxSizing: "border-box"
+            }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`onboard-${onboardingStep}`}
+                initial={{ opacity: 0, x: 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -60 }}
+                transition={SPRING}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 24, flex: 1, justifyContent: "center" }}
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 250, damping: 15 }}
+                  style={{
+                    width: 88, height: 88, borderRadius: 28,
+                    background: "rgba(0,229,168,0.08)", border: "1.5px solid rgba(0,229,168,0.2)",
+                    display: "flex", alignItems: "center", justifyContent: "center"
+                  }}
+                >
+                  {onboardingSteps[onboardingStep].icon}
+                </motion.div>
+                <h2 style={{ fontSize: 22, fontWeight: 900, color: "#fff", margin: 0 }}>
+                  {onboardingSteps[onboardingStep].title}
+                </h2>
+                <p style={{ fontSize: 14, color: "#AAB0C0", lineHeight: 1.6, margin: 0, maxWidth: 280 }}>
+                  {onboardingSteps[onboardingStep].desc}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Progress dots */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 32 }}>
+              {onboardingSteps.map((_, idx) => (
+                <motion.div
+                  key={idx}
+                  animate={{ width: idx === onboardingStep ? 24 : 8, backgroundColor: idx === onboardingStep ? "#00E5A8" : "rgba(255,255,255,0.2)" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  style={{ height: 8, borderRadius: 4 }}
+                />
+              ))}
+            </div>
+
+            {/* Action button */}
+            <Button
+              fullWidth
+              onClick={() => {
+                if (onboardingStep < onboardingSteps.length - 1) {
+                  setOnboardingStep(prev => prev + 1);
+                } else {
+                  setAppFlow("avatar_creation");
+                }
+              }}
+              style={{ maxWidth: 320, fontSize: 14, padding: "14px 24px", borderRadius: 16 }}
+            >
+              {onboardingStep < onboardingSteps.length - 1 ? "Next" : "Create Your Avatar"}
+            </Button>
+
+            {onboardingStep > 0 && (
+              <button
+                onClick={() => setOnboardingStep(prev => prev - 1)}
+                style={{ background: "none", border: "none", color: "#AAB0C0", fontSize: 13, fontWeight: 600, marginTop: 12, cursor: "pointer" }}
+              >
+                ← Back
+              </button>
+            )}
+          </motion.div>
+        )}
+
+        {/* ══════ AVATAR CREATION REVEAL ══════ */}
+        {appFlow === "avatar_creation" && (
+          <motion.div
+            key="avatar-creation"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.5 }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 9997,
+              background: "linear-gradient(160deg, #0B1020 0%, #101935 40%, #0B1020 100%)",
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              padding: "60px 32px 48px", boxSizing: "border-box", overflow: "hidden"
+            }}
+          >
+            <AnimatePresence mode="wait">
+              {/* Phase 1: Capture */}
+              {avatarPhase === "capture" && (
+                <motion.div
+                  key="capture"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.1 }}
+                  transition={SPRING}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, textAlign: "center" }}
+                >
+                  <h2 style={{ fontSize: 20, fontWeight: 900, color: "#fff", margin: 0 }}>Create Your Avatar</h2>
+                  <p style={{ fontSize: 13, color: "#AAB0C0", margin: 0 }}>Capture your likeness to build your 3D fitness companion</p>
+                  <motion.div
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setAvatarPhase("processing");
+                      setTimeout(() => setAvatarPhase("reveal"), 2500);
+                    }}
+                    style={{
+                      width: 180, height: 180, borderRadius: "50%", cursor: "pointer",
+                      border: "3px dashed rgba(0,229,168,0.4)", display: "flex", flexDirection: "column",
+                      alignItems: "center", justifyContent: "center", gap: 12,
+                      background: "rgba(0,229,168,0.04)"
+                    }}
+                  >
+                    <Scan size={40} color="#00E5A8" />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#00E5A8" }}>TAP TO CAPTURE</span>
+                  </motion.div>
+                  <button
+                    onClick={() => setAppFlow("app")}
+                    style={{ background: "none", border: "none", color: "#AAB0C0", fontSize: 12, fontWeight: 600, marginTop: 8, cursor: "pointer" }}
+                  >
+                    Skip for now
+                  </button>
+                </motion.div>
+              )}
+
+              {/* Phase 2: Processing */}
+              {avatarPhase === "processing" && (
+                <motion.div
+                  key="processing"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, textAlign: "center" }}
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                    style={{
+                      width: 64, height: 64, borderRadius: "50%",
+                      border: "4px solid rgba(0,229,168,0.15)",
+                      borderTop: "4px solid #00E5A8"
+                    }}
+                  />
+                  <motion.div
+                    animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0.5, 0.2] }}
+                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                    style={{
+                      position: "absolute", width: 200, height: 200, borderRadius: "50%",
+                      background: "radial-gradient(circle, rgba(91,140,255,0.2) 0%, transparent 70%)",
+                      pointerEvents: "none"
+                    }}
+                  />
+                  <h3 style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: 0 }}>Scanning & Processing…</h3>
+                  <p style={{ fontSize: 12, color: "#AAB0C0", margin: 0 }}>Building your 3D avatar companion</p>
+                </motion.div>
+              )}
+
+              {/* Phase 3: Reveal with confetti/glow */}
+              {avatarPhase === "reveal" && (
+                <motion.div
+                  key="reveal"
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, textAlign: "center", position: "relative" }}
+                >
+                  {/* Confetti particles */}
+                  {Array.from({ length: 24 }).map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{
+                        opacity: 1, scale: 1,
+                        x: 0, y: 0
+                      }}
+                      animate={{
+                        opacity: 0,
+                        x: (Math.random() - 0.5) * 300,
+                        y: (Math.random() - 0.5) * 400,
+                        scale: 0,
+                        rotate: Math.random() * 720
+                      }}
+                      transition={{ duration: 1.5 + Math.random(), delay: Math.random() * 0.3 }}
+                      style={{
+                        position: "absolute",
+                        width: 8 + Math.random() * 8,
+                        height: 8 + Math.random() * 8,
+                        borderRadius: Math.random() > 0.5 ? "50%" : 2,
+                        backgroundColor: ["#00E5A8", "#5B8CFF", "#FFB84D", "#FF2D55", "#fff"][Math.floor(Math.random() * 5)],
+                        pointerEvents: "none", zIndex: 0
+                      }}
+                    />
+                  ))}
+
+                  {/* Glow ring */}
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    style={{
+                      position: "absolute", width: 220, height: 220, borderRadius: "50%",
+                      background: "radial-gradient(circle, rgba(0,229,168,0.25) 0%, transparent 65%)",
+                      pointerEvents: "none"
+                    }}
+                  />
+
+                  <div style={{
+                    width: 120, height: 120, borderRadius: "50%", overflow: "hidden",
+                    border: "3px solid #00E5A8", boxShadow: "0 0 40px rgba(0,229,168,0.4)",
+                    zIndex: 1
+                  }}>
+                    <img src="/record_header.png" alt="Your Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  </div>
+
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: "#fff", margin: 0, zIndex: 1 }}>Avatar Created!</h2>
+                  <p style={{ fontSize: 13, color: "#AAB0C0", margin: 0, zIndex: 1 }}>Your AI fitness companion is ready</p>
+
+                  <div style={{ display: "flex", gap: 16, marginTop: 8, zIndex: 1 }}>
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: "#00E5A8" }}>Level 1</div>
+                      <div style={{ fontSize: 9, color: "#AAB0C0", marginTop: 2 }}>Rank</div>
+                    </div>
+                    <div style={{ width: 1, backgroundColor: "rgba(255,255,255,0.1)" }} />
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: "#5B8CFF" }}>0 XP</div>
+                      <div style={{ fontSize: 9, color: "#AAB0C0", marginTop: 2 }}>Experience</div>
+                    </div>
+                    <div style={{ width: 1, backgroundColor: "rgba(255,255,255,0.1)" }} />
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: "#FFB84D" }}>12</div>
+                      <div style={{ fontSize: 9, color: "#AAB0C0", marginTop: 2 }}>Day Streak</div>
+                    </div>
+                  </div>
+
+                  <Button
+                    fullWidth
+                    onClick={() => setAppFlow("app")}
+                    style={{ maxWidth: 280, marginTop: 16, fontSize: 14, padding: "14px 24px", borderRadius: 16, zIndex: 1 }}
+                  >
+                    Enter FITVA →
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══════ MAIN APP (only rendered when appFlow === "app") ══════ */}
+      {appFlow === "app" && (
       <div className="app-shell">
         {/* Apple Notch & Status Bar */}
         <div className="status-notch"></div>
@@ -829,7 +1178,7 @@ export default function App() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
+                transition={SPRING}
               >
                 {/* Header Section */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
@@ -1227,15 +1576,12 @@ export default function App() {
                       </button>
                     </div>
 
-                    <div style={{ marginTop: 14 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.text2, marginBottom: 4 }}>
-                        <span>Progress</span>
-                        <span>{Math.round((user.setsCompleted / user.setsTotal) * 100)}%</span>
+                    <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }}>
+                      <ProgressRing value={user.setsCompleted} max={user.setsTotal} color="#4CAF50" size={48} strokeWidth={4} />
+                      <div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>{user.setsCompleted} of {user.setsTotal} sets</div>
+                        <div style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>Workout progress</div>
                       </div>
-                      <div style={{ height: 6, borderRadius: 3, backgroundColor: appTheme === "dark" ? "#2C2C35" : "#E5E5EA", overflow: "hidden" }}>
-                        <div style={{ width: `${(user.setsCompleted / user.setsTotal) * 100}%`, height: "100%", backgroundColor: "#4CAF50", transition: "width 0.4s ease" }}></div>
-                      </div>
-                      <div style={{ fontSize: 9, color: C.text2, marginTop: 4 }}>{user.setsCompleted} of {user.setsTotal} sets completed</div>
                     </div>
                   </div>
 
@@ -1267,21 +1613,22 @@ export default function App() {
 
                 {/* Today's Habits */}
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Today's Habits</h3>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
+                <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
                   {[
                     { label: "Water", val: `${user.waterToday}L`, bar: "#2196F3", prg: (user.waterToday / user.waterGoal) * 100 },
                     { label: "Kcal", val: `${user.calToday.toLocaleString()}`, bar: "#FF9800", prg: (user.calToday / user.calGoal) * 100 },
                     { label: "Mood", val: user.moodToday, bar: "#9C27B0", prg: user.moodToday === "Good" ? 80 : 50 }
                   ].map((hab, idx) => (
-                    <div key={idx} className="card-light" style={{ padding: 12, margin: 0, textAlign: "center" }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>{hab.val}</div>
-                      <div style={{ fontSize: 9, color: C.text2, margin: "4px 0 8px" }}>{hab.label}</div>
-                      <div style={{ height: 4, borderRadius: 2, backgroundColor: appTheme === "dark" ? "#2C2C35" : "#E5E5EA", overflow: "hidden" }}>
-                        <div style={{ width: `${Math.min(hab.prg, 100)}%`, height: "100%", backgroundColor: hab.bar, transition: "width 0.4s ease" }}></div>
+                    <motion.div key={idx} variants={staggerItem}>
+                      <div className="card-light" style={{ padding: 12, margin: 0, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <ProgressRing value={hab.prg} max={100} color={hab.bar} size={44} strokeWidth={4} showLabel={false}>
+                          <span style={{ fontSize: 10, fontWeight: 800, color: hab.bar }}>{hab.val}</span>
+                        </ProgressRing>
+                        <div style={{ fontSize: 9, color: C.text2, marginTop: 6, fontWeight: 600 }}>{hab.label}</div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
 
                 {/* Community & Health section lists */}
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Community & Health</h3>
@@ -1316,7 +1663,7 @@ export default function App() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
+                transition={SPRING}
                 style={{ height: "100%" }}
               >
                 <div style={{ 
@@ -1525,7 +1872,7 @@ export default function App() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
+                transition={SPRING}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                   <h1 className="header-title" style={{ color: C.text1, margin: 0 }}>Community</h1>
@@ -1593,7 +1940,7 @@ export default function App() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
+                  transition={SPRING}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                     <h1 className="header-title" style={{ margin: 0 }}>My Profile</h1>
@@ -2025,7 +2372,7 @@ export default function App() {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: 20 }}
-                          transition={{ duration: 0.2 }}
+                          transition={SPRING}
                           style={{ display: "flex", flexDirection: "column", gap: 14 }}
                         >
                           <div className="card-light" style={{ padding: 18, border: `1px solid ${C.border}`, margin: 0 }}>
@@ -2322,7 +2669,7 @@ export default function App() {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: 20 }}
-                          transition={{ duration: 0.2 }}
+                          transition={SPRING}
                           style={{ display: "flex", flexDirection: "column", gap: 14 }}
                         >
                           <div className="card-light" style={{ padding: 18, border: `1px solid ${C.border}`, margin: 0 }}>
@@ -3060,6 +3407,7 @@ export default function App() {
           )}
         </motion.div>
       </div>
+      )}
     </div>
   );
 }
