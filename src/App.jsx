@@ -16,27 +16,28 @@ import Card from "./components/Card";
 import ProgressRing from "./components/ProgressRing";
 import Sheet from "./components/Sheet";
 import IconBadge from "./components/IconBadge";
+import CelebrationBurst from "./components/CelebrationBurst";
+import { color, typography, space } from "./design/tokens";
 
 /* ═══════════════════════════════════════════════════════════
    DESIGN SYSTEM & COLOR SYSTEM (FITVA 2.0 LIGHT MODE STYLING)
    ═══════════════════════════════════════════════════════════ */
 const C = {
-  bg: "#F4F6F8",           // Soft light grey main background
-  appBg: "#FFFFFF",        // Pure white phone screen background
-  surface: "#FFFFFF",      // Card backgrounds
-  surfaceLight: "#F8F9FA", // Light grey backgrounds for secondary elements
-  border: "#E5E5EA",       // Standard separator border
-  
-  // Theme Accent Colors
-  accent: "#00A86B",       // Emerald green primary accent
-  accentOrange: "#FF5F1F", // Orange accent for Nutrition / Streaks
-  accentPink: "#FF2D55",   // Pink accent for Mind
-  blue: "#007AFF",         // Blue accent for Water
-  text1: "#1C1C1E",        // Primary text
-  text2: "#8E8E93",        // Secondary text
-  shadow: "0 8px 24px rgba(0,0,0,0.03)",
-  btnShadow: "0 8px 16px rgba(0, 168, 107, 0.25)",
-  nutritionShadow: "0 8px 16px rgba(255, 95, 31, 0.15)"
+  bg: color.bg,
+  appBg: color.bg,
+  surface: color.surface,
+  surfaceLight: color.surfaceRaised,
+  border: color.border,
+  accent: color.primary,
+  accentOrange: color.warning,
+  accentPink: color.error,
+  blue: color.secondary,
+  text1: color.text1,
+  text2: color.text2,
+  text3: color.text3,
+  shadow: "none",
+  btnShadow: "none",
+  nutritionShadow: "none"
 };
 
 export default function App() {
@@ -52,6 +53,7 @@ export default function App() {
   const staggerContainer = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
   const staggerItem = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: SPRING } };
 
+  const [celebration, setCelebration] = useState(null);
   const [tab, setTab] = useState("home"); // home, plan, community, profile
   const [activeOverlay, setActiveOverlay] = useState(null); // 'rex_coach', 'active_workout', 'quick_log', 'nutrition'
   
@@ -97,37 +99,7 @@ export default function App() {
   const [recipesResult, setRecipesResult] = useState(null);
 
   // Dynamic theme design system mapping
-  const C = appTheme === "dark" ? {
-    bg: "#090A0F",
-    appBg: "#090A0F",
-    surface: "#1C1C24",
-    surfaceLight: "#2C2C35",
-    border: "#2C2C35",
-    accent: "#00E5A8",
-    accentOrange: "#FF5F1F",
-    accentPink: "#FF2D55",
-    blue: "#007AFF",
-    text1: "#FFFFFF",
-    text2: "#8E8E93",
-    shadow: "none",
-    btnShadow: "none",
-    nutritionShadow: "none"
-  } : {
-    bg: "#F4F6F8",
-    appBg: "#FFFFFF",
-    surface: "#FFFFFF",
-    surfaceLight: "#F8F9FA",
-    border: "#E5E5EA",
-    accent: "#00A86B",
-    accentOrange: "#FF5F1F",
-    accentPink: "#FF2D55",
-    blue: "#007AFF",
-    text1: "#1C1C1E",
-    text2: "#8E8E93",
-    shadow: "0 8px 24px rgba(0,0,0,0.03)",
-    btnShadow: "0 8px 16px rgba(0, 168, 107, 0.25)",
-    nutritionShadow: "0 8px 16px rgba(255, 95, 31, 0.15)"
-  };
+  
 
   // App Live States
   const [user, setUser] = useState({
@@ -426,7 +398,7 @@ export default function App() {
         width: "100%",
         height: "100%",
         borderRadius: "0px",
-        background: appTheme === "dark" ? "#0F0F16" : "#FFFFFF",
+        background: appTheme === "dark" ? "#0F0F16" : color.text1,
         cursor: "default",
         display: "flex",
         flexDirection: "column",
@@ -468,7 +440,7 @@ export default function App() {
       width,
       height,
       borderRadius,
-      background: "linear-gradient(135deg, #8A2387 0%, #E94057 50%, #F27121 100%)",
+      background: "linear-gradient(135deg, color.secondary 0%, color.error 50%, color.warning 100%)",
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
@@ -487,10 +459,10 @@ export default function App() {
 
   // ── Onboarding step data ──
   const onboardingSteps = [
-    { icon: <Dumbbell size={36} color="#00E5A8" />, title: "Personalised Workouts", desc: "AI-powered routines tailored to your body, goals, and recovery." },
-    { icon: <Salad size={36} color="#00E5A8" />, title: "Smart Nutrition", desc: "Scan meals, track macros, and get real-time diet coaching from Rex." },
-    { icon: <Brain size={36} color="#5B8CFF" />, title: "Mind & Recovery", desc: "Yoga, skincare, mood check-ins — your holistic wellness companion." },
-    { icon: <Target size={36} color="#00E5A8" />, title: "Compete & Progress", desc: "Track streaks, climb leaderboards, and unlock achievements daily." },
+    { icon: <Dumbbell size={36} color={color.primary} />, title: "Personalised Workouts", desc: "AI-powered routines tailored to your body, goals, and recovery." },
+    { icon: <Salad size={36} color={color.primary} />, title: "Smart Nutrition", desc: "Scan meals, track macros, and get real-time diet coaching from Rex." },
+    { icon: <Brain size={36} color={color.secondary} />, title: "Mind & Recovery", desc: "Yoga, skincare, mood check-ins — your holistic wellness companion." },
+    { icon: <Target size={36} color={color.primary} />, title: "Compete & Progress", desc: "Track streaks, climb leaderboards, and unlock achievements daily." },
   ];
 
   return (
@@ -511,12 +483,12 @@ export default function App() {
         [data-zone] {
           border-left: 3px solid var(--zone-accent) !important;
         }
-        [data-zone="workout"]     { --zone-accent: #00E5A8; }
-        [data-zone="yoga"]        { --zone-accent: #5B8CFF; }
-        [data-zone="skincare"]    { --zone-accent: #FFB84D; }
-        [data-zone="mood"]        { --zone-accent: #22C55E; }
-        [data-zone="leaderboard"] { --zone-accent: #6B7280; }
-        [data-zone="supplements"] { --zone-accent: #5B8CFF; }
+        [data-zone="workout"]     { --zone-accent: color.primary; }
+        [data-zone="yoga"]        { --zone-accent: color.secondary; }
+        [data-zone="skincare"]    { --zone-accent: color.warning; }
+        [data-zone="mood"]        { --zone-accent: color.primary; }
+        [data-zone="leaderboard"] { --zone-accent: color.text2; }
+        [data-zone="supplements"] { --zone-accent: color.secondary; }
 
         .app-shell {
           background-color: ${C.appBg};
@@ -536,7 +508,7 @@ export default function App() {
           display: none;
           width: 140px;
           height: 22px;
-          background-color: #D1D1D6;
+          background-color: color.error;
           border-bottom-left-radius: 14px;
           border-bottom-right-radius: 14px;
           position: absolute;
@@ -571,7 +543,7 @@ export default function App() {
             max-width: 480px;
             height: 960px;
             border-radius: 40px;
-            border: 8px solid #D1D1D6;
+            border: 8px solid color.error;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
           }
           .status-notch {
@@ -848,7 +820,7 @@ export default function App() {
             transition={{ duration: 0.6 }}
             style={{
               position: "fixed", inset: 0, zIndex: 9999,
-              background: "linear-gradient(160deg, #0B1020 0%, #101935 40%, #0B1020 100%)",
+              background: `linear-gradient(160deg, ${color.bg} 0%, ${color.surface} 40%, ${color.bg} 100%)`,
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
               gap: 24, overflow: "hidden"
             }}
@@ -868,15 +840,15 @@ export default function App() {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
             >
-              <div style={{ width: 80, height: 80, borderRadius: 24, background: "linear-gradient(135deg, #00E5A8 0%, #5B8CFF 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 12px 40px rgba(0,229,168,0.4)" }}>
-                <Zap size={36} color="#fff" />
+              <div style={{ width: 80, height: 80, borderRadius: 24, background: `linear-gradient(135deg, ${color.primary} 0%, ${color.secondary} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 12px 40px rgba(0,229,168,0.4)" }}>
+                <Zap size={36} color={color.text1} />
               </div>
             </motion.div>
             <motion.h1
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
-              style={{ fontSize: 32, fontWeight: 900, color: "#fff", margin: 0, letterSpacing: 4 }}
+              style={{ fontSize: 32, fontWeight: 900, color: color.text1, margin: 0, letterSpacing: 4 }}
             >
               FITVA
             </motion.h1>
@@ -884,7 +856,7 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.6 }}
               transition={{ delay: 0.8 }}
-              style={{ fontSize: 12, color: "#AAB0C0", fontWeight: 600, letterSpacing: 2, margin: 0 }}
+              style={{ fontSize: 12, color: color.text2, fontWeight: 600, letterSpacing: 2, margin: 0 }}
             >
               YOUR AI FITNESS COMPANION
             </motion.p>
@@ -901,7 +873,7 @@ export default function App() {
             transition={{ duration: 0.4 }}
             style={{
               position: "fixed", inset: 0, zIndex: 9998,
-              background: "linear-gradient(160deg, #0B1020 0%, #101935 40%, #0B1020 100%)",
+              background: `linear-gradient(160deg, ${color.bg} 0%, ${color.surface} 40%, ${color.bg} 100%)`,
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
               padding: "60px 32px 48px", boxSizing: "border-box"
             }}
@@ -927,10 +899,10 @@ export default function App() {
                 >
                   {onboardingSteps[onboardingStep].icon}
                 </motion.div>
-                <h2 style={{ fontSize: 22, fontWeight: 900, color: "#fff", margin: 0 }}>
+                <h2 style={{ fontSize: 22, fontWeight: 900, color: color.text1, margin: 0 }}>
                   {onboardingSteps[onboardingStep].title}
                 </h2>
-                <p style={{ fontSize: 14, color: "#AAB0C0", lineHeight: 1.6, margin: 0, maxWidth: 280 }}>
+                <p style={{ fontSize: 14, color: color.text2, lineHeight: 1.6, margin: 0, maxWidth: 280 }}>
                   {onboardingSteps[onboardingStep].desc}
                 </p>
               </motion.div>
@@ -941,7 +913,7 @@ export default function App() {
               {onboardingSteps.map((_, idx) => (
                 <motion.div
                   key={idx}
-                  animate={{ width: idx === onboardingStep ? 24 : 8, backgroundColor: idx === onboardingStep ? "#00E5A8" : "rgba(255,255,255,0.2)" }}
+                  animate={{ width: idx === onboardingStep ? 24 : 8, backgroundColor: idx === onboardingStep ? color.primary : "rgba(255,255,255,0.2)" }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   style={{ height: 8, borderRadius: 4 }}
                 />
@@ -966,7 +938,7 @@ export default function App() {
             {onboardingStep > 0 && (
               <button
                 onClick={() => setOnboardingStep(prev => prev - 1)}
-                style={{ background: "none", border: "none", color: "#AAB0C0", fontSize: 13, fontWeight: 600, marginTop: 12, cursor: "pointer" }}
+                style={{ background: "none", border: "none", color: color.text2, fontSize: 13, fontWeight: 600, marginTop: 12, cursor: "pointer" }}
               >
                 ← Back
               </button>
@@ -984,7 +956,7 @@ export default function App() {
             transition={{ duration: 0.5 }}
             style={{
               position: "fixed", inset: 0, zIndex: 9997,
-              background: "linear-gradient(160deg, #0B1020 0%, #101935 40%, #0B1020 100%)",
+              background: `linear-gradient(160deg, ${color.bg} 0%, ${color.surface} 40%, ${color.bg} 100%)`,
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
               padding: "60px 32px 48px", boxSizing: "border-box", overflow: "hidden"
             }}
@@ -1000,8 +972,8 @@ export default function App() {
                   transition={SPRING}
                   style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, textAlign: "center" }}
                 >
-                  <h2 style={{ fontSize: 20, fontWeight: 900, color: "#fff", margin: 0 }}>Create Your Avatar</h2>
-                  <p style={{ fontSize: 13, color: "#AAB0C0", margin: 0 }}>Capture your likeness to build your 3D fitness companion</p>
+                  <h2 style={{ fontSize: 20, fontWeight: 900, color: color.text1, margin: 0 }}>Create Your Avatar</h2>
+                  <p style={{ fontSize: 13, color: color.text2, margin: 0 }}>Capture your likeness to build your 3D fitness companion</p>
                   <motion.div
                     whileTap={{ scale: 0.95 }}
                     onClick={() => {
@@ -1015,12 +987,12 @@ export default function App() {
                       background: "rgba(0,229,168,0.04)"
                     }}
                   >
-                    <Scan size={40} color="#00E5A8" />
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#00E5A8" }}>TAP TO CAPTURE</span>
+                    <Scan size={40} color={color.primary} />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: color.primary }}>TAP TO CAPTURE</span>
                   </motion.div>
                   <button
                     onClick={() => setAppFlow("app")}
-                    style={{ background: "none", border: "none", color: "#AAB0C0", fontSize: 12, fontWeight: 600, marginTop: 8, cursor: "pointer" }}
+                    style={{ background: "none", border: "none", color: color.text2, fontSize: 12, fontWeight: 600, marginTop: 8, cursor: "pointer" }}
                   >
                     Skip for now
                   </button>
@@ -1042,7 +1014,7 @@ export default function App() {
                     style={{
                       width: 64, height: 64, borderRadius: "50%",
                       border: "4px solid rgba(0,229,168,0.15)",
-                      borderTop: "4px solid #00E5A8"
+                      borderTop: "4px solid color.primary"
                     }}
                   />
                   <motion.div
@@ -1054,8 +1026,8 @@ export default function App() {
                       pointerEvents: "none"
                     }}
                   />
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: 0 }}>Scanning & Processing…</h3>
-                  <p style={{ fontSize: 12, color: "#AAB0C0", margin: 0 }}>Building your 3D avatar companion</p>
+                  <h3 style={{ fontSize: 16, fontWeight: 800, color: color.text1, margin: 0 }}>Scanning & Processing…</h3>
+                  <p style={{ fontSize: 12, color: color.text2, margin: 0 }}>Building your 3D avatar companion</p>
                 </motion.div>
               )}
 
@@ -1090,7 +1062,7 @@ export default function App() {
                         width: 8 + Math.random() * 8,
                         height: 8 + Math.random() * 8,
                         borderRadius: Math.random() > 0.5 ? "50%" : 2,
-                        backgroundColor: ["#00E5A8", "#5B8CFF", "#FFB84D", "#FF2D55", "#fff"][Math.floor(Math.random() * 5)],
+                        backgroundColor: [color.primary, color.secondary, color.warning, color.error, color.text1][Math.floor(Math.random() * 5)],
                         pointerEvents: "none", zIndex: 0
                       }}
                     />
@@ -1109,29 +1081,29 @@ export default function App() {
 
                   <div style={{
                     width: 120, height: 120, borderRadius: "50%", overflow: "hidden",
-                    border: "3px solid #00E5A8", boxShadow: "0 0 40px rgba(0,229,168,0.4)",
+                    border: "3px solid color.primary", boxShadow: "0 0 40px rgba(0,229,168,0.4)",
                     zIndex: 1
                   }}>
                     <img src="/record_header.png" alt="Your Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
 
-                  <h2 style={{ fontSize: 22, fontWeight: 900, color: "#fff", margin: 0, zIndex: 1 }}>Avatar Created!</h2>
-                  <p style={{ fontSize: 13, color: "#AAB0C0", margin: 0, zIndex: 1 }}>Your AI fitness companion is ready</p>
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: color.text1, margin: 0, zIndex: 1 }}>Avatar Created!</h2>
+                  <p style={{ fontSize: 13, color: color.text2, margin: 0, zIndex: 1 }}>Your AI fitness companion is ready</p>
 
                   <div style={{ display: "flex", gap: 16, marginTop: 8, zIndex: 1 }}>
                     <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: "#00E5A8" }}>Level 1</div>
-                      <div style={{ fontSize: 9, color: "#AAB0C0", marginTop: 2 }}>Rank</div>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: color.primary }}>Level 1</div>
+                      <div style={{ fontSize: 9, color: color.text2, marginTop: 2 }}>Rank</div>
                     </div>
                     <div style={{ width: 1, backgroundColor: "rgba(255,255,255,0.1)" }} />
                     <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: "#5B8CFF" }}>0 XP</div>
-                      <div style={{ fontSize: 9, color: "#AAB0C0", marginTop: 2 }}>Experience</div>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: color.secondary }}>0 XP</div>
+                      <div style={{ fontSize: 9, color: color.text2, marginTop: 2 }}>Experience</div>
                     </div>
                     <div style={{ width: 1, backgroundColor: "rgba(255,255,255,0.1)" }} />
                     <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: "#FFB84D" }}>12</div>
-                      <div style={{ fontSize: 9, color: "#AAB0C0", marginTop: 2 }}>Day Streak</div>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: color.warning }}>12</div>
+                      <div style={{ fontSize: 9, color: color.text2, marginTop: 2 }}>Day Streak</div>
                     </div>
                   </div>
 
@@ -1234,14 +1206,14 @@ export default function App() {
                             border: i < 5 ? "none" : `1px solid ${C.border}`,
                             display: "flex", alignItems: "center", justifyContent: "center"
                           }}>
-                            {i < 5 && <Check size={10} strokeWidth={3} color={appTheme === "dark" ? "#52D87B" : "#4CAF50"} />}
+                            {i < 5 && <Check size={10} strokeWidth={3} color={appTheme === "dark" ? color.primary : color.primary} />}
                           </div>
                         </div>
                       ))}
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: `1px solid ${C.border}`, paddingTop: 6 }}>
                       <span style={{ fontSize: 10, color: C.text2 }}>Keep going! You're doing great.</span>
-                      <TrendingUp size={12} color="#007AFF" />
+                      <TrendingUp size={12} color={color.secondary} />
                     </div>
                   </div>
                 </div>
@@ -1264,12 +1236,12 @@ export default function App() {
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                       <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(0,122,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Droplet size={14} color="#007AFF" fill="#007AFF" />
+                        <Droplet size={14} color={color.secondary} fill={color.secondary} />
                       </div>
                       <span style={{ fontSize: 11, fontWeight: 700, color: C.text2 }}>Water</span>
                     </div>
                     <div style={{ fontSize: 14, fontWeight: 800 }}>{user.waterToday}L <span style={{ fontSize: 10, color: C.text2, fontWeight: 500 }}>/ {user.waterGoal}L</span></div>
-                    <div className="light-metrics-bottom-bar" style={{ backgroundColor: "#007AFF" }}></div>
+                    <div className="light-metrics-bottom-bar" style={{ backgroundColor: color.secondary }}></div>
                   </motion.div>
 
                   {/* Steps Card Trigger (Accesses Steps section and toggles) */}
@@ -1532,24 +1504,21 @@ export default function App() {
                 {/* 4 Action Cards Grid */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
                   {[
-                    { label: "Workout", info: `${user.workoutCompleted}/${user.workoutTotal} Completed`, icon: <Dumbbell size={16} color="#4CAF50" />, bg: appTheme === "dark" ? "#1A3A27" : "#E8F5E9", action: () => setTab("plan") },
-                    { label: "Nutrition", info: "Track meals", icon: <ChefHat size={16} color={C.accentOrange} />, bg: appTheme === "dark" ? "#3E2519" : "rgba(255, 95, 31, 0.08)", action: () => setActiveOverlay("nutrition") },
-                    { label: "Progress", info: "See journey", icon: <TrendingUp size={16} color="#2196F3" />, bg: appTheme === "dark" ? "#122A42" : "#E3F2FD", action: () => setActiveOverlay("progress") },
-                    { label: "Rex AI Coach", info: "Chat coach", icon: <Sparkles size={16} color="#9C27B0" />, bg: appTheme === "dark" ? "#2B1A3A" : "#F3E5F5", action: () => setActiveOverlay("rex_coach") }
+                    { label: "Workout", icon: <Dumbbell size={16} />, tone: "primary", action: () => setTab("plan") },
+                    { label: "Nutrition", icon: <ChefHat size={16} />, tone: "secondary", action: () => setActiveOverlay("nutrition") },
+                    { label: "Progress", icon: <TrendingUp size={16} />, tone: "secondary", action: () => setActiveOverlay("progress") },
+                    { label: "Rex AI Coach", icon: <Sparkles size={16} />, tone: "secondary", action: () => setActiveOverlay("rex_coach") },
                   ].map((act, i) => (
-                    <motion.div 
-                      key={i} 
-                      whileTap={{ scale: 0.95 }}
-                      className="card-light" 
-                      onClick={act.action} 
-                      style={{ padding: 10, margin: 0, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer" }}
+                    <Card
+                      key={act.label}
+                      index={i}
+                      onClick={act.action}
+                      padding="10px"
+                      style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}
                     >
-                      <div style={{ width: 32, height: 32, borderRadius: "50%", backgroundColor: act.bg, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6 }}>
-                        {act.icon}
-                      </div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>{act.label}</div>
-                      <div style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>{act.info}</div>
-                    </motion.div>
+                      <IconBadge icon={act.icon} tone={act.tone} size={32} />
+                      <div style={{ fontSize: 11, fontWeight: 700, color: C.text1, marginTop: "6px" }}>{act.label}</div>
+                    </Card>
                   ))}
                 </div>
 
@@ -1557,57 +1526,52 @@ export default function App() {
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Train Today</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: 12, marginBottom: 20 }}>
                   {/* Workout Progress Card */}
-                  <div className="card-light" style={{ margin: 0, padding: 14, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <Card style={{ margin: 0, padding: 14, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{ width: 32, height: 32, borderRadius: "50%", backgroundColor: appTheme === "dark" ? "#1A3A27" : "#E8F5E9", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <Activity size={16} color="#4CAF50" />
-                        </div>
+                        <IconBadge icon={<Activity size={16} />} tone="primary" size={32} />
                         <div>
                           <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>Workout</div>
                           <div style={{ fontSize: 10, color: C.text2, marginTop: 2 }}>Legs + Core &bull; 45m &bull; High</div>
                         </div>
                       </div>
-                      <button 
+                      <Button 
+                        variant="secondary"
                         onClick={() => setActiveOverlay("active_workout")}
-                        style={{ backgroundColor: C.surfaceLight, border: "none", borderRadius: 12, padding: "6px 10px", fontSize: 9, fontWeight: 700, color: C.text1, cursor: "pointer" }}
+                        style={{ padding: "6px 10px", fontSize: 9, borderRadius: 12 }}
                       >
                         TODAY'S PLAN &gt;
-                      </button>
+                      </Button>
                     </div>
 
                     <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }}>
-                      <ProgressRing value={user.setsCompleted} max={user.setsTotal} color="#4CAF50" size={48} strokeWidth={4} />
+                      <ProgressRing value={(user.setsCompleted / user.setsTotal) * 100} size={48} strokeWidth={4} label={`${user.setsCompleted}/${user.setsTotal}`} />
                       <div>
                         <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>{user.setsCompleted} of {user.setsTotal} sets</div>
                         <div style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>Workout progress</div>
                       </div>
                     </div>
-                  </div>
+                  </Card>
 
                   {/* Side Recovery Actions */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {/* Yoga */}
-                    <div className="card-light" onClick={() => setActiveOverlay("yoga")} style={{ margin: 0, padding: 10, flex: 1, display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-                      <div style={{ width: 24, height: 24, borderRadius: "50%", backgroundColor: "#F3E5F5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Plus size={12} color="#9C27B0" />
-                      </div>
+                    <Card onClick={() => setActiveOverlay("yoga")} padding="10px" style={{ margin: 0, flex: 1, display: "flex", alignItems: "center", gap: 8 }}>
+                      <IconBadge icon={<Plus size={12} />} tone="secondary" size={24} />
                       <div>
                         <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Yoga</div>
-                        <div style={{ fontSize: 8, color: "#9C27B0", fontWeight: 700, marginTop: 2 }}>RECOVERY</div>
+                        <div style={{ fontSize: 8, color: color.secondary, fontWeight: 700, marginTop: 2 }}>RECOVERY</div>
                       </div>
-                    </div>
+                    </Card>
 
                     {/* Skincare */}
-                    <div className="card-light" onClick={() => setActiveOverlay("skincare")} style={{ margin: 0, padding: 10, flex: 1, display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-                      <div style={{ width: 24, height: 24, borderRadius: "50%", backgroundColor: "#FCE4EC", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Sparkles size={12} color="#E91E63" />
-                      </div>
+                    <Card onClick={() => setActiveOverlay("skincare")} padding="10px" style={{ margin: 0, flex: 1, display: "flex", alignItems: "center", gap: 8 }}>
+                      <IconBadge icon={<Sparkles size={12} />} tone="error" size={24} />
                       <div>
                         <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Skincare</div>
-                        <div style={{ fontSize: 8, color: "#E91E63", fontWeight: 700, marginTop: 2 }}>EVENING</div>
+                        <div style={{ fontSize: 8, color: color.error, fontWeight: 700, marginTop: 2 }}>EVENING</div>
                       </div>
-                    </div>
+                    </Card>
                   </div>
                 </div>
 
@@ -1615,17 +1579,17 @@ export default function App() {
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Today's Habits</h3>
                 <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
                   {[
-                    { label: "Water", val: `${user.waterToday}L`, bar: "#2196F3", prg: (user.waterToday / user.waterGoal) * 100 },
-                    { label: "Kcal", val: `${user.calToday.toLocaleString()}`, bar: "#FF9800", prg: (user.calToday / user.calGoal) * 100 },
-                    { label: "Mood", val: user.moodToday, bar: "#9C27B0", prg: user.moodToday === "Good" ? 80 : 50 }
+                    { label: "Water", val: `${user.waterToday}L`, bar: color.secondary, prg: (user.waterToday / user.waterGoal) * 100 },
+                    { label: "Kcal", val: `${user.calToday.toLocaleString()}`, bar: color.warning, prg: (user.calToday / user.calGoal) * 100 },
+                    { label: "Mood", val: user.moodToday, bar: color.secondary, prg: user.moodToday === "Good" ? 80 : 50 }
                   ].map((hab, idx) => (
                     <motion.div key={idx} variants={staggerItem}>
-                      <div className="card-light" style={{ padding: 12, margin: 0, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <ProgressRing value={hab.prg} max={100} color={hab.bar} size={44} strokeWidth={4} showLabel={false}>
+                      <Card padding="12px" style={{ margin: 0, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <ProgressRing value={hab.prg} color={hab.bar} size={44} strokeWidth={4} showLabel={false}>
                           <span style={{ fontSize: 10, fontWeight: 800, color: hab.bar }}>{hab.val}</span>
                         </ProgressRing>
                         <div style={{ fontSize: 9, color: C.text2, marginTop: 6, fontWeight: 600 }}>{hab.label}</div>
-                      </div>
+                      </Card>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -1633,25 +1597,21 @@ export default function App() {
                 {/* Community & Health section lists */}
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Community & Health</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <div className="card-light" onClick={() => setTab("community")} style={{ padding: "12px 14px", margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}>
+                  <Card onClick={() => setTab("community")} padding="12px 14px" style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: appTheme === "dark" ? "#1A3A27" : "#E8F5E9", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Trophy size={14} color="#4CAF50" />
-                      </div>
+                      <IconBadge icon={<Trophy size={14} />} tone="primary" size={28} />
                       <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Leaderboard</span>
                     </div>
-                    <span style={{ fontSize: 10, color: "#4CAF50", fontWeight: 700 }}>RANK #24</span>
-                  </div>
+                    <span style={{ fontSize: 10, color: color.primary, fontWeight: 700 }}>RANK #24</span>
+                  </Card>
 
-                  <div className="card-light" onClick={() => setActiveOverlay("supplements")} style={{ padding: "12px 14px", margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}>
+                  <Card onClick={() => setActiveOverlay("supplements")} padding="12px 14px" style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: appTheme === "dark" ? "#3E2519" : "#FFF3E0", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <ShoppingBag size={14} color="#FF9800" />
-                      </div>
+                      <IconBadge icon={<ShoppingBag size={14} />} tone="warning" size={28} />
                       <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Supplements</span>
                     </div>
-                    <span style={{ fontSize: 10, color: "#FF9800", fontWeight: 700 }}>STOCKED</span>
-                  </div>
+                    <span style={{ fontSize: 10, color: color.warning, fontWeight: 700 }}>STOCKED</span>
+                  </Card>
                 </div>
               </motion.div>
             )}
@@ -1678,7 +1638,7 @@ export default function App() {
                   {/* Header Row */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <img src="/record_header.png" style={{ width: 44, height: 44, borderRadius: "50%", border: "1.5px solid #00E5A8" }} alt="avatar" />
+                      <img src="/record_header.png" style={{ width: 44, height: 44, borderRadius: "50%", border: "1.5px solid color.primary" }} alt="avatar" />
                       <div>
                         <div style={{ fontSize: 16, fontWeight: "900", letterSpacing: "-0.5px", textTransform: "uppercase", color: C.text1 }}>HI JAMES</div>
                         <div style={{ fontSize: 10, color: C.text2, display: "flex", alignItems: "center", gap: 4 }}>
@@ -1694,7 +1654,7 @@ export default function App() {
 
                   {/* Neon Lime Progress Card */}
                   <div style={{
-                    background: "linear-gradient(135deg, #D4FC79 0%, #96E6A1 100%)",
+                    background: "linear-gradient(135deg, color.primary 0%, color.primary 100%)",
                     borderRadius: 24,
                     padding: 20,
                     marginBottom: 24,
@@ -1716,7 +1676,7 @@ export default function App() {
                       <button 
                         onClick={() => triggerAlert("Lower Body workout stats logged!")}
                         style={{
-                          backgroundColor: "#000000", color: "#FFFFFF", padding: "8px 16px", borderRadius: 20,
+                          backgroundColor: color.bg, color: color.text1, padding: "8px 16px", borderRadius: 20,
                           fontSize: 11, fontWeight: "900", display: "flex", alignItems: "center", gap: 6, border: "none", cursor: "pointer"
                         }}
                       >
@@ -1729,7 +1689,7 @@ export default function App() {
                       {/* Circular Progress Ring */}
                       <div style={{
                         position: "absolute", top: -14, right: -4, width: 38, height: 38, borderRadius: "50%",
-                        border: "3px solid #000000", display: "flex", alignItems: "center", justifyContent: "center",
+                        border: "3px solid color.bg", display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: 10, fontWeight: "900"
                       }}>
                         72%
@@ -1775,7 +1735,7 @@ export default function App() {
                     <div 
                       onClick={() => setActiveOverlay("active_workout")}
                       style={{
-                        backgroundColor: "#B5B5F8",
+                        backgroundColor: color.secondary,
                         borderRadius: 24,
                         padding: "20px 16px 16px",
                         position: "relative",
@@ -1956,7 +1916,7 @@ export default function App() {
                         style={{
                           padding: "6px 12px", border: "none", borderRadius: 8, fontSize: 11, fontWeight: "800",
                           backgroundColor: !isDark ? C.surface : "transparent",
-                          color: !isDark ? C.accent : "#8E8E93",
+                          color: !isDark ? C.accent : color.text2,
                           cursor: "pointer", boxShadow: !isDark ? "0 2px 4px rgba(0,0,0,0.05)" : "none",
                           transition: "all 0.2s"
                         }}
@@ -1967,8 +1927,8 @@ export default function App() {
                         onClick={() => setAppTheme("dark")}
                         style={{
                           padding: "6px 12px", border: "none", borderRadius: 8, fontSize: 11, fontWeight: "800",
-                          backgroundColor: isDark ? (isDark ? "#000000" : C.surface) : "transparent",
-                          color: isDark ? "#C4F27B" : C.text2,
+                          backgroundColor: isDark ? (isDark ? color.bg : C.surface) : "transparent",
+                          color: isDark ? color.primary : C.text2,
                           cursor: "pointer", boxShadow: isDark ? "0 2px 4px rgba(0,0,0,0.15)" : "none",
                           transition: "all 0.2s"
                         }}
@@ -1987,8 +1947,8 @@ export default function App() {
                       <h2 style={{ fontSize: 18, fontWeight: 800, color: C.text1, margin: 0 }}>{user.name}</h2>
                       <p style={{ fontSize: 12, color: C.text2, margin: "2px 0 0" }}>arjun@fitva.com</p>
                       <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
-                        <span style={{ fontSize: 10, fontWeight: 700, backgroundColor: isDark ? "#1E3A27" : "#E8F5E9", color: isDark ? "#52D87B" : "#4CAF50", padding: "2px 6px", borderRadius: 6 }}>LEVEL 4</span>
-                        <span style={{ fontSize: 10, fontWeight: 700, backgroundColor: isDark ? "#3E2519" : "rgba(255, 95, 31, 0.1)", color: isDark ? "#FF8E53" : C.accentOrange, padding: "2px 6px", borderRadius: 6 }}>1,240 XP</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, backgroundColor: isDark ? "#1E3A27" : "#E8F5E9", color: isDark ? color.primary : color.primary, padding: "2px 6px", borderRadius: 6 }}>LEVEL 4</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, backgroundColor: isDark ? color.warning : "rgba(255, 95, 31, 0.1)", color: isDark ? color.warning : C.accentOrange, padding: "2px 6px", borderRadius: 6 }}>1,240 XP</span>
                       </div>
                     </div>
                   </div>
@@ -2000,11 +1960,11 @@ export default function App() {
                       <div style={{ fontSize: 10, color: C.text2, marginTop: 2 }}>Streak</div>
                     </div>
                     <div className="card-light" style={{ flex: 1, textAlign: "center", margin: 0, padding: 12 }}>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: "#007AFF" }}>24th</div>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: color.secondary }}>24th</div>
                       <div style={{ fontSize: 10, color: C.text2, marginTop: 2 }}>Leaderboard</div>
                     </div>
                     <div className="card-light" style={{ flex: 1, textAlign: "center", margin: 0, padding: 12 }}>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: "#9C27B0" }}>{user.workoutCompleted}</div>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: color.secondary }}>{user.workoutCompleted}</div>
                       <div style={{ fontSize: 10, color: C.text2, marginTop: 2 }}>Workouts</div>
                     </div>
                   </div>
@@ -2046,7 +2006,7 @@ export default function App() {
                 exit={{ opacity: 0, y: 960 }}
                 transition={{ type: "spring", damping: 30 }}
                 style={{
-                  position: "absolute", inset: 0, backgroundColor: "#090A0F", zIndex: 1000,
+                  position: "absolute", inset: 0, backgroundColor: color.bg, zIndex: 1000,
                   display: "flex", flexDirection: "column", boxSizing: "border-box",
                   overflow: "hidden"
                 }}
@@ -2069,9 +2029,9 @@ export default function App() {
 
                 {/* Top Controls HUD */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "60px 24px 20px", zIndex: 3, width: "100%" }}>
-                  <div style={{ color: "#FFFFFF" }}>
+                  <div style={{ color: color.text1 }}>
                     <button 
-                      style={{ background: "none", border: "none", color: "#FFFFFF", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}
+                      style={{ background: "none", border: "none", color: color.text1, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}
                       onClick={() => setActiveOverlay(null)}
                     >
                       <ArrowLeft size={20} /> Back
@@ -2088,18 +2048,18 @@ export default function App() {
                         triggerAlert(isWorkoutPaused ? "Workout resumed!" : "Workout paused!");
                       }}
                       style={{
-                        width: 46, height: 46, borderRadius: "50%", backgroundColor: "#FFFFFF",
+                        width: 46, height: 46, borderRadius: "50%", backgroundColor: color.text1,
                         display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer",
                         boxShadow: "0 8px 16px rgba(0,0,0,0.15)"
                       }}
                     >
-                      {isWorkoutPaused ? <Play size={18} fill="#090A0F" color="#090A0F" style={{ marginLeft: 2 }} /> : <X size={18} color="#090A0F" strokeWidth={3} />}
+                      {isWorkoutPaused ? <Play size={18} fill={color.bg} color={color.bg} style={{ marginLeft: 2 }} /> : <X size={18} color={color.bg} strokeWidth={3} />}
                     </motion.button>
                     
                     {/* Calories counter */}
-                    <div style={{ textAlign: "right", color: "#FFFFFF" }}>
+                    <div style={{ textAlign: "right", color: color.text1 }}>
                       <div style={{ fontSize: 18, fontWeight: "900", lineHeight: 1 }}>328</div>
-                      <div style={{ fontSize: 9, color: "#CCCCCC", fontWeight: "700", textTransform: "uppercase", marginTop: 2 }}>Kcal Burned</div>
+                      <div style={{ fontSize: 9, color: color.text2, fontWeight: "700", textTransform: "uppercase", marginTop: 2 }}>Kcal Burned</div>
                     </div>
 
                     {/* Vertical Progress Bar Level Indicators */}
@@ -2111,8 +2071,8 @@ export default function App() {
                             key={lvl} 
                             style={{
                               width: 14, height: 5, borderRadius: 2.5,
-                              backgroundColor: active ? "#B5B5F8" : "rgba(255,255,255,0.2)",
-                              boxShadow: active ? "0 0 6px #B5B5F8" : "none"
+                              backgroundColor: active ? color.secondary : "rgba(255,255,255,0.2)",
+                              boxShadow: active ? "0 0 6px color.secondary" : "none"
                             }} 
                           />
                         );
@@ -2124,26 +2084,26 @@ export default function App() {
                 {/* Bottom Timer Dashboard Card */}
                 <div style={{
                   position: "absolute", bottom: 0, left: 0, right: 0, height: 250,
-                  backgroundColor: "#FFFFFF", borderTopLeftRadius: 40, borderTopRightRadius: 40,
+                  backgroundColor: color.text1, borderTopLeftRadius: 40, borderTopRightRadius: 40,
                   zIndex: 3, padding: "24px 20px 20px", display: "flex", flexDirection: "column",
                   justifyContent: "space-between", boxShadow: "0 -10px 30px rgba(0,0,0,0.2)", boxSizing: "border-box"
                 }}>
                   {/* Pull Indicator Pill */}
-                  <div style={{ width: 40, height: 5, backgroundColor: "#E5E5EA", borderRadius: 2.5, alignSelf: "center", marginBottom: 14 }}></div>
+                  <div style={{ width: 40, height: 5, backgroundColor: color.border, borderRadius: 2.5, alignSelf: "center", marginBottom: 14 }}></div>
 
                   {/* Timer Info Row */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     {/* Elapsed */}
                     <div style={{ width: "25%" }}>
-                      <div style={{ fontSize: 10, fontWeight: "800", color: "#8E8E93", textTransform: "uppercase" }}>Elapsed</div>
-                      <div style={{ fontSize: 18, fontWeight: "900", color: "#1C1C1E", marginTop: 2 }}>
+                      <div style={{ fontSize: 10, fontWeight: "800", color: color.text2, textTransform: "uppercase" }}>Elapsed</div>
+                      <div style={{ fontSize: 18, fontWeight: "900", color: color.surface, marginTop: 2 }}>
                         {Math.floor(elapsedSeconds / 60).toString().padStart(2, '0')}:{(elapsedSeconds % 60).toString().padStart(2, '0')}
                       </div>
                     </div>
 
                     {/* Digital timer */}
                     <div style={{ 
-                      fontSize: 38, fontWeight: "900", color: "#1C1C1E", textAlign: "center", 
+                      fontSize: 38, fontWeight: "900", color: color.surface, textAlign: "center", 
                       fontFamily: "Courier, monospace", letterSpacing: "1px" 
                     }}>
                       {Math.floor(workoutTimer / 60).toString().padStart(2, '0')}:{(workoutTimer % 60).toString().padStart(2, '0')}
@@ -2151,8 +2111,8 @@ export default function App() {
 
                     {/* Set */}
                     <div style={{ width: "25%", textAlign: "right" }}>
-                      <div style={{ fontSize: 10, fontWeight: "800", color: "#8E8E93", textTransform: "uppercase" }}>Set</div>
-                      <div style={{ fontSize: 18, fontWeight: "900", color: "#1C1C1E", marginTop: 2 }}>2/5</div>
+                      <div style={{ fontSize: 10, fontWeight: "800", color: color.text2, textTransform: "uppercase" }}>Set</div>
+                      <div style={{ fontSize: 18, fontWeight: "900", color: color.surface, marginTop: 2 }}>2/5</div>
                     </div>
                   </div>
 
@@ -2162,10 +2122,10 @@ export default function App() {
                     backgroundColor: "#F2F2F7", borderRadius: 32, padding: "6px 16px", marginTop: 14
                   }}>
                     {[
-                      { icon: <HomeIcon size={20} color="#8E8E93" />, key: "home" },
-                      { icon: <TrendingUp size={20} color="#8E8E93" />, key: "stats" },
-                      { icon: <Dumbbell size={20} color="#FFFFFF" />, key: "workout", active: true },
-                      { icon: <User size={20} color="#8E8E93" />, key: "profile" }
+                      { icon: <HomeIcon size={20} color={color.text2} />, key: "home" },
+                      { icon: <TrendingUp size={20} color={color.text2} />, key: "stats" },
+                      { icon: <Dumbbell size={20} color={color.text1} />, key: "workout", active: true },
+                      { icon: <User size={20} color={color.text2} />, key: "profile" }
                     ].map((nav, i) => (
                       <div 
                         key={i} 
@@ -2177,7 +2137,7 @@ export default function App() {
                         }}
                         style={{
                           width: 44, height: 44, borderRadius: "50%",
-                          backgroundColor: nav.active ? "#7F5DF0" : "transparent",
+                          backgroundColor: nav.active ? color.secondary : "transparent",
                           display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
                           transition: "background-color 0.2s"
                         }}
@@ -2191,138 +2151,79 @@ export default function App() {
             )}
 
             {/* C. QUICK LOG MODAL OVERLAY */}
-            {activeOverlay === "quick_log" && (
-              <motion.div
-                key="quick-log"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                style={{
-                  position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 1000,
-                  display: "flex", alignItems: "flex-end", justifyContent: "center"
-                }}
-              >
-                <motion.div
-                  initial={{ y: 300 }}
-                  animate={{ y: 0 }}
-                  exit={{ y: 300 }}
-                  style={{
-                    width: "100%", maxWidth: 480, backgroundColor: C.surface, borderTopLeftRadius: 30, borderTopRightRadius: 30,
-                    padding: 24, boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 14,
-                    border: `1px solid ${C.border}`, borderBottom: "none"
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h3 style={{ fontSize: 16, fontWeight: 800, color: C.text1, margin: 0, whiteSpace: "nowrap" }}>Quick Log Habits</h3>
-                    <button 
-                      style={{ background: "none", border: "none", color: C.text2, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 4 }} 
-                      onClick={() => setActiveOverlay(null)}
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
+            <Sheet
+              isOpen={activeOverlay === "quick_log"}
+              onClose={() => setActiveOverlay(null)}
+              title="Quick Log Habits"
+            >
+              {/* Water Quick Log Preset */}
+              <div style={{ marginBottom: 14 }}>
+                <label className="input-label" style={{ marginBottom: 8 }}>Water Intake</label>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {["+250ml", "+500ml", "+750ml"].map((ml) => (
+                    <Button key={ml} onClick={() => {
+                      const val = parseFloat(ml) / 1000;
+                      setUser(prev => ({ ...prev, waterToday: parseFloat((prev.waterToday + val).toFixed(1)) }));
+                      triggerAlert(`Added ${ml} water intake!`);
+                      setCelebration("streak");
+                    }} variant="secondary" fullWidth style={{ fontSize: 12, padding: "10px" }}>
+                      {ml}
+                    </Button>
+                  ))}
+                </div>
+              </div>
 
-                  {/* Water Quick Log Preset */}
-                  <div>
-                    <label className="input-label" style={{ marginBottom: 8 }}>Water Intake</label>
-                    <div style={{ display: "flex", gap: 10 }}>
-                      {["+250ml", "+500ml", "+750ml"].map((ml) => (
-                        <button key={ml} onClick={() => {
-                          const val = parseFloat(ml) / 1000;
-                          setUser(prev => ({ ...prev, waterToday: parseFloat((prev.waterToday + val).toFixed(1)) }));
-                          triggerAlert(`Added ${ml} water intake!`);
-                        }} style={{ flex: 1, padding: 12, borderRadius: 12, border: `1px solid ${C.border}`, backgroundColor: "transparent", color: C.blue, fontWeight: 700, cursor: "pointer", fontSize: 12 }}>
-                          {ml}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+              {/* Log Nutrition Preset */}
+              <div style={{ marginBottom: 14 }}>
+                <label className="input-label" style={{ marginBottom: 8 }}>Log Nutrition</label>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {["+300 Cal", "+500 Cal", "+700 Cal"].map((cal) => (
+                    <Button key={cal} onClick={() => {
+                      const val = parseInt(cal);
+                      setUser(prev => ({ ...prev, calToday: prev.calToday + val }));
+                      triggerAlert(`Logged ${cal} meal!`);
+                      setCelebration("streak");
+                    }} variant="secondary" fullWidth style={{ fontSize: 12, padding: "10px" }}>
+                      {cal}
+                    </Button>
+                  ))}
+                </div>
+              </div>
 
-                  {/* Log Nutrition Preset */}
-                  <div>
-                    <label className="input-label" style={{ marginBottom: 8 }}>Log Nutrition</label>
-                    <div style={{ display: "flex", gap: 10 }}>
-                      {["+300 Cal", "+500 Cal", "+700 Cal"].map((cal) => (
-                        <button key={cal} onClick={() => {
-                          const val = parseInt(cal);
-                          setUser(prev => ({ ...prev, calToday: prev.calToday + val }));
-                          triggerAlert(`Logged ${cal} meal!`);
-                        }} style={{ flex: 1, padding: 12, borderRadius: 12, border: `1px solid ${C.border}`, backgroundColor: "transparent", color: C.accentOrange, fontWeight: 700, cursor: "pointer", fontSize: 12 }}>
-                          {cal}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+              {/* Mind/Mood Quick Log */}
+              <div style={{ marginBottom: 20 }}>
+                <label className="input-label" style={{ marginBottom: 8 }}>Select Mood</label>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {["Good", "Tired", "Energetic"].map((m) => (
+                    <Button key={m} onClick={() => {
+                      setUser(prev => ({ ...prev, moodToday: m, mindToday: m === "Good" ? 8 : m === "Energetic" ? 10 : 5 }));
+                      triggerAlert(`Mood logged as ${m}!`);
+                      setCelebration("streak");
+                    }} variant={user.moodToday === m ? "primary" : "secondary"} fullWidth style={{ fontSize: 12, padding: "10px" }}>
+                      {m}
+                    </Button>
+                  ))}
+                </div>
+              </div>
 
-                  {/* Mind/Mood Quick Log */}
-                  <div style={{ marginBottom: 12 }}>
-                    <label className="input-label" style={{ marginBottom: 8 }}>Select Mood</label>
-                    <div style={{ display: "flex", gap: 10 }}>
-                      {["Good", "Tired", "Energetic"].map((m) => (
-                        <button key={m} onClick={() => {
-                          setUser(prev => ({ ...prev, moodToday: m, mindToday: m === "Good" ? 8 : m === "Energetic" ? 10 : 5 }));
-                          triggerAlert(`Mood logged as ${m}!`);
-                        }} style={{ flex: 1, padding: 12, borderRadius: 12, border: `1px solid ${C.border}`, backgroundColor: user.moodToday === m ? "rgba(0,168,107,0.08)" : "transparent", color: user.moodToday === m ? C.accent : C.text1, fontWeight: 700, cursor: "pointer", fontSize: 12 }}>
-                          {m}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <button className="btn-action" onClick={() => setActiveOverlay(null)}>
-                    Save & Finish
-                  </button>
-                </motion.div>
-              </motion.div>
-            )}
+              <Button fullWidth onClick={() => setActiveOverlay(null)}>
+                Save & Finish
+              </Button>
+            </Sheet>
 
             {/* D. NUTRITION FEATURE OVERLAY (Full App Screen Page) */}
             {activeOverlay === "nutrition" && (() => {
-              const nutritionAccent = "#00E5A8"; /* TEMP: awaiting confirmed zone accent from product owner */
+              const nutritionAccent = color.primary; /* TEMP: awaiting confirmed zone accent from product owner */
               const isNewUser = recentFoodLogs.length === 0;
               const presets = isNewUser ? ["Apple", "Oatmeal", "Greek Yogurt"] : recentFoodLogs;
 
               return (
-                <motion.div
-                  key="nutrition-screen"
-                  initial={{ opacity: 0, y: 960 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 960 }}
-                  transition={{ type: "spring", damping: 28 }}
-                  style={{
-                    position: "absolute", inset: 0, backgroundColor: C.appBg, zIndex: 1000,
-                    display: "flex", flexDirection: "column", boxSizing: "border-box",
-                    padding: "54px 20px 24px", transition: "background-color 0.3s"
-                  }}
+                <Sheet
+                  isOpen={activeOverlay === "nutrition"}
+                  onClose={() => setActiveOverlay(null)}
+                  title={nutritionTab === "analyser" ? "Food Scanner" : "Recipe Creator"}
                 >
-                  {/* Header - Task specific title only */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-                    <div>
-                      <h2 style={{ fontSize: 18, fontWeight: 800, color: C.text1, margin: 0 }}>
-                        {nutritionTab === "analyser" ? "Food Scanner" : "Recipe Creator"}
-                      </h2>
-                      <span style={{ fontSize: 11, color: C.text2 }}>
-                        {nutritionTab === "analyser" ? "Scan or log what you're eating" : "Scan or search ingredients"}
-                      </span>
-                    </div>
-                    <motion.button 
-                      whileTap={{ scale: 0.9 }}
-                      style={{
-                        width: 36, height: 36, borderRadius: "50%", border: `1px solid ${C.border}`,
-                        backgroundColor: C.surface, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0
-                      }}
-                      onClick={() => {
-                        setScannedFoodResult(null);
-                        setScanConfidence(null);
-                        setScanError(null);
-                        setShowManualForm(false);
-                        setRecipeError(null);
-                        setActiveOverlay(null);
-                      }}
-                    >
-                      <X size={16} color={C.text1} />
-                    </motion.button>
-                  </div>
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", boxSizing: "border-box", transition: "background-color 0.3s" }}>
 
                   {/* Segmented Mode Controller Toggle */}
                   <div style={{ display: "flex", marginBottom: 20, backgroundColor: C.surfaceLight, borderRadius: 14, padding: 4, border: `1px solid ${C.border}` }}>
@@ -2751,65 +2652,74 @@ export default function App() {
                             )}
 
                             {/* Generate Recipes solid-filled CTA (disabled if list empty) */}
-                            <button 
-                              className="btn-action" 
+                            <Button 
                               disabled={recipeIngredients.length === 0}
-                              style={{ 
-                                backgroundColor: recipeIngredients.length === 0 ? C.border : nutritionAccent, 
-                                opacity: recipeIngredients.length === 0 ? 0.45 : 1,
-                                cursor: recipeIngredients.length === 0 ? "not-allowed" : "pointer",
-                                color: recipeIngredients.length === 0 ? C.text2 : "white",
-                                boxShadow: recipeIngredients.length === 0 ? "none" : C.nutritionShadow,
-                                pointerEvents: recipeIngredients.length === 0 ? "none" : "auto",
-                                margin: 0
-                              }} 
-                              onClick={handleSimulateRecipeGeneration}
+                              onClick={() => {
+                                if (recipeIngredients.length === 0) {
+                                  triggerAlert("Please scan or add at least one ingredient first!");
+                                  return;
+                                }
+                                setGeneratingRecipes(true);
+                                setRecipeError(null);
+                                setRecipesResult(null);
+
+                                setTimeout(() => {
+                                  setGeneratingRecipes(false);
+                                  setRecipesResult([
+                                    {
+                                      title: "High-Protein Oatmeal Bowl",
+                                      calories: 420,
+                                      protein: 28,
+                                      carbs: 56,
+                                      time: "8 mins",
+                                      ingredients: ["1 scoop Protein Powder", "50g Oats", "1/2 Scanned Banana", "150ml milk"],
+                                      youtube: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                                    },
+                                    {
+                                      title: "Banana Oat Pancakes",
+                                      calories: 380,
+                                      protein: 22,
+                                      carbs: 48,
+                                      time: "12 mins",
+                                      ingredients: ["1 Scanned Banana", "40g Oats", "2 Eggs", "1/2 tsp cinnamon"],
+                                      youtube: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                                    }
+                                  ]);
+                                  triggerAlert("Rex AI generated 2 recipes! 🥞");
+                                }, 2000);
+                              }}
+                              fullWidth
                             >
-                              {generatingRecipes ? "Generating Suggestions..." : "Generate Recipes"}
-                            </button>
+                              {generatingRecipes ? "REX IS GENERATING RECIPES..." : "GENERATE REX RECIPES"}
+                            </Button>
                           </div>
 
-                          {/* Recipe Generation Failure State */}
-                          {recipeError && (
-                            <div className="card-light" style={{ padding: 14, border: `1px solid ${C.accentOrange}`, backgroundColor: "rgba(255, 95, 31, 0.05)", margin: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-                              <span style={{ fontSize: 12, color: C.text1, fontWeight: 700 }}>{recipeError}</span>
-                              <button 
-                                onClick={handleSimulateRecipeGeneration}
-                                style={{
-                                  padding: "6px 12px", borderRadius: 8, border: `1px solid ${nutritionAccent}`,
-                                  backgroundColor: "transparent", color: nutritionAccent, fontWeight: 700, fontSize: 11, cursor: "pointer"
-                                }}
-                              >
-                                Retry
-                              </button>
-                            </div>
-                          )}
-
-                          {/* Suggested Recipe results */}
+                          {/* AI Recipe Generator Results */}
                           <AnimatePresence>
                             {recipesResult && (
                               <motion.div
                                 initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 15 }}
-                                style={{ display: "flex", flexDirection: "column", gap: 12 }}
+                                style={{ display: "flex", flexDirection: "column", gap: 14 }}
                               >
-                                <h4 style={{ fontSize: 13, fontWeight: 700, color: C.text2, textTransform: "uppercase", margin: "4px 0 0" }}>Suggested Recipes</h4>
-                                
-                                {recipesResult.map((recipe, index) => (
-                                  <div key={index} className="card-light" style={{ padding: 16, border: `1px solid ${C.border}`, margin: 0 }}>
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                                      <h5 style={{ fontSize: 14, fontWeight: 800, color: C.text1, margin: 0 }}>{recipe.title}</h5>
-                                      <span style={{ fontSize: 10, color: nutritionAccent, fontWeight: 700 }}>{recipe.time} &bull; {recipe.calories}</span>
+                                <h3 style={{ fontSize: 13, fontWeight: 800, color: C.text2, margin: 0, textTransform: "uppercase" }}>Recommended AI Recipes</h3>
+                                {recipesResult.map((recipe, idx) => (
+                                  <div key={idx} className="card-light" style={{ padding: 16, border: `1px solid ${C.border}`, margin: 0 }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                                      <div>
+                                        <h4 style={{ fontSize: 14, fontWeight: 900, color: C.text1, margin: 0 }}>{recipe.title}</h4>
+                                        <div style={{ fontSize: 9, color: C.text2, marginTop: 4, fontWeight: 700 }}>
+                                          {recipe.time} &bull; {recipe.calories} Kcal &bull; {recipe.protein}g Protein
+                                        </div>
+                                      </div>
                                     </div>
-                                    
-                                    <p style={{ fontSize: 11, color: C.text2, margin: "0 0 10px", lineHeight: 1.4 }}>
-                                      {recipe.instructions}
-                                    </p>
 
-                                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 12 }}>
-                                      {recipe.ingredientsUsed.map((ing, i) => (
-                                        <span key={i} style={{ fontSize: 9, backgroundColor: C.surfaceLight, padding: "2px 6px", borderRadius: 6, color: C.text2 }}>
+                                    {/* Ingredient list */}
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 14 }}>
+                                      {recipe.ingredients.map((ing, i) => (
+                                        <span key={i} style={{ fontSize: 10, color: C.text1, display: "flex", alignItems: "center", gap: 6 }}>
+                                          <span style={{ width: 4, height: 4, borderRadius: "50%", backgroundColor: nutritionAccent }} />
                                           {ing}
                                         </span>
                                       ))}
@@ -2826,8 +2736,8 @@ export default function App() {
                                         border: "1px solid rgba(211, 47, 47, 0.2)", cursor: "pointer"
                                       }}
                                     >
-                                      <Youtube size={16} color="#D32F2F" fill="#D32F2F" />
-                                      <span style={{ fontSize: 11, fontWeight: 700, color: "#D32F2F" }}>Watch Video Recipe Tutorial</span>
+                                      <Youtube size={16} color={color.error} fill={color.error} />
+                                      <span style={{ fontSize: 11, fontWeight: 700, color: color.error }}>Watch Video Recipe Tutorial</span>
                                     </a>
                                   </div>
                                 ))}
@@ -2839,8 +2749,9 @@ export default function App() {
 
                     </AnimatePresence>
                   </div>
-                </motion.div>
-              );
+                </div>
+              </Sheet>
+            );
             })()}
 
             {/* E. PROGRESS OVERLAY (Re-implemented per Progress Implementation Spec) */}
@@ -2877,7 +2788,7 @@ export default function App() {
 
                 <div style={{ flex: 1, overflowY: "auto", paddingRight: 4, paddingBottom: 24, scrollbarWidth: "none" }}>
                   {/* 1. AVATAR HERO ZONE */}
-                  <div style={{ position: "relative", width: "100%", height: 180, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backgroundColor: appTheme === "dark" ? "#151C32" : "#F0F4FF", borderRadius: 24, padding: 12, marginBottom: 16, border: `1.5px solid ${C.border}`, overflow: "hidden" }}>
+                  <div style={{ position: "relative", width: "100%", height: 180, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backgroundColor: appTheme === "dark" ? color.surface : "#F0F4FF", borderRadius: 24, padding: 12, marginBottom: 16, border: `1.5px solid ${C.border}`, overflow: "hidden" }}>
                     {avatarLoadError ? (
                       // Static Avatar Fallback
                       <img 
@@ -2904,10 +2815,10 @@ export default function App() {
                   {/* <RexBubble> speech text */}
                   <div className="card-light" style={{ display: "flex", gap: 10, padding: 14, margin: "0 0 16px", border: `1px solid ${C.border}`, position: "relative" }}>
                     <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(156,39,176,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <Sparkles size={14} color="#9C27B0" />
+                      <Sparkles size={14} color={color.secondary} />
                     </div>
                     <div>
-                      <div style={{ fontSize: 10, fontWeight: "800", color: "#9C27B0", textTransform: "uppercase", marginBottom: 2 }}>Rex AI Companion</div>
+                      <div style={{ fontSize: 10, fontWeight: "800", color: color.secondary, textTransform: "uppercase", marginBottom: 2 }}>Rex AI Companion</div>
                       <p style={{ fontSize: 11, color: C.text1, margin: 0, lineHeight: 1.4 }}>
                         "Welcome back, Arjun! Ready to conquer today's Recommended Workout? Let's keep that 12-day streak glowing!"
                       </p>
@@ -2937,7 +2848,7 @@ export default function App() {
                     {/* Metric 3: Water Ring */}
                     <div className="card-light" style={{ flex: 1, margin: 0, padding: 12, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", border: `1px solid ${C.border}` }}>
                       <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(0,122,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6 }}>
-                        <ShoppingBag size={14} color="#007AFF" />
+                        <ShoppingBag size={14} color={color.secondary} />
                       </div>
                       <span style={{ fontSize: 13, fontWeight: 900, color: C.text1 }}>{user.waterToday}L</span>
                       <span style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>of {user.waterGoal}L Goal</span>
@@ -2954,7 +2865,7 @@ export default function App() {
                       width: "100%",
                       padding: "16px",
                       borderRadius: 16,
-                      background: "linear-gradient(135deg, #00E5A8 0%, #00A86B 100%)",
+                      background: "linear-gradient(135deg, color.primary 0%, color.primary 100%)",
                       color: "white",
                       border: "none",
                       fontWeight: "800",
@@ -3154,7 +3065,7 @@ export default function App() {
                               whileTap={{ scale: 0.98 }}
                               onClick={() => triggerAlert("Order placed for out-of-stock items!")}
                               style={{
-                                width: "100%", padding: 12, borderRadius: 12, backgroundColor: "#007AFF",
+                                width: "100%", padding: 12, borderRadius: 12, backgroundColor: color.secondary,
                                 border: "none", color: "white", fontSize: 12, fontWeight: 800, marginTop: 14, cursor: "pointer"
                               }}
                             >
@@ -3191,7 +3102,7 @@ export default function App() {
                       backgroundColor: activeOverlay === "rex_coach" ? "rgba(156, 39, 176, 0.12)" : activeOverlay === "yoga" ? "rgba(127, 93, 240, 0.15)" : activeOverlay === "supplements" ? "rgba(255, 152, 0, 0.12)" : "rgba(233, 30, 99, 0.12)",
                       display: "flex", alignItems: "center", justifyContent: "center"
                     }}>
-                      {activeOverlay === "rex_coach" ? <Sparkles size={18} color="#9C27B0" /> : activeOverlay === "yoga" ? <Dumbbell size={18} color="#7F5DF0" /> : activeOverlay === "supplements" ? <ShoppingBag size={18} color="#FF9800" /> : <Sparkles size={18} color="#E91E63" />}
+                      {activeOverlay === "rex_coach" ? <Sparkles size={18} color={color.secondary} /> : activeOverlay === "yoga" ? <Dumbbell size={18} color={color.secondary} /> : activeOverlay === "supplements" ? <ShoppingBag size={18} color={color.warning} /> : <Sparkles size={18} color={color.error} />}
                     </div>
                     <h2 style={{ fontSize: 18, fontWeight: 900, color: C.text1, margin: 0, textTransform: "capitalize" }}>
                       {activeOverlay === "rex_coach" ? "Rex AI Coach" : activeOverlay}
@@ -3246,7 +3157,7 @@ export default function App() {
               display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all 0.2s"
             }}>
-              <Dumbbell size={24} color={tab === "plan" ? "#7F5DF0" : C.text2} />
+              <Dumbbell size={24} color={tab === "plan" ? color.secondary : C.text2} />
             </div>
           </button>
 
@@ -3325,11 +3236,11 @@ export default function App() {
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <div style={{
                     width: 36, height: 36, borderRadius: "50%",
-                    background: "linear-gradient(135deg, #8A2387 0%, #E94057 50%, #F27121 100%)",
+                    background: "linear-gradient(135deg, color.secondary 0%, color.error 50%, color.warning 100%)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     boxShadow: "0 4px 10px rgba(233, 64, 87, 0.3)"
                   }}>
-                    <Sparkles size={18} color="#FFFFFF" />
+                    <Sparkles size={18} color={color.text1} />
                   </div>
                   <div>
                     <div style={{ fontSize: 16, fontWeight: 900, color: C.text1 }}>Rex AI Coach</div>
@@ -3402,7 +3313,7 @@ export default function App() {
                   zIndex: -1
                 }}
               />
-              <Sparkles size={20} color="#FFFFFF" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15))" }} />
+              <Sparkles size={20} color={color.text1} style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15))" }} />
             </div>
           )}
         </motion.div>

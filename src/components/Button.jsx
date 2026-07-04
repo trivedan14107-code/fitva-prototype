@@ -1,89 +1,100 @@
-import { motion } from "framer-motion";
+import React from "react";
+import { motion as m } from "framer-motion";
+import { color, typography, motion } from "../design/tokens";
 
 /**
  * FITVA Design System – Button Component
  * Variants: primary | secondary | ghost | danger
- * Uses spring-based press animation (not just scale).
+ * Uses spring-based snappy press animation, support for loading and disabled states.
  */
-
-const COLORS = {
-  primary: "#00E5A8",
-  secondary: "#5B8CFF",
-  success: "#00A86B",
-  warning: "#FFB84D",
-  error: "#FF2D55",
-};
-
-const variantStyles = {
-  primary: {
-    backgroundColor: COLORS.primary,
-    color: "#FFFFFF",
-    border: "none",
-    boxShadow: "0 6px 20px rgba(0, 229, 168, 0.35)",
-  },
-  secondary: {
-    backgroundColor: "transparent",
-    color: COLORS.primary,
-    border: `1.5px solid ${COLORS.primary}`,
-    boxShadow: "none",
-  },
-  ghost: {
-    backgroundColor: "transparent",
-    color: "inherit",
-    border: "none",
-    boxShadow: "none",
-  },
-  danger: {
-    backgroundColor: COLORS.error,
-    color: "#FFFFFF",
-    border: "none",
-    boxShadow: "0 6px 20px rgba(255, 45, 85, 0.3)",
-  },
-};
-
 export default function Button({
   children,
   variant = "primary",
   onClick,
   disabled = false,
+  loading = false,
   style = {},
   fullWidth = false,
   ...rest
 }) {
-  const base = variantStyles[variant] || variantStyles.primary;
+  const getStyles = () => {
+    switch (variant) {
+      case "primary":
+        return {
+          backgroundColor: color.primary,
+          color: color.bg,
+          border: "none",
+          boxShadow: `0 4px 16px rgba(0, 229, 168, 0.25)`,
+        };
+      case "secondary":
+        return {
+          backgroundColor: "transparent",
+          color: color.primary,
+          border: `1.5px solid ${color.primary}`,
+        };
+      case "ghost":
+        return {
+          backgroundColor: "transparent",
+          color: color.text2,
+          border: "none",
+        };
+      case "danger":
+        return {
+          backgroundColor: color.error,
+          color: color.text1,
+          border: "none",
+          boxShadow: `0 4px 16px rgba(255, 92, 92, 0.2)`,
+        };
+      default:
+        return {};
+    }
+  };
+
+  const baseStyle = {
+    fontFamily: typography.body,
+    fontWeight: "700",
+    fontSize: "14px",
+    padding: "12px 24px",
+    borderRadius: "14px",
+    cursor: disabled || loading ? "not-allowed" : "pointer",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    outline: "none",
+    width: fullWidth ? "100%" : "auto",
+    userSelect: "none",
+    transition: "background-color 0.2s, border-color 0.2s, color 0.2s",
+    ...getStyles(),
+    ...style,
+  };
 
   return (
-    <motion.button
-      whileTap={{
-        scale: 0.94,
-        y: 2,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-        transition: { type: "spring", stiffness: 400, damping: 15 },
-      }}
-      whileHover={{ scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 400, damping: 20 }}
-      onClick={disabled ? undefined : onClick}
+    <m.button
+      whileTap={!(disabled || loading) ? { scale: 0.96 } : {}}
+      transition={motion.spring.snappy}
+      onClick={disabled || loading ? undefined : onClick}
       style={{
-        ...base,
-        padding: "12px 20px",
-        borderRadius: 12,
-        fontWeight: 800,
-        fontSize: 13,
-        cursor: disabled ? "not-allowed" : "pointer",
+        ...baseStyle,
         opacity: disabled ? 0.4 : 1,
-        pointerEvents: disabled ? "none" : "auto",
-        width: fullWidth ? "100%" : "auto",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        fontFamily: "inherit",
-        letterSpacing: "0.3px",
-        ...style,
       }}
+      disabled={disabled || loading}
       {...rest}
     >
+      {loading ? (
+        <m.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          style={{
+            width: "16px",
+            height: "16px",
+            border: `2px solid currentColor`,
+            borderTopColor: "transparent",
+            borderRadius: "50%",
+          }}
+        />
+      ) : null}
       {children}
-    </motion.button>
+    </m.button>
   );
 }
