@@ -57,9 +57,16 @@ export default function App() {
   const [tab, setTab] = useState("home"); // home, plan, community, profile
   const [activeOverlay, setActiveOverlay] = useState(null); // 'rex_coach', 'active_workout', 'quick_log', 'nutrition'
   
-  // Expandable Metrics Panel (Controlled by clicking Water card)
-  const [isMetricsExpanded, setIsMetricsExpanded] = useState(true); // Open by default for immediate view
-  const [metricsMode, setMetricsMode] = useState("water"); // 'water' or 'steps'
+  // Carousel State Variables
+  const [carouselIndex, setCarouselIndex] = useState(0); // 0 to 4 (Overview, Streak, Water, Steps, Calories)
+  const [expandedCarouselSlide, setExpandedCarouselSlide] = useState(null); // null or index
+  const [reminderActive, setReminderActive] = useState(false);
+  const [waterLogs, setWaterLogs] = useState([
+    { time: "08:00 AM", amount: 0.4 },
+    { time: "11:30 AM", amount: 0.5 },
+    { time: "02:15 PM", amount: 0.3 },
+    { time: "05:00 PM", amount: 0.4 }
+  ]);
   const [waterGoalInput, setWaterGoalInput] = useState("2.5");
   const [stepsGoalInput, setStepsGoalInput] = useState("10000");
   const [progressTab, setProgressTab] = useState("workout"); // workout, water, steps, nutrition
@@ -178,7 +185,7 @@ export default function App() {
 
   // Shake / Mouse movement velocity tracking for Steps simulation
   const handleMouseMove = (e) => {
-    if (!sensorActive || metricsMode !== "steps") return;
+    if (!sensorActive || expandedCarouselSlide !== 3) return;
     const now = Date.now();
     const dt = now - lastMousePos.current.t;
     if (dt > 50) {
@@ -195,7 +202,7 @@ export default function App() {
 
   // Mobile Accelerometer Sensor Hook
   useEffect(() => {
-    if (!sensorActive || metricsMode !== "steps") return;
+    if (!sensorActive || expandedCarouselSlide !== 3) return;
 
     let lastX = null, lastY = null, lastZ = null;
     const threshold = 12.0;
@@ -218,7 +225,7 @@ export default function App() {
 
     window.addEventListener("devicemotion", handleDeviceMotion);
     return () => window.removeEventListener("devicemotion", handleDeviceMotion);
-  }, [sensorActive, metricsMode]);
+  }, [sensorActive, expandedCarouselSlide]);
 
   // Ticking Workout Timers hook
   useEffect(() => {
@@ -456,6 +463,161 @@ export default function App() {
       return () => clearTimeout(t);
     }
   }, [appFlow]);
+
+  // Auto-scroll Carousel every 2 seconds (paused when expanded detail sheet is open)
+  useEffect(() => {
+    if (expandedCarouselSlide !== null) return;
+    const interval = setInterval(() => {
+      setCarouselIndex(prev => (prev + 1) % 5);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [expandedCarouselSlide]);
+
+  const handleDragEnd = (event, info) => {
+    const swipeThreshold = 50;
+    if (info.offset.x < -swipeThreshold) {
+      setCarouselIndex(prev => Math.min(prev + 1, 4));
+    } else if (info.offset.x > swipeThreshold) {
+      setCarouselIndex(prev => Math.max(prev - 1, 0));
+    }
+  };
+
+  const renderCarouselSlide = (idx) => {
+    switch (idx) {
+      case 0:
+        return (
+          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+            <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Intro Dashboard</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 12px", margin: "6px 0" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <Flame size={12} color={C.accentOrange} />
+                <span style={{ fontSize: 11, fontWeight: 800 }}>{user.streak}d</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <Droplet size={12} color={C.blue} />
+                <span style={{ fontSize: 11, fontWeight: 800 }}>{user.waterToday}L</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <Footprints size={12} color={C.accent} />
+                <span style={{ fontSize: 11, fontWeight: 800 }}>{Math.round(user.stepsToday / 100) / 10}k</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <Zap size={12} color={color.error} />
+                <span style={{ fontSize: 11, fontWeight: 800 }}>490 kcal</span>
+              </div>
+            </div>
+            <span style={{ fontSize: 9, color: C.accent, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Swipe to explore details &gt;</span>
+          </div>
+        );
+      case 1:
+        return (
+          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Current Streak</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.streak} Days</div>
+              </div>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(255, 95, 31, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Flame size={16} color={C.accentOrange} fill={C.accentOrange} />
+              </div>
+            </div>
+            {/* Mini weekday indicator */}
+            <div style={{ display: "flex", justifyContent: "space-between", margin: "4px 0" }}>
+              {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
+                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                  <span style={{ fontSize: 8, fontWeight: 700, color: C.text2 }}>{day}</span>
+                  <div style={{
+                    width: 10, height: 10, borderRadius: "50%",
+                    backgroundColor: i < 5 ? "#1A3A27" : "transparent",
+                    border: i < 5 ? "none" : `1px solid ${C.border}`,
+                    display: "flex", alignItems: "center", justifyContent: "center"
+                  }}>
+                    {i < 5 && <Check size={7} strokeWidth={4} color={color.primary} />}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Water Intake</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.waterToday}L <span style={{ fontSize: 12, color: C.text2, fontWeight: 500 }}>/ {user.waterGoal}L</span></div>
+              </div>
+              <motion.button 
+                whileTap={{ scale: 0.9 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setReminderActive(!reminderActive);
+                  triggerAlert(!reminderActive ? "Water reminder set! 🔔" : "Water reminder disabled! 🔔");
+                }}
+                style={{ 
+                  width: 28, height: 28, borderRadius: "50%", 
+                  backgroundColor: reminderActive ? "rgba(0, 122, 255, 0.2)" : "rgba(255, 255, 255, 0.05)", 
+                  display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer" 
+                }}
+              >
+                <Bell size={14} color={reminderActive ? C.blue : C.text2} fill={reminderActive ? C.blue : "none"} />
+              </motion.button>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <ProgressRing value={(user.waterToday / user.waterGoal) * 100} size={28} strokeWidth={3} showLabel={false} color={C.blue} />
+              <span style={{ fontSize: 10, color: C.text2 }}>Target: {Math.round((user.waterToday / user.waterGoal) * 100)}% done</span>
+            </div>
+          </div>
+        );
+      case 3:
+        return (
+          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Steps Tracker</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.stepsToday.toLocaleString()}</div>
+              </div>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(0, 229, 168, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Footprints size={14} color={C.accent} />
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 36, paddingBottom: 4 }}>
+              {[30, 45, 25, 60, 80, 50, 40].map((h, i) => (
+                <div 
+                  key={i} 
+                  style={{ 
+                    flex: 1, 
+                    height: `${h}%`, 
+                    backgroundColor: i === 4 ? C.accent : "rgba(255,255,255,0.1)", 
+                    borderRadius: 1 
+                  }} 
+                />
+              ))}
+            </div>
+          </div>
+        );
+      case 4:
+        return (
+          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Calories Burned</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>490 kcal</div>
+              </div>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(255, 45, 85, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Zap size={14} color={color.error} />
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 9, color: C.text2 }}>Walk: 170 kcal &bull; Work: 320 kcal</span>
+              <div style={{ width: 24, height: 24, borderRadius: "50%", border: `3.5px solid ${color.error}`, borderTopColor: "transparent", transform: "rotate(45deg)" }} />
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   // ── Onboarding step data ──
   const onboardingSteps = [
@@ -1184,308 +1346,56 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Current Streak Card */}
-                  <div className="card-light" style={{ padding: 14, margin: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", height: 160 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                      <div>
-                        <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Current Streak</div>
-                        <div style={{ fontSize: 22, fontWeight: 800, color: C.text1, marginTop: 2 }}>{user.streak} Days</div>
-                      </div>
-                      <div style={{ width: 32, height: 32, borderRadius: "50%", backgroundColor: "rgba(255, 95, 31, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Flame size={18} color={C.accentOrange} fill={C.accentOrange} />
-                      </div>
+                  {/* Interactive Carousel Card */}
+                  <div 
+                    className="card-light" 
+                    style={{ 
+                      padding: 14, margin: 0, display: "flex", flexDirection: "column", 
+                      justifyContent: "space-between", height: 160, overflow: "hidden", 
+                      position: "relative", cursor: "pointer", border: `1px solid ${C.border}` 
+                    }}
+                    onClick={() => setExpandedCarouselSlide(carouselIndex)}
+                  >
+                    <div style={{ flex: 1, position: "relative" }}>
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={carouselIndex}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={{ duration: 0.2 }}
+                          drag="x"
+                          dragConstraints={{ left: 0, right: 0 }}
+                          dragElastic={0.2}
+                          onDragEnd={handleDragEnd}
+                          style={{ height: "100%", width: "100%" }}
+                        >
+                          {renderCarouselSlide(carouselIndex)}
+                        </motion.div>
+                      </AnimatePresence>
                     </div>
-                    {/* Weekday indicators */}
-                    <div style={{ display: "flex", justifyContent: "space-between", margin: "8px 0" }}>
-                      {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
-                        <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-                          <span style={{ fontSize: 9, fontWeight: 700, color: C.text2 }}>{day}</span>
-                          <div style={{
-                            width: 14, height: 14, borderRadius: "50%",
-                            backgroundColor: i < 5 ? (appTheme === "dark" ? "#1A3A27" : "#E8F5E9") : "transparent",
-                            border: i < 5 ? "none" : `1px solid ${C.border}`,
-                            display: "flex", alignItems: "center", justifyContent: "center"
-                          }}>
-                            {i < 5 && <Check size={10} strokeWidth={3} color={appTheme === "dark" ? color.primary : color.primary} />}
-                          </div>
-                        </div>
+
+                    {/* Dot Indicators */}
+                    <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 4 }}>
+                      {[0, 1, 2, 3, 4].map((idx) => (
+                        <div 
+                          key={idx}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCarouselIndex(idx);
+                          }}
+                          style={{
+                            width: 6, height: 6, borderRadius: "50%",
+                            backgroundColor: carouselIndex === idx ? C.accent : "rgba(255,255,255,0.2)",
+                            transition: "background-color 0.2s",
+                            cursor: "pointer"
+                          }}
+                        />
                       ))}
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: `1px solid ${C.border}`, paddingTop: 6 }}>
-                      <span style={{ fontSize: 10, color: C.text2 }}>Keep going! You're doing great.</span>
-                      <TrendingUp size={12} color={color.secondary} />
-                    </div>
                   </div>
                 </div>
 
-                {/* 3 Metrics Cards (Exactly matching Water, Nutrition, Mind from image.png) */}
-                <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-                  {/* Water Card Trigger (Controlled by clicking it to expand/toggle) */}
-                  <motion.div 
-                    whileTap={{ scale: 0.95 }}
-                    className="light-metrics-card" 
-                    onClick={() => {
-                      if (isMetricsExpanded && metricsMode === "water") {
-                        setIsMetricsExpanded(false);
-                      } else {
-                        setIsMetricsExpanded(true);
-                        setMetricsMode("water");
-                      }
-                    }}
-                    style={{ border: isMetricsExpanded && metricsMode === "water" ? `2.5px solid ${C.blue}` : `1px solid ${C.border}` }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(0,122,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Droplet size={14} color={color.secondary} fill={color.secondary} />
-                      </div>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: C.text2 }}>Water</span>
-                    </div>
-                    <div style={{ fontSize: 14, fontWeight: 800 }}>{user.waterToday}L <span style={{ fontSize: 10, color: C.text2, fontWeight: 500 }}>/ {user.waterGoal}L</span></div>
-                    <div className="light-metrics-bottom-bar" style={{ backgroundColor: color.secondary }}></div>
-                  </motion.div>
-
-                  {/* Steps Card Trigger (Accesses Steps section and toggles) */}
-                  <motion.div 
-                    whileTap={{ scale: 0.95 }}
-                    className="light-metrics-card" 
-                    onClick={() => {
-                      if (isMetricsExpanded && metricsMode === "steps") {
-                        setIsMetricsExpanded(false);
-                      } else {
-                        setIsMetricsExpanded(true);
-                        setMetricsMode("steps");
-                      }
-                    }}
-                    style={{ border: isMetricsExpanded && metricsMode === "steps" ? `2.5px solid ${C.accent}` : `1px solid ${C.border}` }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(0,168,107,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Footprints size={14} color={C.accent} />
-                      </div>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: C.text2 }}>Steps</span>
-                    </div>
-                    <div style={{ fontSize: 14, fontWeight: 800 }}>{user.stepsToday.toLocaleString()} <span style={{ fontSize: 10, color: C.text2, fontWeight: 500 }}>steps</span></div>
-                    <div className="light-metrics-bottom-bar" style={{ backgroundColor: C.accent }}></div>
-                  </motion.div>
-
-                  {/* Mind */}
-                  <div className="light-metrics-card" onClick={() => triggerAlert("Track Mind/Mood using the '+' button!")}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(255,45,85,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Heart size={14} color={C.accentPink} fill={C.accentPink} />
-                      </div>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: C.text2 }}>Mind</span>
-                    </div>
-                    <div style={{ fontSize: 14, fontWeight: 800 }}>{user.mindToday} <span style={{ fontSize: 10, color: C.text2, fontWeight: 500 }}>/ {user.mindGoal}</span></div>
-                    <div className="light-metrics-bottom-bar" style={{ backgroundColor: C.accentPink }}></div>
-                  </div>
-                </div>
-
-                {/* ═══════════════════════════════════════════════════════
-                   EXPANDABLE MODULE (STRICT LEFT-TO-RIGHT SLIDE)
-                   ═══════════════════════════════════════════════════════ */}
-                <AnimatePresence>
-                  {isMetricsExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="expanded-metric-panel"
-                    >
-                      {/* Segmented Mode Controller Toggle */}
-                      <div style={{ display: "flex", marginBottom: 20, backgroundColor: C.surfaceLight, borderRadius: 14, padding: 4, border: `1px solid ${C.border}` }}>
-                        <motion.button 
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => setMetricsMode("water")}
-                          style={{
-                            flex: 1, padding: "10px 12px", border: "none", borderRadius: 10, fontSize: 12, fontWeight: 700,
-                            backgroundColor: metricsMode === "water" ? C.surface : "transparent",
-                            color: metricsMode === "water" ? C.blue : C.text2,
-                            cursor: "pointer", transition: "all 0.2s"
-                          }}
-                        >
-                          💧 Water
-                        </motion.button>
-                        <motion.button 
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => setMetricsMode("steps")}
-                          style={{
-                            flex: 1, padding: "10px 12px", border: "none", borderRadius: 10, fontSize: 12, fontWeight: 700,
-                            backgroundColor: metricsMode === "steps" ? C.surface : "transparent",
-                            color: metricsMode === "steps" ? C.accent : C.text2,
-                            cursor: "pointer", transition: "all 0.2s"
-                          }}
-                        >
-                          🏃 Steps
-                        </motion.button>
-                      </div>
-
-                      {/* Content panel with strictly left-to-right sliding transition */}
-                      <div style={{ position: "relative", minHeight: 225, overflow: "hidden" }}>
-                        <AnimatePresence>
-                          
-                          {/* WATER DETAILS VIEW */}
-                          {metricsMode === "water" && (
-                            <motion.div
-                              key="water-expanded"
-                              initial={{ x: "-100%", opacity: 0 }}
-                              animate={{ x: 0, opacity: 1 }}
-                              exit={{ x: "100%", opacity: 0 }}
-                              transition={{ type: "tween", ease: "easeInOut", duration: 0.35 }}
-                              style={{ position: "absolute", width: "100%" }}
-                            >
-                              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 16, alignItems: "center" }}>
-                                {/* Left Side Details */}
-                                <div>
-                                  <div style={{ fontSize: 16, fontWeight: 800, color: C.text1, lineHeight: 1.3 }}>
-                                    Good evening Arjun,
-                                  </div>
-                                  <div style={{ fontSize: 13, color: C.blue, fontWeight: 700, marginTop: 4, textTransform: "capitalize" }}>
-                                    {getWaterMotivation()}
-                                  </div>
-
-                                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 24, marginBottom: 14 }}>
-                                    <span style={{ fontSize: 12, fontWeight: 700, color: C.text2 }}>Target</span>
-                                    <input 
-                                      type="number" 
-                                      value={waterGoalInput}
-                                      step="0.1"
-                                      onChange={(e) => {
-                                        setWaterGoalInput(e.target.value);
-                                        const val = parseFloat(e.target.value);
-                                        if (val > 0) setUser(prev => ({ ...prev, waterGoal: val }));
-                                      }}
-                                      style={{
-                                        width: 70, padding: "8px 12px", border: `1px solid ${C.border}`,
-                                        borderRadius: 10, outline: "none", fontSize: 13, fontWeight: 700,
-                                        backgroundColor: C.surfaceLight, textAlign: "center"
-                                      }}
-                                    />
-                                    <span style={{ fontSize: 12, fontWeight: 700 }}>L</span>
-                                  </div>
-
-                                  <motion.button 
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => {
-                                      setUser(prev => ({ ...prev, waterToday: parseFloat((prev.waterToday + 0.2).toFixed(1)) }));
-                                      triggerAlert("Drank 200ml of water! 💧");
-                                    }}
-                                    style={{
-                                      backgroundColor: C.blue, color: "white", border: "none", borderRadius: 12,
-                                      padding: "12px 24px", fontWeight: 700, fontSize: 13, cursor: "pointer",
-                                      boxShadow: "0 6px 12px rgba(0, 122, 255, 0.2)"
-                                    }}
-                                  >
-                                    Achieve
-                                  </motion.button>
-                                </div>
-
-                                {/* Right Side: Glass Visual */}
-                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                  <div className="glass-rim"></div>
-                                  <div className="glass-container">
-                                    <div className="glass-fill" style={{ height: `${Math.min((user.waterToday / user.waterGoal) * 100, 100)}%` }}>
-                                      <div className="glass-wave"></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </motion.div>
-                          )}
-
-                          {/* STEPS DETAILS VIEW */}
-                          {metricsMode === "steps" && (
-                            <motion.div
-                              key="steps-expanded"
-                              initial={{ x: "-100%", opacity: 0 }}
-                              animate={{ x: 0, opacity: 1 }}
-                              exit={{ x: "100%", opacity: 0 }}
-                              transition={{ type: "tween", ease: "easeInOut", duration: 0.35 }}
-                              style={{ position: "absolute", width: "100%" }}
-                              onMouseMove={handleMouseMove}
-                            >
-                              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 16, alignItems: "center" }}>
-                                {/* Left Side Details */}
-                                <div>
-                                  <div style={{ fontSize: 16, fontWeight: 800, color: C.text1 }}>
-                                    Good evening Arjun
-                                  </div>
-                                  <div style={{ fontSize: 11, color: C.text2, marginTop: 4, lineHeight: 1.4 }}>
-                                    Desktop check: move cursor over this card to walk.
-                                  </div>
-
-                                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 20, marginBottom: 14 }}>
-                                    <span style={{ fontSize: 12, fontWeight: 700, color: C.text2 }}>Goal</span>
-                                    <input 
-                                      type="number" 
-                                      value={stepsGoalInput}
-                                      onChange={(e) => {
-                                        setStepsGoalInput(e.target.value);
-                                        const val = parseInt(e.target.value);
-                                        if (val > 0) setUser(prev => ({ ...prev, stepsGoalInput: val }));
-                                      }}
-                                      style={{
-                                        width: 80, padding: "8px 12px", border: `1px solid ${C.border}`,
-                                        borderRadius: 10, outline: "none", fontSize: 13, fontWeight: 700,
-                                        backgroundColor: C.surfaceLight, textAlign: "center", color: C.text1
-                                      }}
-                                    />
-                                  </div>
-
-                                  <motion.button 
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => {
-                                      setSensorActive(!sensorActive);
-                                      triggerAlert(sensorActive ? "Steps sensor paused!" : "Steps sensor active! Shake device or swipe mouse to walk.");
-                                    }}
-                                    style={{
-                                      backgroundColor: sensorActive ? C.text2 : C.accent, color: "white", border: "none", borderRadius: 12,
-                                      padding: "12px 24px", fontWeight: 700, fontSize: 13, cursor: "pointer",
-                                      boxShadow: sensorActive ? "none" : C.btnShadow
-                                    }}
-                                  >
-                                    {sensorActive ? "Pause" : "Achieve"}
-                                  </motion.button>
-                                </div>
-
-                                {/* Right Side: Walking Visual Footprints */}
-                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                  <div style={{ fontSize: 20, fontWeight: 800, color: C.text1 }}>
-                                    {user.stepsToday.toLocaleString()}
-                                  </div>
-                                  <div style={{ fontSize: 10, color: C.text2, marginTop: 2, marginBottom: 12 }}>steps</div>
-
-                                  <div style={{ display: "flex", gap: 10 }}>
-                                    <motion.div 
-                                      animate={sensorActive ? { y: [0, -8, 0], scale: [1, 1.05, 1] } : {}}
-                                      transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut" }}
-                                      style={{ fontSize: 32, opacity: sensorActive ? 1 : 0.2 }}
-                                    >
-                                      🦶
-                                    </motion.div>
-                                    <motion.div 
-                                      animate={sensorActive ? { y: [0, -8, 0], scale: [1, 1.05, 1] } : {}}
-                                      transition={{ repeat: Infinity, duration: 0.8, delay: 0.4, ease: "easeInOut" }}
-                                      style={{ fontSize: 32, opacity: sensorActive ? 1 : 0.2 }}
-                                    >
-                                      👣
-                                    </motion.div>
-                                  </div>
-
-                                  <div style={{ display: "flex", alignItems: "center", fontSize: 10, fontWeight: 700, color: sensorActive ? C.accent : C.text2, marginTop: 12 }}>
-                                    <span className="sensor-indicator" style={{ backgroundColor: sensorActive ? C.accent : C.text2 }}></span>
-                                    {sensorActive ? "ACTIVE" : "INACTIVE"}
-                                  </div>
-                                </div>
-                              </div>
-                            </motion.div>
-                          )}
-                          
-                        </AnimatePresence>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
 
                 {/* Sparkling tagline Banner */}
                 <div className="card-light" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 14, marginBottom: 20 }}>
@@ -1597,7 +1507,7 @@ export default function App() {
                 {/* Community & Health section lists */}
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Community & Health</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <Card onClick={() => setTab("community")} padding="12px 14px" style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <Card onClick={() => setTab("leaderboard")} padding="12px 14px" style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <IconBadge icon={<Trophy size={14} />} tone="primary" size={28} />
                       <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Leaderboard</span>
@@ -1844,49 +1754,96 @@ export default function App() {
                   </button>
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                  {posts.map((post) => (
-                    <div className="card-light" key={post.id} style={{ padding: 16, margin: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                        <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: C.surfaceLight, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, border: `1px solid ${C.border}`, color: C.text1 }}>
-                          {post.user.substring(0, 2).toUpperCase()}
+                <div style={{ 
+                  display: "flex", 
+                  flexDirection: "column", 
+                  alignItems: "center", 
+                  justifyContent: "center", 
+                  minHeight: "55vh",
+                  textAlign: "center"
+                }}>
+                  <div style={{
+                    width: 64, height: 64, borderRadius: "50%",
+                    backgroundColor: "rgba(0, 168, 107, 0.08)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    marginBottom: 16
+                  }}>
+                    <Users size={32} color={C.accent} />
+                  </div>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, color: C.text1, margin: "0 0 8px" }}>yet to come</h2>
+                  <p style={{ fontSize: 12, color: C.text2, margin: 0, maxWidth: 220, lineHeight: 1.5 }}>
+                    Community posts feed and interactive challenges are coming in a future update!
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* 3.5. LEADERBOARD TAB */}
+            {tab === "leaderboard" && !activeOverlay && (
+              <motion.div
+                key="leaderboard"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={SPRING}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                  <h1 className="header-title" style={{ color: C.text1, margin: 0 }}>Leaderboard</h1>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: C.accent, backgroundColor: "rgba(0, 168, 107, 0.08)", padding: "4px 10px", borderRadius: 8 }}>Global</span>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {[
+                    { rank: 1, user: "FitRaj_21", score: "45 days streak" },
+                    { rank: 2, user: "GymQueen", score: "38 days streak" },
+                    { rank: 3, user: "IronMike", score: "32 days streak" },
+                    { rank: 4, user: "FlexMaster", score: "29 days streak" },
+                    { rank: 5, user: "CardioKing", score: "25 days streak" }
+                  ].map((leader) => {
+                    const initials = leader.user.substring(0, 2).toUpperCase();
+                    const rankColor = leader.rank === 1 ? "#FFD700" : leader.rank === 2 ? "#C0C0C0" : leader.rank === 3 ? "#CD7F32" : C.text2;
+                    return (
+                      <Card key={leader.rank} padding="14px" style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between", border: `1px solid ${C.border}` }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                          <span style={{ fontSize: 14, fontWeight: 900, color: rankColor, width: 20, textAlign: "center" }}>
+                            {leader.rank}
+                          </span>
+                          <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: C.surfaceLight, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, border: `1px solid ${C.border}`, color: C.text1 }}>
+                            {initials}
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>{leader.user}</div>
+                          </div>
                         </div>
-                        <div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>{post.user}</div>
-                          <div style={{ fontSize: 10, color: C.text2 }}>{post.time}</div>
-                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: C.text2 }}>{leader.score}</span>
+                      </Card>
+                    );
+                  })}
+
+                  {/* Spacer and current user rank (Rank 24) */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "10px 0" }}>
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: C.text3, margin: "0 3px" }} />
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: C.text3, margin: "0 3px" }} />
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: C.text3, margin: "0 3px" }} />
+                  </div>
+
+                  <Card padding="14px" style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between", border: `1.5px solid ${C.accent}`, boxShadow: `0 0 16px rgba(0, 168, 107, 0.15)` }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ fontSize: 14, fontWeight: 900, color: C.accent, width: 20, textAlign: "center" }}>
+                        24
+                      </span>
+                      <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "rgba(0, 168, 107, 0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, border: `1px solid ${C.accent}`, color: C.accent }}>
+                        AR
                       </div>
-                      <p style={{ fontSize: 13, color: C.text1, margin: "0 0 12px", lineHeight: 1.5 }}>
-                        {post.caption}
-                      </p>
-                      <div style={{ display: "flex", gap: 10, borderTop: `1px solid ${C.border}`, paddingTop: 10 }}>
-                        <button 
-                          onClick={() => {
-                            const updated = posts.map(p => p.id === post.id ? { ...p, boosts: p.boosts + 1 } : p);
-                            setPosts(updated);
-                            triggerAlert(`Boosted ${post.user}'s post! ⚡`);
-                          }}
-                          style={{
-                            flex: 1, padding: "8px 12px", borderRadius: 10, border: "none",
-                            backgroundColor: "rgba(0, 168, 107, 0.08)", color: C.accent,
-                            fontWeight: 700, fontSize: 11, cursor: "pointer"
-                          }}
-                        >
-                          ⚡ BOOST ({post.boosts})
-                        </button>
-                        <button 
-                          onClick={() => triggerAlert("Challenge accepted!")}
-                          style={{
-                            flex: 1, padding: "8px 12px", borderRadius: 10, border: `1px solid ${C.border}`,
-                            backgroundColor: "transparent", color: C.text2,
-                            fontWeight: 600, fontSize: 11, cursor: "pointer"
-                          }}
-                        >
-                          🎯 ACCEPT CHALLENGE
-                        </button>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <div style={{ fontSize: 13, fontWeight: 800, color: C.text1 }}>{user.name}</div>
+                          <span style={{ fontSize: 9, fontWeight: 700, color: C.accent, backgroundColor: "rgba(0, 168, 107, 0.08)", padding: "2px 6px", borderRadius: 4 }}>YOU</span>
+                        </div>
                       </div>
                     </div>
-                  ))}
+                    <span style={{ fontSize: 11, fontWeight: 800, color: C.accent }}>{user.streak} days streak</span>
+                  </Card>
                 </div>
               </motion.div>
             )}
@@ -2209,6 +2166,384 @@ export default function App() {
               <Button fullWidth onClick={() => setActiveOverlay(null)}>
                 Save & Finish
               </Button>
+            </Sheet>
+
+            {/* Expanded Carousel Slide 1: Overview */}
+            <Sheet
+              isOpen={expandedCarouselSlide === 0}
+              onClose={() => setExpandedCarouselSlide(null)}
+              title="Overview Analytics"
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "10px 0" }}>
+                <div className="card-light" style={{ display: "flex", gap: 10, padding: 14, margin: 0, border: `1.5px solid ${color.primary}` }}>
+                  <Sparkles size={16} color={C.accent} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <p style={{ fontSize: 12, color: C.text1, margin: 0, lineHeight: 1.5 }}>
+                    Hello Arjun, here is your fitness overview. Swipe the carousel dashboard or tap shortcut metrics to check daily goals!
+                  </p>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                  <Card onClick={() => { setCarouselIndex(1); setExpandedCarouselSlide(1); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Flame size={20} color={C.accentOrange} fill={C.accentOrange} />
+                    <span style={{ fontSize: 11, color: C.text2, marginTop: 6 }}>Streak</span>
+                    <span style={{ fontSize: 16, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.streak} Days</span>
+                  </Card>
+
+                  <Card onClick={() => { setCarouselIndex(2); setExpandedCarouselSlide(2); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Droplet size={20} color={C.blue} fill={C.blue} />
+                    <span style={{ fontSize: 11, color: C.text2, marginTop: 6 }}>Water Log</span>
+                    <span style={{ fontSize: 16, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.waterToday}L / {user.waterGoal}L</span>
+                  </Card>
+
+                  <Card onClick={() => { setCarouselIndex(3); setExpandedCarouselSlide(3); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Footprints size={20} color={C.accent} />
+                    <span style={{ fontSize: 11, color: C.text2, marginTop: 6 }}>Steps</span>
+                    <span style={{ fontSize: 16, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.stepsToday.toLocaleString()}</span>
+                  </Card>
+
+                  <Card onClick={() => { setCarouselIndex(4); setExpandedCarouselSlide(4); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Zap size={20} color={color.error} />
+                    <span style={{ fontSize: 11, color: C.text2, marginTop: 6 }}>Energy Balance</span>
+                    <span style={{ fontSize: 16, fontWeight: 900, color: C.text1, marginTop: 2 }}>490 kcal</span>
+                  </Card>
+                </div>
+
+                <div className="card-light" style={{ padding: 16, margin: 0, textAlign: "center" }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: C.text1 }}>Today's Performance Target</div>
+                  <div style={{ fontSize: 10, color: C.text2, marginTop: 4 }}>You have completed 72% of your target workouts!</div>
+                  <div style={{ width: "100%", height: 8, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 4, marginTop: 12, overflow: "hidden" }}>
+                    <div style={{ width: "72%", height: "100%", backgroundColor: C.accent, borderRadius: 4 }} />
+                  </div>
+                </div>
+              </div>
+            </Sheet>
+
+            {/* Expanded Carousel Slide 2: Streak */}
+            <Sheet
+              isOpen={expandedCarouselSlide === 1}
+              onClose={() => setExpandedCarouselSlide(null)}
+              title="Streak Analytics"
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 20, padding: "10px 0" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 16, backgroundColor: C.surfaceLight, padding: 18, borderRadius: 16 }}>
+                  <div style={{ width: 54, height: 54, borderRadius: "50%", backgroundColor: "rgba(255, 95, 31, 0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Flame size={32} color={C.accentOrange} fill={C.accentOrange} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: 24, fontWeight: 900, color: C.text1, margin: 0 }}>{user.streak} Days Streak</h3>
+                    <p style={{ fontSize: 11, color: C.text2, margin: "4px 0 0" }}>Keep going! You're in the top 5% of active users.</p>
+                  </div>
+                </div>
+
+                {/* Weekday indicators */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <h4 style={{ fontSize: 12, fontWeight: 800, color: C.text2, textTransform: "uppercase" }}>Weekly History</h4>
+                  <div style={{ display: "flex", justifyContent: "space-between", backgroundColor: C.surfaceLight, padding: 14, borderRadius: 14 }}>
+                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, i) => (
+                      <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: C.text2 }}>{day}</span>
+                        <div style={{
+                          width: 24, height: 24, borderRadius: "50%",
+                          backgroundColor: i < 5 ? (appTheme === "dark" ? "#1A3A27" : "#E8F5E9") : "transparent",
+                          border: i < 5 ? "none" : `1.5px solid ${C.border}`,
+                          display: "flex", alignItems: "center", justifyContent: "center"
+                        }}>
+                          {i < 5 ? (
+                            <Check size={14} strokeWidth={3} color={color.primary} />
+                          ) : (
+                            <span style={{ fontSize: 9, color: C.text2 }}>{day[0]}</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Streak consistency graph */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <h3 style={{ fontSize: 13, fontWeight: 800, color: C.text2, textTransform: "uppercase" }}>Streak Consistency</h3>
+                  <div style={{ padding: 14, backgroundColor: C.surfaceLight, borderRadius: 14 }}>
+                    <svg viewBox="0 0 300 100" style={{ width: "100%", height: "auto" }}>
+                      <defs>
+                        <linearGradient id="streakGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={C.accentOrange} stopOpacity="0.4" />
+                          <stop offset="100%" stopColor={C.accentOrange} stopOpacity="0.0" />
+                        </linearGradient>
+                      </defs>
+                      <line x1="10" y1="20" x2="290" y2="20" stroke="rgba(255,255,255,0.05)" strokeDasharray="4" />
+                      <line x1="10" y1="50" x2="290" y2="50" stroke="rgba(255,255,255,0.05)" strokeDasharray="4" />
+                      <line x1="10" y1="80" x2="290" y2="80" stroke="rgba(255,255,255,0.05)" strokeDasharray="4" />
+                      <path d="M 10 90 L 50 30 L 100 50 L 150 20 L 200 40 L 250 15 L 290 85 L 290 90 Z" fill="url(#streakGrad)" />
+                      <path d="M 10 90 L 50 30 L 100 50 L 150 20 L 200 40 L 250 15 L 290 85" fill="none" stroke={C.accentOrange} strokeWidth="3" strokeLinecap="round" />
+                      <circle cx="10" cy="90" r="4" fill={C.accentOrange} />
+                      <circle cx="50" cy="30" r="4" fill={C.accentOrange} />
+                      <circle cx="100" cy="50" r="4" fill={C.accentOrange} />
+                      <circle cx="150" cy="20" r="4" fill={C.accentOrange} />
+                      <circle cx="200" cy="40" r="4" fill={C.accentOrange} />
+                      <circle cx="250" cy="15" r="4" fill={C.accentOrange} />
+                      <circle cx="290" cy="85" r="4" fill={C.accentOrange} />
+                    </svg>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: C.text2, marginTop: 8, padding: "0 4px" }}>
+                      <span>Mon</span>
+                      <span>Tue</span>
+                      <span>Wed</span>
+                      <span>Thu</span>
+                      <span>Fri</span>
+                      <span>Sat</span>
+                      <span>Sun</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Sheet>
+
+            {/* Expanded Carousel Slide 3: Water */}
+            <Sheet
+              isOpen={expandedCarouselSlide === 2}
+              onClose={() => setExpandedCarouselSlide(null)}
+              title="Hydration Analytics"
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 20, padding: "10px 0" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: C.surfaceLight, padding: 18, borderRadius: 16 }}>
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: C.blue, textTransform: "uppercase" }}>Hydration Target</span>
+                    <h3 style={{ fontSize: 24, fontWeight: 900, color: C.text1, margin: "4px 0 0" }}>{user.waterToday}L <span style={{ fontSize: 14, color: C.text2, fontWeight: 500 }}>/ {user.waterGoal}L</span></h3>
+                  </div>
+                  <motion.button 
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => {
+                      setReminderActive(!reminderActive);
+                      triggerAlert(!reminderActive ? "Water reminder set! 🔔" : "Water reminder disabled! 🔔");
+                    }}
+                    style={{ 
+                      width: 44, height: 44, borderRadius: "50%", 
+                      backgroundColor: reminderActive ? "rgba(0, 122, 255, 0.2)" : "rgba(255, 255, 255, 0.05)", 
+                      display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer" 
+                    }}
+                  >
+                    <Bell size={20} color={reminderActive ? C.blue : C.text2} fill={reminderActive ? C.blue : "none"} />
+                  </motion.button>
+                </div>
+
+                {/* Target adjustment & logging steppers */}
+                <div className="card-light" style={{ padding: 16, margin: 0, display: "flex", flexDirection: "column", gap: 14 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Adjust Target Limit:</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <input 
+                        type="number" 
+                        value={waterGoalInput}
+                        step="0.1"
+                        onChange={(e) => {
+                          setWaterGoalInput(e.target.value);
+                          const val = parseFloat(e.target.value);
+                          if (val > 0) setUser(prev => ({ ...prev, waterGoal: val }));
+                        }}
+                        style={{
+                          width: 80, padding: "8px 12px", border: `1px solid ${C.border}`,
+                          borderRadius: 10, outline: "none", fontSize: 13, fontWeight: 700,
+                          backgroundColor: C.surfaceLight, textAlign: "center", color: C.text1
+                        }}
+                      />
+                      <span style={{ fontSize: 12, fontWeight: 700 }}>Liters</span>
+                    </div>
+                  </div>
+
+                  <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 14 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: C.text1, display: "block", marginBottom: 10 }}>Quick Log Hydration:</span>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      {[
+                        { label: "+250ml", amount: 0.25 },
+                        { label: "+500ml", amount: 0.5 },
+                        { label: "+1.0L", amount: 1.0 }
+                      ].map((item, idx) => (
+                        <Button 
+                          key={idx}
+                          onClick={() => {
+                            setUser(prev => ({ ...prev, waterToday: parseFloat((prev.waterToday + item.amount).toFixed(2)) }));
+                            const logTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            setWaterLogs(prev => [...prev, { time: logTime, amount: item.amount }]);
+                            triggerAlert(`Logged ${item.label} water! 💧`);
+                          }}
+                          variant="secondary"
+                          fullWidth
+                          style={{ padding: "10px 0", fontSize: 12 }}
+                        >
+                          {item.label}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hydration history bar chart */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <h3 style={{ fontSize: 13, fontWeight: 800, color: C.text2, textTransform: "uppercase" }}>Hydration History</h3>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", height: 120, backgroundColor: C.surfaceLight, borderRadius: 14, padding: "14px 20px" }}>
+                    {waterLogs.map((log, idx) => {
+                      const pct = Math.min((log.amount / 1.0) * 100, 100);
+                      return (
+                        <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flex: 1 }}>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: C.blue }}>{log.amount}L</span>
+                          <div style={{ width: 14, height: 60, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 7, display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
+                            <div style={{ width: "100%", height: `${pct}%`, backgroundColor: C.blue, borderRadius: 7 }} />
+                          </div>
+                          <span style={{ fontSize: 9, color: C.text2 }}>{log.time.split(" ")[0]}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </Sheet>
+
+            {/* Expanded Carousel Slide 4: Steps */}
+            <Sheet
+              isOpen={expandedCarouselSlide === 3}
+              onClose={() => setExpandedCarouselSlide(null)}
+              title="Steps Analytics"
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 20, padding: "10px 0" }} onMouseMove={handleMouseMove}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: C.surfaceLight, padding: 18, borderRadius: 16 }}>
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: C.accent, textTransform: "uppercase" }}>Steps Walked Today</span>
+                    <h3 style={{ fontSize: 24, fontWeight: 900, color: C.text1, margin: "4px 0 0" }}>{user.stepsToday.toLocaleString()} <span style={{ fontSize: 14, color: C.text2, fontWeight: 500 }}>/ {stepsGoalInput}</span></h3>
+                  </div>
+                  <div style={{ width: 44, height: 44, borderRadius: "50%", backgroundColor: "rgba(0, 229, 168, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Footprints size={24} color={C.accent} />
+                  </div>
+                </div>
+
+                {/* Steps goal adjustment & simulator */}
+                <div className="card-light" style={{ padding: 16, margin: 0, display: "flex", flexDirection: "column", gap: 14 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Target Limit:</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <input 
+                        type="number" 
+                        value={stepsGoalInput}
+                        onChange={(e) => {
+                          setStepsGoalInput(e.target.value);
+                          const val = parseInt(e.target.value);
+                          if (val > 0) setUser(prev => ({ ...prev, stepsGoalInput: val }));
+                        }}
+                        style={{
+                          width: 90, padding: "8px 12px", border: `1px solid ${C.border}`,
+                          borderRadius: 10, outline: "none", fontSize: 13, fontWeight: 700,
+                          backgroundColor: C.surfaceLight, textAlign: "center", color: C.text1
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Desktop Testing Walk Simulator:</span>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                      <span style={{ fontSize: 10, color: C.text2, flex: 1 }}>Move cursor over this sheet to walk. Toggle active to auto-walk.</span>
+                      <Button 
+                        onClick={() => {
+                          setSensorActive(!sensorActive);
+                          triggerAlert(!sensorActive ? "Steps sensor active! Mouse swipe or shake device to walk." : "Steps sensor paused!");
+                        }}
+                        variant={sensorActive ? "primary" : "secondary"}
+                        style={{ padding: "8px 16px", fontSize: 12, borderRadius: 10 }}
+                      >
+                        {sensorActive ? "PAUSE" : "ACTIVATE"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Steps breakdown bar chart */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <h3 style={{ fontSize: 13, fontWeight: 800, color: C.text2, textTransform: "uppercase" }}>Steps Breakdown</h3>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", height: 120, backgroundColor: C.surfaceLight, borderRadius: 14, padding: "14px 20px" }}>
+                    {[
+                      { label: "08:00 AM", val: 1200 },
+                      { label: "12:00 PM", val: 1800 },
+                      { label: "04:00 PM", val: 410 },
+                      { label: "08:00 PM", val: 800 }
+                    ].map((log, idx) => {
+                      const pct = (log.val / 2000) * 100;
+                      return (
+                        <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flex: 1 }}>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: C.accent }}>{log.val}</span>
+                          <div style={{ width: 16, height: 60, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 8, display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
+                            <div style={{ width: "100%", height: `${pct}%`, backgroundColor: C.accent, borderRadius: 8 }} />
+                          </div>
+                          <span style={{ fontSize: 9, color: C.text2 }}>{log.label.split(" ")[0]}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </Sheet>
+
+            {/* Expanded Carousel Slide 5: Calories */}
+            <Sheet
+              isOpen={expandedCarouselSlide === 4}
+              onClose={() => setExpandedCarouselSlide(null)}
+              title="Energy Balance Analytics"
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 20, padding: "10px 0" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: C.surfaceLight, padding: 18, borderRadius: 16 }}>
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: color.error, textTransform: "uppercase" }}>Total Energy Burned</span>
+                    <h3 style={{ fontSize: 24, fontWeight: 900, color: C.text1, margin: "4px 0 0" }}>490 kcal</h3>
+                  </div>
+                  <div style={{ width: 44, height: 44, borderRadius: "50%", backgroundColor: "rgba(255, 45, 85, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Zap size={24} color={color.error} />
+                  </div>
+                </div>
+
+                {/* Energy balance ring graphics */}
+                <div className="card-light" style={{ padding: 20, margin: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: C.text1, alignSelf: "flex-start" }}>Energy Ring Tracker</span>
+                  
+                  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", margin: "14px 0", position: "relative" }}>
+                    <svg width="180" height="180" viewBox="0 0 100 100" style={{ transform: "rotate(-90deg)" }}>
+                      {/* Outer Ring (Consumed) */}
+                      <circle cx="50" cy="50" r="40" fill="transparent" stroke="rgba(255, 95, 31, 0.08)" strokeWidth="6" />
+                      <circle cx="50" cy="50" r="40" fill="transparent" stroke={color.warning} strokeWidth="6" strokeDasharray="251.3" strokeDashoffset={251.3 - (251.3 * Math.min(user.calToday / user.calGoal, 1))} strokeLinecap="round" />
+
+                      {/* Middle Ring (Workouts Burned) */}
+                      <circle cx="50" cy="50" r="28" fill="transparent" stroke="rgba(255, 45, 85, 0.08)" strokeWidth="6" />
+                      <circle cx="50" cy="50" r="28" fill="transparent" stroke={color.error} strokeWidth="6" strokeDasharray="175.9" strokeDashoffset={175.9 - (175.9 * (320 / 500))} strokeLinecap="round" />
+
+                      {/* Inner Ring (Walking Burned) */}
+                      <circle cx="50" cy="50" r="16" fill="transparent" stroke="rgba(0, 229, 168, 0.08)" strokeWidth="6" />
+                      <circle cx="50" cy="50" r="16" fill="transparent" stroke={color.primary} strokeWidth="6" strokeDasharray="100.5" strokeDashoffset={100.5 - (100.5 * (170 / 300))} strokeLinecap="round" />
+                    </svg>
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", borderTop: `1px solid ${C.border}`, paddingTop: 14 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 11 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: color.warning }} />
+                        <span style={{ color: C.text1, fontWeight: 700 }}>Consumed</span>
+                      </div>
+                      <span style={{ color: C.text2 }}>{user.calToday} kcal / {user.calGoal} kcal</span>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 11 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: color.error }} />
+                        <span style={{ color: C.text1, fontWeight: 700 }}>Workout Burn</span>
+                      </div>
+                      <span style={{ color: C.text2 }}>320 kcal / 500 kcal</span>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 11 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: color.primary }} />
+                        <span style={{ color: C.text1, fontWeight: 700 }}>Walking Burn</span>
+                      </div>
+                      <span style={{ color: C.text2 }}>170 kcal / 300 kcal</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </Sheet>
 
             {/* D. NUTRITION FEATURE OVERLAY (Full App Screen Page) */}
@@ -3185,7 +3520,19 @@ export default function App() {
             </div>
           </button>
 
-          {/* Tab 5: Profile */}
+          {/* Tab 5: Leaderboard */}
+          <button className="nav-item" onClick={() => { setTab("leaderboard"); setActiveOverlay(null); }} style={{ position: "relative" }}>
+            <div style={{
+              width: 48, height: 48, borderRadius: "50%",
+              backgroundColor: tab === "leaderboard" ? "rgba(0, 168, 107, 0.12)" : "transparent",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "all 0.2s"
+            }}>
+              <Trophy size={24} color={tab === "leaderboard" ? C.accent : C.text2} />
+            </div>
+          </button>
+
+          {/* Tab 6: Profile */}
           <button className="nav-item" onClick={() => { setTab("profile"); setActiveOverlay(null); }} style={{ position: "relative" }}>
             <div style={{
               width: 48, height: 48, borderRadius: "50%",
