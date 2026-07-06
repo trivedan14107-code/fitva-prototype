@@ -25,12 +25,12 @@ export default function Card({
   const cardStyle = {
     backgroundColor: color.surface,
     color: color.text1,
-    borderRadius: "20px",
+    borderRadius: "24px", // Heavily rounded corners
     padding: padding,
-    border: highlighted ? `1px solid ${color.primary}` : `1px solid ${color.border}`,
+    border: highlighted ? `1.5px solid ${color.primary}` : `1px solid rgba(255, 255, 255, 0.75)`,
     boxShadow: highlighted 
-      ? `0 0 24px rgba(0, 229, 168, 0.18)` 
-      : "0 4px 20px rgba(0, 0, 0, 0.2)",
+      ? `6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0), inset 0 0 10px rgba(229, 152, 155, 0.2)` 
+      : "6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0)",
     cursor: onClick ? "pointer" : "default",
     position: "relative",
     overflow: "hidden",

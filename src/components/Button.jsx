@@ -20,30 +20,34 @@ export default function Button({
   const getStyles = () => {
     switch (variant) {
       case "primary":
+        // Neumorphic Extruded pill button matching background
         return {
-          backgroundColor: color.primary,
-          color: color.bg,
-          border: "none",
-          boxShadow: `0 4px 16px rgba(0, 229, 168, 0.25)`,
+          backgroundColor: color.surface,
+          color: color.text1,
+          border: "1px solid rgba(255, 255, 255, 0.8)",
+          boxShadow: "4px 4px 10px rgba(163, 177, 198, 0.55), -4px -4px 10px rgba(255, 255, 255, 1.0)",
         };
       case "secondary":
+        // Soft Coral Accent button with white text
         return {
-          backgroundColor: "transparent",
-          color: color.primary,
-          border: `1.5px solid ${color.primary}`,
+          backgroundColor: color.primary,
+          color: "#FFFFFF",
+          border: "none",
+          boxShadow: "4px 4px 10px rgba(229, 152, 155, 0.35)",
         };
       case "ghost":
         return {
           backgroundColor: "transparent",
           color: color.text2,
           border: "none",
+          boxShadow: "none",
         };
       case "danger":
         return {
           backgroundColor: color.error,
-          color: color.text1,
+          color: "#FFFFFF",
           border: "none",
-          boxShadow: `0 4px 16px rgba(255, 92, 92, 0.2)`,
+          boxShadow: "4px 4px 10px rgba(255, 154, 154, 0.35)",
         };
       default:
         return {};
@@ -54,8 +58,8 @@ export default function Button({
     fontFamily: typography.body,
     fontWeight: "700",
     fontSize: "14px",
-    padding: "12px 24px",
-    borderRadius: "14px",
+    padding: "12px 28px",
+    borderRadius: "30px", // Pill-shaped or softly rounded blocks
     cursor: disabled || loading ? "not-allowed" : "pointer",
     display: "inline-flex",
     alignItems: "center",
@@ -64,7 +68,7 @@ export default function Button({
     outline: "none",
     width: fullWidth ? "100%" : "auto",
     userSelect: "none",
-    transition: "background-color 0.2s, border-color 0.2s, color 0.2s",
+    transition: "background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s",
     ...getStyles(),
     ...style,
   };

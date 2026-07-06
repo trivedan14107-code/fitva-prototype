@@ -1,15 +1,15 @@
 export const color = {
-  primary: "#00E5A8",       // Momentum Green — progress, growth, primary actions, the Ring
-  secondary: "#5B8CFF",     // Rex Blue — AI/coach moments only
-  warning: "#FFB84D",       // missed goals, reminders
-  error: "#FF5C5C",         // failed actions, critical alerts
-  bg: "#0B1020",            // app background
-  surface: "#151C32",       // cards, sheets, nav bar
-  surfaceRaised: "#1B2340", // pressed/hover state
-  text1: "#F5F7FA",         // primary text
-  text2: "#8B93A7",         // secondary text
-  text3: "#565D72",         // disabled/tertiary text
-  border: "rgba(255, 255, 255, 0.08)",
+  primary: "#E5989B",       // Soft, muted pastel coral/pink tone
+  secondary: "#8EA4C0",     // Soft muted blue/gray
+  warning: "#FFD1B3",       // Missed goals, reminders
+  error: "#FF9A9A",         // Critical alerts, errors
+  bg: "#F0F4F8",            // Background & Base Surfaces: highly uniform light pastel blue/gray tint
+  surface: "#F0F4F8",       // Cards, sheets, nav bar base
+  surfaceRaised: "#E5ECF4", // Recessed/pressed/hover state base
+  text1: "#2C3E50",         // Typography: Dark slate gray/navy blue text
+  text2: "#5A738E",         // Secondary text: medium slate blue/gray
+  text3: "#8CA0BA",         // Muted/tertiary text
+  border: "rgba(163, 177, 198, 0.35)",
 };
 
 export const typography = {

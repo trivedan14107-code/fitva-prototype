@@ -35,9 +35,9 @@ const C = {
   text1: color.text1,
   text2: color.text2,
   text3: color.text3,
-  shadow: "none",
-  btnShadow: "none",
-  nutritionShadow: "none"
+  shadow: "6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0)",
+  btnShadow: "4px 4px 10px rgba(163, 177, 198, 0.55), -4px -4px 10px rgba(255, 255, 255, 1.0)",
+  nutritionShadow: "6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0)"
 };
 
 export default function App() {
@@ -527,12 +527,12 @@ export default function App() {
                 <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
                   <span style={{ fontSize: 8, fontWeight: 700, color: C.text2 }}>{day}</span>
                   <div style={{
-                    width: 10, height: 10, borderRadius: "50%",
-                    backgroundColor: i < 5 ? "#1A3A27" : "transparent",
+                    width: 14, height: 14, borderRadius: "50%",
+                    backgroundColor: i < 5 ? color.primary : "transparent",
                     border: i < 5 ? "none" : `1px solid ${C.border}`,
                     display: "flex", alignItems: "center", justifyContent: "center"
                   }}>
-                    {i < 5 && <Check size={7} strokeWidth={4} color={color.primary} />}
+                    {i < 5 && <Check size={8} strokeWidth={4} color="white" />}
                   </div>
                 </div>
               ))}
@@ -645,12 +645,12 @@ export default function App() {
         [data-zone] {
           border-left: 3px solid var(--zone-accent) !important;
         }
-        [data-zone="workout"]     { --zone-accent: color.primary; }
-        [data-zone="yoga"]        { --zone-accent: color.secondary; }
-        [data-zone="skincare"]    { --zone-accent: color.warning; }
-        [data-zone="mood"]        { --zone-accent: color.primary; }
-        [data-zone="leaderboard"] { --zone-accent: color.text2; }
-        [data-zone="supplements"] { --zone-accent: color.secondary; }
+        [data-zone="workout"]     { --zone-accent: ${color.primary}; }
+        [data-zone="yoga"]        { --zone-accent: ${color.secondary}; }
+        [data-zone="skincare"]    { --zone-accent: ${color.warning}; }
+        [data-zone="mood"]        { --zone-accent: ${color.primary}; }
+        [data-zone="leaderboard"] { --zone-accent: ${color.text2}; }
+        [data-zone="supplements"] { --zone-accent: ${color.secondary}; }
 
         .app-shell {
           background-color: ${C.appBg};
@@ -670,7 +670,7 @@ export default function App() {
           display: none;
           width: 140px;
           height: 22px;
-          background-color: color.error;
+          background-color: ${C.text1};
           border-bottom-left-radius: 14px;
           border-bottom-right-radius: 14px;
           position: absolute;
@@ -705,7 +705,7 @@ export default function App() {
             max-width: 480px;
             height: 960px;
             border-radius: 40px;
-            border: 8px solid color.error;
+            border: 8px solid ${C.text1};
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
           }
           .status-notch {
@@ -774,17 +774,17 @@ export default function App() {
           left: 16px;
           right: 16px;
           height: 64px;
-          background-color: ${appTheme === "dark" ? "rgba(28, 28, 36, 0.98)" : "rgba(255, 255, 255, 0.98)"};
+          background-color: ${C.surface};
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
-          border: 1px solid ${C.border};
+          border: 1px solid rgba(255, 255, 255, 0.85);
           border-radius: 36px;
           display: flex;
           justify-content: space-around;
           align-items: center;
           z-index: 99;
           box-sizing: border-box;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+          box-shadow: 6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0);
           transition: background-color 0.3s, border-color 0.3s;
         }
 
@@ -833,29 +833,32 @@ export default function App() {
           margin-bottom: 6px;
         }
 
-        .text-input {
+        .text-input, input[type="number"], input[type="text"], textarea, select {
           width: 100%;
           padding: 12px 16px;
-          border-radius: 12px;
-          border: 1px solid ${C.border};
-          background-color: ${C.surfaceLight};
+          border-radius: 16px !important;
+          border: 1px solid rgba(255, 255, 255, 0.5) !important;
+          background-color: ${C.surfaceLight} !important;
           font-size: 14px;
-          color: ${C.text1};
+          color: ${C.text1} !important;
           outline: none;
           box-sizing: border-box;
+          box-shadow: inset 3px 3px 6px rgba(163, 177, 198, 0.45), inset -3px -3px 6px rgba(255, 255, 255, 0.85) !important;
+          transition: all 0.2s ease;
         }
 
         .btn-action {
-          background-color: ${C.accent};
-          color: white;
-          border: none;
-          border-radius: 14px;
+          background-color: ${C.surface};
+          color: ${color.primary};
+          border: 1px solid rgba(255, 255, 255, 0.8);
+          border-radius: 30px;
           padding: 12px 24px;
           font-weight: 700;
           font-size: 14px;
           cursor: pointer;
-          box-shadow: ${C.btnShadow};
+          box-shadow: 4px 4px 10px rgba(163, 177, 198, 0.55), -4px -4px 10px rgba(255, 255, 255, 1.0);
           width: 100%;
+          transition: all 0.2s ease;
         }
 
         .btn-action:active {
@@ -1578,7 +1581,7 @@ export default function App() {
                       }}>
                         72%
                       </div>
-                      <img src="/body_builder_trainer.png" alt="Trainer" style={{ width: 100, height: 115, objectFit: "contain", marginTop: 24 }} />
+                      <img src="/hand_cream_lifestyle.png" alt="Trainer" style={{ width: 100, height: 115, objectFit: "contain", marginTop: 24 }} />
                     </div>
                   </div>
 
@@ -1619,18 +1622,19 @@ export default function App() {
                     <div 
                       onClick={() => setActiveOverlay("active_workout")}
                       style={{
-                        backgroundColor: color.secondary,
+                        backgroundColor: C.surfaceLight,
                         borderRadius: 24,
                         padding: "20px 16px 16px",
                         position: "relative",
                         overflow: "hidden",
-                        color: "#0F0F26",
+                        color: C.text1,
                         cursor: "pointer",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "space-between",
                         height: 180,
-                        boxShadow: "0 10px 20px rgba(181, 181, 248, 0.15)"
+                        boxShadow: C.shadow,
+                        border: "1px solid rgba(255, 255, 255, 0.75)"
                       }}
                     >
                       {/* Top-right Cutout Badge */}
@@ -1656,7 +1660,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 11, fontWeight: "700", opacity: 0.9 }}>Glutes / Squats / Hamstrings</div>
                         </div>
-                        <img src="/total_attack.png" alt="Lower Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
+                        <img src="/fairy_lights_jar.png" alt="Lower Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
                       </div>
                     </div>
 
@@ -1664,18 +1668,19 @@ export default function App() {
                     <div 
                       onClick={() => triggerAlert("Upper body workout starts in Pro upgrade!")}
                       style={{
-                        backgroundColor: "#FBC8D4",
+                        backgroundColor: "rgba(229, 152, 155, 0.22)",
                         borderRadius: 24,
                         padding: "20px 16px 16px",
                         position: "relative",
                         overflow: "hidden",
-                        color: "#2E0F1F",
+                        color: C.text1,
                         cursor: "pointer",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "space-between",
                         height: 180,
-                        boxShadow: "0 10px 20px rgba(251, 200, 212, 0.15)"
+                        boxShadow: C.shadow,
+                        border: "1px solid rgba(255, 255, 255, 0.75)"
                       }}
                     >
                       {/* Top-right Cutout Badge */}
@@ -1701,7 +1706,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 11, fontWeight: "700", opacity: 0.9 }}>Chest / Shoulders / Triceps</div>
                         </div>
-                        <img src="/chest_workout.png" alt="Upper Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
+                        <img src="/fairy_lights_jar.png" alt="Upper Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
                       </div>
                     </div>
                   </div>
@@ -1945,7 +1950,7 @@ export default function App() {
                 {/* Cinematic Hero Image Background */}
                 <div style={{
                   position: "absolute", inset: 0,
-                  backgroundImage: "url('/body_builder_trainer.png')",
+                  backgroundImage: "url('/hand_cream_lifestyle.png')",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   zIndex: 1
@@ -2218,12 +2223,12 @@ export default function App() {
                         <span style={{ fontSize: 10, fontWeight: 700, color: C.text2 }}>{day}</span>
                         <div style={{
                           width: 24, height: 24, borderRadius: "50%",
-                          backgroundColor: i < 5 ? (appTheme === "dark" ? "#1A3A27" : "#E8F5E9") : "transparent",
+                          backgroundColor: i < 5 ? color.primary : "transparent",
                           border: i < 5 ? "none" : `1.5px solid ${C.border}`,
                           display: "flex", alignItems: "center", justifyContent: "center"
                         }}>
                           {i < 5 ? (
-                            <Check size={14} strokeWidth={3} color={color.primary} />
+                            <Check size={14} strokeWidth={3} color="white" />
                           ) : (
                             <span style={{ fontSize: 9, color: C.text2 }}>{day[0]}</span>
                           )}
