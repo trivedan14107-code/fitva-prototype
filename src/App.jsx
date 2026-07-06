@@ -1473,36 +1473,10 @@ export default function App() {
                         <div style={{ fontSize: 8, color: color.secondary, fontWeight: 700, marginTop: 2 }}>RECOVERY</div>
                       </div>
                     </Card>
-
-                    {/* Skincare */}
-                    <Card onClick={() => setActiveOverlay("skincare")} padding="10px" style={{ margin: 0, flex: 1, display: "flex", alignItems: "center", gap: 8 }}>
-                      <IconBadge icon={<Sparkles size={12} />} tone="error" size={24} />
-                      <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Skincare</div>
-                        <div style={{ fontSize: 8, color: color.error, fontWeight: 700, marginTop: 2 }}>EVENING</div>
-                      </div>
-                    </Card>
                   </div>
                 </div>
 
-                {/* Today's Habits */}
-                <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Today's Habits</h3>
-                <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
-                  {[
-                    { label: "Water", val: `${user.waterToday}L`, bar: color.secondary, prg: (user.waterToday / user.waterGoal) * 100 },
-                    { label: "Kcal", val: `${user.calToday.toLocaleString()}`, bar: color.warning, prg: (user.calToday / user.calGoal) * 100 },
-                    { label: "Mood", val: user.moodToday, bar: color.secondary, prg: user.moodToday === "Good" ? 80 : 50 }
-                  ].map((hab, idx) => (
-                    <motion.div key={idx} variants={staggerItem}>
-                      <Card padding="12px" style={{ margin: 0, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <ProgressRing value={hab.prg} color={hab.bar} size={44} strokeWidth={4} showLabel={false}>
-                          <span style={{ fontSize: 10, fontWeight: 800, color: hab.bar }}>{hab.val}</span>
-                        </ProgressRing>
-                        <div style={{ fontSize: 9, color: C.text2, marginTop: 6, fontWeight: 600 }}>{hab.label}</div>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </motion.div>
+
 
                 {/* Community & Health section lists */}
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Community & Health</h3>
@@ -3496,17 +3470,7 @@ export default function App() {
             </div>
           </button>
 
-          {/* Floating plus button */}
-          <button className="nav-item" style={{ position: "relative", top: -14 }} onClick={() => setActiveOverlay("quick_log")}>
-            <div style={{
-              width: 56, height: 56, borderRadius: "50%",
-              backgroundColor: C.accent,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 8px 16px rgba(0, 168, 107, 0.25)"
-            }}>
-              <Plus size={28} color="white" strokeWidth={3} />
-            </div>
-          </button>
+
 
           {/* Tab 4: Community */}
           <button className="nav-item" onClick={() => { setTab("community"); setActiveOverlay(null); }} style={{ position: "relative" }}>
