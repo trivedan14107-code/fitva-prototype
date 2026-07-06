@@ -24,8 +24,8 @@ export default function Button({
         return {
           backgroundColor: color.surface,
           color: color.text1,
-          border: "1px solid rgba(255, 255, 255, 0.8)",
-          boxShadow: "4px 4px 10px rgba(163, 177, 198, 0.55), -4px -4px 10px rgba(255, 255, 255, 1.0)",
+          border: "1px solid var(--color-border)",
+          boxShadow: "var(--shadow-button)",
         };
       case "secondary":
         // Soft Coral Accent button with white text
@@ -33,7 +33,7 @@ export default function Button({
           backgroundColor: color.primary,
           color: "#FFFFFF",
           border: "none",
-          boxShadow: "4px 4px 10px rgba(229, 152, 155, 0.35)",
+          boxShadow: "var(--shadow-button-accent)",
         };
       case "ghost":
         return {
@@ -47,7 +47,7 @@ export default function Button({
           backgroundColor: color.error,
           color: "#FFFFFF",
           border: "none",
-          boxShadow: "4px 4px 10px rgba(255, 154, 154, 0.35)",
+          boxShadow: "var(--shadow-button-danger)",
         };
       default:
         return {};

@@ -27,10 +27,10 @@ export default function Card({
     color: color.text1,
     borderRadius: "24px", // Heavily rounded corners
     padding: padding,
-    border: highlighted ? `1.5px solid ${color.primary}` : `1px solid rgba(255, 255, 255, 0.75)`,
+    border: highlighted ? `1.5px solid ${color.primary}` : `1.5px solid var(--color-border)`,
     boxShadow: highlighted 
       ? `6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0), inset 0 0 10px rgba(229, 152, 155, 0.2)` 
-      : "6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0)",
+      : "var(--shadow-extruded)",
     cursor: onClick ? "pointer" : "default",
     position: "relative",
     overflow: "hidden",

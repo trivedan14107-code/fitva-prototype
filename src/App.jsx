@@ -647,6 +647,8 @@ export default function App() {
           --shadow-extruded: 6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0);
           --shadow-recessed: inset 3px 3px 6px rgba(163, 177, 198, 0.45), inset -3px -3px 6px rgba(255, 255, 255, 0.85);
           --shadow-button: 4px 4px 10px rgba(163, 177, 198, 0.55), -4px -4px 10px rgba(255, 255, 255, 1.0);
+          --shadow-button-accent: 4px 4px 10px rgba(229, 152, 155, 0.35);
+          --shadow-button-danger: 4px 4px 10px rgba(255, 154, 154, 0.35);
 
           --badge-primary-bg: rgba(229, 152, 155, 0.12);
           --badge-primary-border: rgba(229, 152, 155, 0.22);
@@ -674,9 +676,11 @@ export default function App() {
           --color-warning: #E0AAFF;
           --color-error: #FF9E00;
           
-          --shadow-extruded: 6px 6px 14px rgba(0, 0, 0, 0.75), -6px -6px 14px rgba(255, 255, 255, 0.04);
+          --shadow-extruded: 6px 6px 14px rgba(0, 0, 0, 0.75), -6px -6px 14px rgba(255, 255, 255, 0.015);
           --shadow-recessed: inset 3px 3px 6px rgba(0, 0, 0, 0.8), inset -3px -3px 6px rgba(255, 255, 255, 0.03);
-          --shadow-button: 4px 4px 10px rgba(0, 0, 0, 0.65), -4px -4px 10px rgba(255, 255, 255, 0.04);
+          --shadow-button: 4px 4px 10px rgba(0, 0, 0, 0.65), -4px -4px 10px rgba(255, 255, 255, 0.012);
+          --shadow-button-accent: 4px 4px 10px rgba(157, 78, 221, 0.25);
+          --shadow-button-danger: 4px 4px 10px rgba(255, 158, 0, 0.15);
 
           --badge-primary-bg: rgba(157, 78, 221, 0.15);
           --badge-primary-border: rgba(157, 78, 221, 0.25);
@@ -1490,7 +1494,7 @@ export default function App() {
                       style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}
                     >
                       <IconBadge icon={act.icon} tone={act.tone} size={32} />
-                      <div style={{ fontSize: 11, fontWeight: 700, color: C.text1, marginTop: "6px" }}>{act.label}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: C.text1, marginTop: "6px" }}>{act.label}</div>
                     </Card>
                   ))}
                 </div>
@@ -1511,7 +1515,7 @@ export default function App() {
                       <Button 
                         variant="secondary"
                         onClick={() => setActiveOverlay("active_workout")}
-                        style={{ padding: "6px 10px", fontSize: 9, borderRadius: 12 }}
+                        style={{ padding: "8px 14px", fontSize: 12, borderRadius: 12 }}
                       >
                         TODAY'S PLAN &gt;
                       </Button>
