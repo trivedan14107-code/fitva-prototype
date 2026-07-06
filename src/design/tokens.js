@@ -1,15 +1,15 @@
 export const color = {
-  primary: "#E5989B",       // Soft, muted pastel coral/pink tone
-  secondary: "#8EA4C0",     // Soft muted blue/gray
-  warning: "#FFD1B3",       // Missed goals, reminders
-  error: "#FF9A9A",         // Critical alerts, errors
-  bg: "#F0F4F8",            // Background & Base Surfaces: highly uniform light pastel blue/gray tint
-  surface: "#F0F4F8",       // Cards, sheets, nav bar base
-  surfaceRaised: "#E5ECF4", // Recessed/pressed/hover state base
-  text1: "#2C3E50",         // Typography: Dark slate gray/navy blue text
-  text2: "#5A738E",         // Secondary text: medium slate blue/gray
-  text3: "#8CA0BA",         // Muted/tertiary text
-  border: "rgba(163, 177, 198, 0.35)",
+  primary: "var(--color-primary)",
+  secondary: "var(--color-secondary)",
+  warning: "var(--color-warning)",
+  error: "var(--color-error)",
+  bg: "var(--color-bg)",
+  surface: "var(--color-surface)",
+  surfaceRaised: "var(--color-surface-raised)",
+  text1: "var(--color-text1)",
+  text2: "var(--color-text2)",
+  text3: "var(--color-text3)",
+  border: "var(--color-border)",
 };
 
 export const typography = {

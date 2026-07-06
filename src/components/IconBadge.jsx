@@ -16,33 +16,33 @@ export default function IconBadge({
     switch (tone) {
       case "primary":
         return {
-          bg: "rgba(0, 229, 168, 0.08)",
-          border: "rgba(0, 229, 168, 0.15)",
+          bg: "var(--badge-primary-bg)",
+          border: "var(--badge-primary-border)",
           iconColor: colors.primary,
         };
       case "secondary":
         return {
-          bg: "rgba(91, 140, 255, 0.08)",
-          border: "rgba(91, 140, 255, 0.15)",
+          bg: "var(--badge-secondary-bg)",
+          border: "var(--badge-secondary-border)",
           iconColor: colors.secondary,
         };
       case "warning":
         return {
-          bg: "rgba(255, 184, 77, 0.08)",
-          border: "rgba(255, 184, 77, 0.15)",
+          bg: "var(--badge-warning-bg)",
+          border: "var(--badge-warning-border)",
           iconColor: colors.warning,
         };
       case "error":
         return {
-          bg: "rgba(255, 92, 92, 0.08)",
-          border: "rgba(255, 92, 92, 0.15)",
+          bg: "var(--badge-error-bg)",
+          border: "var(--badge-error-border)",
           iconColor: colors.error,
         };
       case "neutral":
       default:
         return {
-          bg: "rgba(255, 255, 255, 0.04)",
-          border: "rgba(255, 255, 255, 0.08)",
+          bg: "var(--badge-neutral-bg)",
+          border: "var(--badge-neutral-border)",
           iconColor: colors.text2,
         };
     }

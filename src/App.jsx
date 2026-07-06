@@ -628,10 +628,70 @@ export default function App() {
   ];
 
   return (
-    <div className="main-wrapper">
+    <div className={`main-wrapper theme-${appTheme}`}>
       <style>{`
+        :root {
+          /* Default: Light Theme */
+          --color-bg: #F0F4F8;
+          --color-surface: #F0F4F8;
+          --color-surface-raised: #E5ECF4;
+          --color-border: rgba(163, 177, 198, 0.35);
+          --color-text1: #2C3E50;
+          --color-text2: #5A738E;
+          --color-text3: #8CA0BA;
+          --color-primary: #E5989B;
+          --color-secondary: #8EA4C0;
+          --color-warning: #FFD1B3;
+          --color-error: #FF9A9A;
+          
+          --shadow-extruded: 6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0);
+          --shadow-recessed: inset 3px 3px 6px rgba(163, 177, 198, 0.45), inset -3px -3px 6px rgba(255, 255, 255, 0.85);
+          --shadow-button: 4px 4px 10px rgba(163, 177, 198, 0.55), -4px -4px 10px rgba(255, 255, 255, 1.0);
+
+          --badge-primary-bg: rgba(229, 152, 155, 0.12);
+          --badge-primary-border: rgba(229, 152, 155, 0.22);
+          --badge-secondary-bg: rgba(142, 164, 192, 0.12);
+          --badge-secondary-border: rgba(142, 164, 192, 0.22);
+          --badge-warning-bg: rgba(255, 209, 179, 0.12);
+          --badge-warning-border: rgba(255, 209, 179, 0.22);
+          --badge-error-bg: rgba(255, 154, 154, 0.12);
+          --badge-error-border: rgba(255, 154, 154, 0.22);
+          --badge-neutral-bg: rgba(90, 115, 142, 0.08);
+          --badge-neutral-border: rgba(90, 115, 142, 0.15);
+        }
+
+        .theme-dark {
+          /* Cyber-Neumorphic Dark Theme */
+          --color-bg: #1A1A1E;
+          --color-surface: #1A1A1E;
+          --color-surface-raised: #121215;
+          --color-border: rgba(0, 0, 0, 0.4);
+          --color-text1: #E4E4E7;
+          --color-text2: #71717A;
+          --color-text3: #52525B;
+          --color-primary: #9D4EDD;
+          --color-secondary: #7B2CBF;
+          --color-warning: #E0AAFF;
+          --color-error: #FF9E00;
+          
+          --shadow-extruded: 6px 6px 14px rgba(0, 0, 0, 0.75), -6px -6px 14px rgba(255, 255, 255, 0.04);
+          --shadow-recessed: inset 3px 3px 6px rgba(0, 0, 0, 0.8), inset -3px -3px 6px rgba(255, 255, 255, 0.03);
+          --shadow-button: 4px 4px 10px rgba(0, 0, 0, 0.65), -4px -4px 10px rgba(255, 255, 255, 0.04);
+
+          --badge-primary-bg: rgba(157, 78, 221, 0.15);
+          --badge-primary-border: rgba(157, 78, 221, 0.25);
+          --badge-secondary-bg: rgba(123, 44, 191, 0.15);
+          --badge-secondary-border: rgba(123, 44, 191, 0.25);
+          --badge-warning-bg: rgba(224, 170, 255, 0.15);
+          --badge-warning-border: rgba(224, 170, 255, 0.25);
+          --badge-error-bg: rgba(255, 158, 0, 0.15);
+          --badge-error-border: rgba(255, 158, 0, 0.25);
+          --badge-neutral-bg: rgba(255, 255, 255, 0.06);
+          --badge-neutral-border: rgba(255, 255, 255, 0.12);
+        }
+
         html, body, #root {
-          background-color: ${C.appBg};
+          background-color: var(--color-bg);
           margin: 0;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           color: ${C.text1};
@@ -1581,7 +1641,7 @@ export default function App() {
                       }}>
                         72%
                       </div>
-                      <img src="/hand_cream_lifestyle.png" alt="Trainer" style={{ width: 100, height: 115, objectFit: "contain", marginTop: 24 }} />
+                      <img src={appTheme === "dark" ? "/neon_architecture.png" : "/hand_cream_lifestyle.png"} alt="Trainer" style={{ width: 100, height: 115, objectFit: "contain", marginTop: 24 }} />
                     </div>
                   </div>
 
@@ -1660,7 +1720,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 11, fontWeight: "700", opacity: 0.9 }}>Glutes / Squats / Hamstrings</div>
                         </div>
-                        <img src="/fairy_lights_jar.png" alt="Lower Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
+                        <img src={appTheme === "dark" ? "/neon_architecture.png" : "/fairy_lights_jar.png"} alt="Lower Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
                       </div>
                     </div>
 
@@ -1668,7 +1728,7 @@ export default function App() {
                     <div 
                       onClick={() => triggerAlert("Upper body workout starts in Pro upgrade!")}
                       style={{
-                        backgroundColor: "rgba(229, 152, 155, 0.22)",
+                        backgroundColor: appTheme === "dark" ? "rgba(157, 78, 221, 0.22)" : "rgba(229, 152, 155, 0.22)",
                         borderRadius: 24,
                         padding: "20px 16px 16px",
                         position: "relative",
@@ -1706,7 +1766,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 11, fontWeight: "700", opacity: 0.9 }}>Chest / Shoulders / Triceps</div>
                         </div>
-                        <img src="/fairy_lights_jar.png" alt="Upper Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
+                        <img src={appTheme === "dark" ? "/purple_smoke.png" : "/fairy_lights_jar.png"} alt="Upper Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
                       </div>
                     </div>
                   </div>
@@ -1950,7 +2010,7 @@ export default function App() {
                 {/* Cinematic Hero Image Background */}
                 <div style={{
                   position: "absolute", inset: 0,
-                  backgroundImage: "url('/hand_cream_lifestyle.png')",
+                  backgroundImage: appTheme === "dark" ? "url('/neon_architecture.png')" : "url('/hand_cream_lifestyle.png')",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   zIndex: 1
@@ -3455,7 +3515,7 @@ export default function App() {
           <button className="nav-item" onClick={() => { setTab("home"); setActiveOverlay(null); }} style={{ position: "relative" }}>
             <div style={{
               width: 48, height: 48, borderRadius: "50%",
-              backgroundColor: tab === "home" && !activeOverlay ? "rgba(0, 168, 107, 0.12)" : "transparent",
+              backgroundColor: tab === "home" && !activeOverlay ? "var(--badge-primary-bg)" : "transparent",
               display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all 0.2s"
             }}>
@@ -3467,11 +3527,11 @@ export default function App() {
           <button className="nav-item" onClick={() => { setTab("plan"); setActiveOverlay(null); }} style={{ position: "relative" }}>
             <div style={{
               width: 48, height: 48, borderRadius: "50%",
-              backgroundColor: tab === "plan" ? "rgba(127, 93, 240, 0.15)" : "transparent",
+              backgroundColor: tab === "plan" ? "var(--badge-secondary-bg)" : "transparent",
               display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all 0.2s"
             }}>
-              <Dumbbell size={24} color={tab === "plan" ? color.secondary : C.text2} />
+              <Dumbbell size={24} color={tab === "plan" ? C.blue : C.text2} />
             </div>
           </button>
 
@@ -3481,7 +3541,7 @@ export default function App() {
           <button className="nav-item" onClick={() => { setTab("community"); setActiveOverlay(null); }} style={{ position: "relative" }}>
             <div style={{
               width: 48, height: 48, borderRadius: "50%",
-              backgroundColor: tab === "community" ? "rgba(0, 168, 107, 0.12)" : "transparent",
+              backgroundColor: tab === "community" ? "var(--badge-primary-bg)" : "transparent",
               display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all 0.2s"
             }}>
@@ -3493,7 +3553,7 @@ export default function App() {
           <button className="nav-item" onClick={() => { setTab("leaderboard"); setActiveOverlay(null); }} style={{ position: "relative" }}>
             <div style={{
               width: 48, height: 48, borderRadius: "50%",
-              backgroundColor: tab === "leaderboard" ? "rgba(0, 168, 107, 0.12)" : "transparent",
+              backgroundColor: tab === "leaderboard" ? "var(--badge-primary-bg)" : "transparent",
               display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all 0.2s"
             }}>
@@ -3505,7 +3565,7 @@ export default function App() {
           <button className="nav-item" onClick={() => { setTab("profile"); setActiveOverlay(null); }} style={{ position: "relative" }}>
             <div style={{
               width: 48, height: 48, borderRadius: "50%",
-              backgroundColor: tab === "profile" ? "rgba(142, 142, 147, 0.15)" : "transparent",
+              backgroundColor: tab === "profile" ? "var(--badge-primary-bg)" : "transparent",
               display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all 0.2s"
             }}>
