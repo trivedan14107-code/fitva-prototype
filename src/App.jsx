@@ -1448,16 +1448,46 @@ export default function App() {
                   {/* Side Recovery Actions */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {/* Yoga */}
-                    <Card onClick={() => setActiveOverlay("yoga")} padding="12px" style={{ margin: 0, flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box", overflow: "hidden" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <Card 
+                      onClick={() => setActiveOverlay("yoga")} 
+                      padding="12px" 
+                      style={{ 
+                        margin: 0, 
+                        flex: 1, 
+                        position: "relative", 
+                        overflow: "hidden", 
+                        height: "100%", 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        justifyContent: "space-between",
+                        boxSizing: "border-box" 
+                      }}
+                    >
+                      {/* Full-bleed Background Image */}
+                      <div style={{
+                        position: "absolute",
+                        inset: 0,
+                        backgroundImage: "url('/yoga_recovery_thumbnail.png')",
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        zIndex: 1
+                      }} />
+                      
+                      {/* Dark Gradient Overlay for text readability */}
+                      <div style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "linear-gradient(to bottom, rgba(11,16,32,0.3) 0%, rgba(11,16,32,0.85) 100%)",
+                        zIndex: 2
+                      }} />
+
+                      {/* Card Content Overlay */}
+                      <div style={{ zIndex: 3, display: "flex", alignItems: "center", gap: 6 }}>
                         <IconBadge icon={<Plus size={12} />} tone="primary" size={20} />
                         <div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Yoga</div>
-                          <div style={{ fontSize: 8, color: color.primary, fontWeight: 700, marginTop: 1 }}>RECOVERY</div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF" }}>Yoga</div>
+                          <div style={{ fontSize: 8, color: "var(--color-primary)", fontWeight: 700, marginTop: 1 }}>RECOVERY</div>
                         </div>
-                      </div>
-                      <div style={{ width: "100%", height: 60, borderRadius: 12, overflow: "hidden", marginTop: 8 }}>
-                        <img src="/yoga_recovery_thumbnail.png" alt="Yoga Recovery" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       </div>
                     </Card>
                   </div>
