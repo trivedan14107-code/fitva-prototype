@@ -18,11 +18,12 @@ import Sheet from "./components/Sheet";
 import IconBadge from "./components/IconBadge";
 import CelebrationBurst from "./components/CelebrationBurst";
 import TiltCard from "./components/TiltCard";
+import StreakProgressCarousel from "./components/StreakProgressCarousel";
 import { color, typography, space } from "./design/tokens";
 
-/* ═══════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    DESIGN SYSTEM & COLOR SYSTEM (FITVA 2.0 LIGHT MODE STYLING)
-   ═══════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const C = {
   bg: color.bg,
   appBg: color.bg,
@@ -43,7 +44,7 @@ const C = {
 
 export default function App() {
   const SHOW_LEADERBOARD = false;
-  // ── App flow: splash → onboarding → avatar_creation → app ──
+  // â”€â”€ App flow: splash â†’ onboarding â†’ avatar_creation â†’ app â”€â”€
   const [appFlow, setAppFlow] = useState("splash"); // "splash" | "onboarding" | "avatar_creation" | "app"
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [avatarPhase, setAvatarPhase] = useState("capture"); // "capture" | "processing" | "reveal"
@@ -209,7 +210,7 @@ export default function App() {
         last_regenerated_at: new Date().toISOString()
       };
     });
-    triggerAlert(`Swapped ${mealType} to: ${newMeal.name}! 🔄`);
+    triggerAlert(`Swapped ${mealType} to: ${newMeal.name}! ðŸ”„`);
   };
   
   const handleLogFood = (name, calories, protein = 25, carbs = 45, fats = 10) => {
@@ -283,9 +284,9 @@ export default function App() {
   const [inputText, setInputText] = useState("");
   
   const [posts, setPosts] = useState([
-    { id: "p1", user: "FitRaj_21", caption: "Day 15 transformation — never felt better! 💪", boosts: 24, time: "2h ago" },
-    { id: "p2", user: "GymQueen", caption: "Morning cardio done! Streak is alive 🔥", boosts: 18, time: "4h ago" },
-    { id: "p3", user: "IronMike", caption: "New PR on deadlifts today — 120kg! 🎯", boosts: 42, time: "6h ago" }
+    { id: "p1", user: "FitRaj_21", caption: "Day 15 transformation â€” never felt better! ðŸ’ª", boosts: 24, time: "2h ago" },
+    { id: "p2", user: "GymQueen", caption: "Morning cardio done! Streak is alive ðŸ”¥", boosts: 18, time: "4h ago" },
+    { id: "p3", user: "IronMike", caption: "New PR on deadlifts today â€” 120kg! ðŸŽ¯", boosts: 42, time: "6h ago" }
   ]);
 
   const [alertMsg, setAlertMsg] = useState("");
@@ -484,7 +485,7 @@ export default function App() {
       } else {
         setScanConfidence(0.95);
         setScannedFoodResult(foodDatabase[foodKey]);
-        triggerAlert("Food scanner completed analysis! 🥗");
+        triggerAlert("Food scanner completed analysis! ðŸ¥—");
       }
     }, 1500);
   };
@@ -529,7 +530,7 @@ export default function App() {
             instructions: "Boil oats with chicken broth, shred grilled chicken on top, garnish with green onions."
           }
         ]);
-        triggerAlert("Rex AI generated 2 recipes! 🥞");
+        triggerAlert("Rex AI generated 2 recipes! ðŸ¥ž");
       }
     }, 1500);
   };
@@ -603,7 +604,7 @@ export default function App() {
     };
   };
 
-  // ── Splash auto-advance timer ──
+  // â”€â”€ Splash auto-advance timer â”€â”€
   useEffect(() => {
     if (appFlow === "splash") {
       const t = setTimeout(() => setAppFlow("onboarding"), 2500);
@@ -732,9 +733,9 @@ export default function App() {
                 <ProgressRing value={(nutritionDaily.calories_consumed / nutritionDaily.calorie_target) * 100} size={28} strokeWidth={3} showLabel={false} color="var(--color-primary)" />
                 <div style={{ display: "flex", gap: 6, fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.8)" }}>
                   <span>P: {nutritionDaily.protein_g}g</span>
-                  <span>•</span>
+                  <span>â€¢</span>
                   <span>C: {nutritionDaily.carbs_g}g</span>
-                  <span>•</span>
+                  <span>â€¢</span>
                   <span>F: {nutritionDaily.fats_g}g</span>
                 </div>
               </div>
@@ -757,7 +758,7 @@ export default function App() {
                   onClick={(e) => {
                     e.stopPropagation();
                     setReminderActive(!reminderActive);
-                    triggerAlert(!reminderActive ? "Water reminder set! 🔔" : "Water reminder disabled! 🔔");
+                    triggerAlert(!reminderActive ? "Water reminder set! ðŸ””" : "Water reminder disabled! ðŸ””");
                   }}
                   style={{ 
                     width: 28, height: 28, borderRadius: "50%", 
@@ -833,11 +834,11 @@ export default function App() {
     }
   };
 
-  // ── Onboarding step data ──
+  // â”€â”€ Onboarding step data â”€â”€
   const onboardingSteps = [
     { icon: <Dumbbell size={36} color={color.primary} />, title: "Personalised Workouts", desc: "AI-powered routines tailored to your body, goals, and recovery." },
     { icon: <Salad size={36} color={color.primary} />, title: "Smart Nutrition", desc: "Scan meals, track macros, and get real-time diet coaching from Rex." },
-    { icon: <Brain size={36} color={color.secondary} />, title: "Mind & Recovery", desc: "Yoga, skincare, mood check-ins — your holistic wellness companion." },
+    { icon: <Brain size={36} color={color.secondary} />, title: "Mind & Recovery", desc: "Yoga, skincare, mood check-ins â€” your holistic wellness companion." },
     { icon: <Target size={36} color={color.primary} />, title: "Compete & Progress", desc: "Track streaks, climb leaderboards, and unlock achievements daily." },
   ];
 
@@ -1253,7 +1254,7 @@ export default function App() {
       `}</style>
 
       <AnimatePresence mode="wait">
-        {/* ══════ SPLASH SCREEN ══════ */}
+        {/* â•â•â•â•â•â• SPLASH SCREEN â•â•â•â•â•â• */}
         {appFlow === "splash" && (
           <motion.div
             key="splash"
@@ -1306,7 +1307,7 @@ export default function App() {
           </motion.div>
         )}
 
-        {/* ══════ ONBOARDING (4 steps) ══════ */}
+        {/* â•â•â•â•â•â• ONBOARDING (4 steps) â•â•â•â•â•â• */}
         {appFlow === "onboarding" && (
           <motion.div
             key="onboarding"
@@ -1383,13 +1384,13 @@ export default function App() {
                 onClick={() => setOnboardingStep(prev => prev - 1)}
                 style={{ background: "none", border: "none", color: color.text2, fontSize: 13, fontWeight: 600, marginTop: 12, cursor: "pointer" }}
               >
-                ← Back
+                â† Back
               </button>
             )}
           </motion.div>
         )}
 
-        {/* ══════ AVATAR CREATION REVEAL ══════ */}
+        {/* â•â•â•â•â•â• AVATAR CREATION REVEAL â•â•â•â•â•â• */}
         {appFlow === "avatar_creation" && (
           <motion.div
             key="avatar-creation"
@@ -1469,7 +1470,7 @@ export default function App() {
                       pointerEvents: "none"
                     }}
                   />
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: color.text1, margin: 0 }}>Scanning & Processing…</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 800, color: color.text1, margin: 0 }}>Scanning & Processingâ€¦</h3>
                   <p style={{ fontSize: 12, color: color.text2, margin: 0 }}>Building your 3D avatar companion</p>
                 </motion.div>
               )}
@@ -1555,7 +1556,7 @@ export default function App() {
                     onClick={() => setAppFlow("app")}
                     style={{ maxWidth: 280, marginTop: 16, fontSize: 14, padding: "14px 24px", borderRadius: 16, zIndex: 1 }}
                   >
-                    Enter FITVA →
+                    Enter FITVA â†’
                   </Button>
                 </motion.div>
               )}
@@ -1564,7 +1565,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* ══════ MAIN APP (only rendered when appFlow === "app") ══════ */}
+      {/* â•â•â•â•â•â• MAIN APP (only rendered when appFlow === "app") â•â•â•â•â•â• */}
       {appFlow === "app" && (
       <div className="app-shell">
         {/* Apple Notch & Status Bar */}
@@ -1572,17 +1573,17 @@ export default function App() {
         <div className="status-bar">
           <div>9:41</div>
           <div style={{ display: "flex", gap: 6 }}>
-            <span>📶</span>
-            <span>🔋</span>
+            <span>ðŸ“¶</span>
+            <span>ðŸ”‹</span>
           </div>
         </div>
 
         {/* Global Action Alert */}
         {alertMsg && <div className="success-alert">{alertMsg}</div>}
 
-        {/* ═══════════════════════════════════════════════════════════
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
            MAIN SCREEN ROUTING
-           ═══════════════════════════════════════════════════════════ */}
+           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <div className="screen-content">
           <AnimatePresence mode="wait">
             
@@ -1660,7 +1661,7 @@ export default function App() {
                 {/* Train Today Section */}
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Train Today</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: 12, marginBottom: 20 }}>
-                  {/* Workout Progress Card – 3D Tilt */}
+                  {/* Workout Progress Card â€“ 3D Tilt */}
                   <TiltCard
                     style={{ margin: 0, minHeight: 140 }}
                     padding="14px"
@@ -1927,7 +1928,7 @@ export default function App() {
                       <div>
                         <div style={{ fontSize: 16, fontWeight: "900", letterSpacing: "-0.5px", textTransform: "uppercase", color: C.text1 }}>HI JAMES</div>
                         <div style={{ fontSize: 10, color: C.text2, display: "flex", alignItems: "center", gap: 4 }}>
-                          <span>⚡</span> Fitness Freak
+                          <span>âš¡</span> Fitness Freak
                         </div>
                       </div>
                     </div>
@@ -1966,7 +1967,7 @@ export default function App() {
                         }}
                       >
                         538 CALORIES
-                        <span style={{ fontSize: 10 }}>↗</span>
+                        <span style={{ fontSize: 10 }}>â†—</span>
                       </button>
                     </div>
 
@@ -2333,9 +2334,9 @@ export default function App() {
 
           </AnimatePresence>
 
-          {/* ═══════════════════════════════════════════════════════════
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
              OVERLAYS & MODALS
-             ═══════════════════════════════════════════════════════════ */}
+             â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <AnimatePresence>
             
 
@@ -2699,7 +2700,7 @@ export default function App() {
                     whileTap={{ scale: 0.9 }}
                     onClick={() => {
                       setReminderActive(!reminderActive);
-                      triggerAlert(!reminderActive ? "Water reminder set! 🔔" : "Water reminder disabled! 🔔");
+                      triggerAlert(!reminderActive ? "Water reminder set! ðŸ””" : "Water reminder disabled! ðŸ””");
                     }}
                     style={{ 
                       width: 44, height: 44, borderRadius: "50%", 
@@ -2749,7 +2750,7 @@ export default function App() {
                             setUser(prev => ({ ...prev, waterToday: parseFloat((prev.waterToday + item.amount).toFixed(2)) }));
                             const logTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                             setWaterLogs(prev => [...prev, { time: logTime, amount: item.amount }]);
-                            triggerAlert(`Logged ${item.label} water! 💧`);
+                            triggerAlert(`Logged ${item.label} water! ðŸ’§`);
                           }}
                           variant="secondary"
                           fullWidth
@@ -2961,7 +2962,7 @@ export default function App() {
                         cursor: "pointer", transition: "color 0.2s, background-color 0.2s"
                       }}
                     >
-                      🔍 Food Analyser
+                      ðŸ” Food Analyser
                     </motion.button>
                     <motion.button 
                       whileTap={{ scale: 0.95 }}
@@ -2979,7 +2980,7 @@ export default function App() {
                         cursor: "pointer", transition: "color 0.2s, background-color 0.2s"
                       }}
                     >
-                      🥞 Recipe Creator
+                      ðŸ¥ž Recipe Creator
                     </motion.button>
                   </div>
 
@@ -3023,7 +3024,7 @@ export default function App() {
                                       marginBottom: 10
                                     }}
                                   />
-                                  <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Analyzing your meal…</span>
+                                  <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Analyzing your mealâ€¦</span>
                                 </div>
                               ) : (
                                 <>
@@ -3308,7 +3309,7 @@ export default function App() {
                               }} 
                               onClick={() => {
                                 setRecipeIngredients(prev => [...new Set([...prev, "Oats", "Avocado", "Chicken"])]);
-                                triggerAlert("Scanned ingredients successfully! 🥬");
+                                triggerAlert("Scanned ingredients successfully! ðŸ¥¬");
                               }}
                             >
                               {generatingRecipes && <div className="scanning-line"></div>}
@@ -3407,7 +3408,7 @@ export default function App() {
                                       youtube: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                                     }
                                   ]);
-                                  triggerAlert("Rex AI generated 2 recipes! 🥞");
+                                  triggerAlert("Rex AI generated 2 recipes! ðŸ¥ž");
                                 }, 2000);
                               }}
                               fullWidth
@@ -3577,236 +3578,14 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* ── SWIPEABLE CAROUSEL: Streak + Chart ─────────── */}
-                  {(() => {
-                    const weekData = [
-                      { label: "Mon", value: 56 },
-                      { label: "Tue", value: 32 },
-                      { label: "Wed", value: 68, highlight: true },
-                      { label: "Thu", value: 44 },
-                      { label: "Fri", value: 52 },
-                      { label: "Sat", value: 20 },
-                      { label: "Sun", value: 0 },
-                    ];
-                    const monthData = [
-                      { label: "W1", value: 58 },
-                      { label: "W2", value: 72, highlight: true },
-                      { label: "W3", value: 45 },
-                      { label: "W4", value: 63 },
-                    ];
-                    const data = progressChartMode === "week" ? weekData : monthData;
-                    const maxVal = Math.max(...data.map(d => d.value));
-                    const avgVal = Math.round(
-                      data.filter(d => d.value > 0).reduce((a, b) => a + b.value, 0) /
-                      data.filter(d => d.value > 0).length
-                    );
-                    const chartH = 110;
-                    const [slideIdx, setSlideIdx] = useState(0);
-                    const dragStartX = useRef(0);
+                  {/* â”€â”€ SWIPEABLE CAROUSEL: Streak + Chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                  <StreakProgressCarousel
+                    user={user}
+                    C={C}
+                    progressChartMode={progressChartMode}
+                    setProgressChartMode={setProgressChartMode}
+                  />
 
-                    const handleDragStart = (e) => {
-                      dragStartX.current = e.type === "touchstart"
-                        ? e.touches[0].clientX
-                        : e.clientX;
-                    };
-                    const handleDragEnd = (e) => {
-                      const endX = e.type === "touchend"
-                        ? e.changedTouches[0].clientX
-                        : e.clientX;
-                      const diff = dragStartX.current - endX;
-                      if (diff > 40) setSlideIdx(1);
-                      else if (diff < -40) setSlideIdx(0);
-                    };
-
-                    return (
-                      <div style={{ marginBottom: 14 }}>
-                        {/* Outer container */}
-                        <div
-                          style={{ overflow: "hidden", borderRadius: 20, touchAction: "pan-y" }}
-                          onMouseDown={handleDragStart}
-                          onMouseUp={handleDragEnd}
-                          onTouchStart={handleDragStart}
-                          onTouchEnd={handleDragEnd}
-                        >
-                          {/* Sliding track */}
-                          <motion.div
-                            animate={{ x: slideIdx === 0 ? "0%" : "-100%" }}
-                            transition={{ type: "spring", stiffness: 320, damping: 34 }}
-                            style={{ display: "flex", width: "200%" }}
-                          >
-                            {/* ── SLIDE 1: Current Streak ── */}
-                            <div style={{
-                              width: "50%",
-                              flexShrink: 0,
-                              background: "linear-gradient(135deg, rgba(0,229,168,0.08) 0%, rgba(91,140,255,0.06) 100%)",
-                              border: "1.5px solid rgba(0,229,168,0.18)",
-                              borderRadius: 20,
-                              padding: "14px 16px",
-                              boxSizing: "border-box"
-                            }}>
-                              {/* Header */}
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                                <div>
-                                  <div style={{ fontSize: 9, fontWeight: 800, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: 2 }}>Current Streak</div>
-                                  <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, lineHeight: 1 }}>{user.streak} Days</div>
-                                </div>
-                                <div style={{
-                                  width: 40, height: 40, borderRadius: "50%",
-                                  background: "radial-gradient(circle, rgba(0,229,168,0.25) 0%, rgba(0,229,168,0.05) 100%)",
-                                  border: "1.5px solid rgba(0,229,168,0.35)",
-                                  display: "flex", alignItems: "center", justifyContent: "center"
-                                }}>
-                                  <Flame size={18} color="var(--color-primary)" />
-                                </div>
-                              </div>
-                              {/* Day chips */}
-                              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((day, i) => {
-                                  const isActive = i < 5;
-                                  const isToday = i === 4;
-                                  return (
-                                    <div key={day} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
-                                      <div style={{ fontSize: 9, fontWeight: 700, color: isActive ? "var(--color-primary)" : C.text3 }}>{day}</div>
-                                      <motion.div
-                                        initial={{ scale: 0.6, opacity: 0 }}
-                                        animate={{ scale: 1, opacity: 1 }}
-                                        transition={{ delay: i * 0.05, type: "spring", stiffness: 400, damping: 20 }}
-                                        style={{
-                                          width: 28, height: 28, borderRadius: "50%",
-                                          backgroundColor: isActive ? "var(--color-primary)" : "rgba(255,255,255,0.04)",
-                                          border: isActive ? "none" : `1.5px solid ${C.border}`,
-                                          display: "flex", alignItems: "center", justifyContent: "center",
-                                          boxShadow: isActive && isToday ? "0 0 10px rgba(0,229,168,0.5)" : "none"
-                                        }}
-                                      >
-                                        {isActive
-                                          ? <Check size={13} strokeWidth={3} color="#0B1020" />
-                                          : <span style={{ fontSize: 9, color: C.text3, fontWeight: 700 }}>{day[0]}</span>
-                                        }
-                                      </motion.div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                              {/* Swipe hint */}
-                              <div style={{ marginTop: 10, textAlign: "center", fontSize: 8, color: C.text3, fontWeight: 600 }}>← Swipe to see progress chart</div>
-                            </div>
-
-                            {/* ── SLIDE 2: Your Progress Chart ── */}
-                            <div style={{
-                              width: "50%",
-                              flexShrink: 0,
-                              backgroundColor: C.surface,
-                              border: `1.5px solid ${C.border}`,
-                              borderRadius: 20,
-                              padding: "14px 16px",
-                              boxSizing: "border-box"
-                            }}>
-                              {/* Chart Header */}
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                                <div>
-                                  <div style={{ fontSize: 15, fontWeight: 900, color: C.text1 }}>Your progress</div>
-                                  <div style={{ fontSize: 9, color: C.text2, marginTop: 2, lineHeight: 1.4 }}>Focus minutes across the week</div>
-                                </div>
-                                {/* Week / Month Toggle */}
-                                <div style={{ display: "flex", gap: 2, backgroundColor: C.bg, borderRadius: 999, padding: 3, border: `1px solid ${C.border}` }}>
-                                  {["week","month"].map(mode => (
-                                    <motion.button
-                                      key={mode}
-                                      onClick={e => { e.stopPropagation(); setProgressChartMode(mode); }}
-                                      whileTap={{ scale: 0.9 }}
-                                      style={{
-                                        padding: "4px 10px", borderRadius: 999, border: "none",
-                                        fontSize: 10, fontWeight: 700, cursor: "pointer",
-                                        backgroundColor: progressChartMode === mode ? "var(--color-primary)" : "transparent",
-                                        color: progressChartMode === mode ? "#0B1020" : C.text2,
-                                        transition: "all 0.2s"
-                                      }}
-                                    >
-                                      {mode === "week" ? "Week" : "Month"}
-                                    </motion.button>
-                                  ))}
-                                </div>
-                              </div>
-
-                              {/* Bars */}
-                              <div style={{ display: "flex", alignItems: "flex-end", height: chartH, gap: 4 }}>
-                                {data.map((d, i) => {
-                                  const barH = d.value > 0 ? Math.max((d.value / maxVal) * chartH, 14) : 14;
-                                  return (
-                                    <div key={d.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                                      {d.value > 0 && (
-                                        <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                          <span style={{ fontSize: 9, fontWeight: 800, color: d.highlight ? "var(--color-primary)" : C.text2 }}>{d.value}</span>
-                                          {d.highlight && <div style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: "var(--color-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}><TrendingUp size={7} color="#0B1020" /></div>}
-                                        </div>
-                                      )}
-                                      <motion.div
-                                        initial={{ scaleY: 0 }}
-                                        animate={{ scaleY: slideIdx === 1 ? 1 : 0 }}
-                                        transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 24 }}
-                                        style={{
-                                          width: "100%",
-                                          height: barH,
-                                          borderRadius: 999,
-                                          background: d.highlight
-                                            ? "linear-gradient(to top, rgba(0,229,168,0.35) 0%, rgba(0,229,168,0.95) 100%)"
-                                            : d.value > 0
-                                              ? "linear-gradient(to top, rgba(0,229,168,0.06) 0%, rgba(0,229,168,0.32) 100%)"
-                                              : "rgba(255,255,255,0.04)",
-                                          border: d.highlight ? "1.5px solid rgba(0,229,168,0.55)" : `1px solid ${C.border}`,
-                                          transformOrigin: "bottom",
-                                          position: "relative",
-                                          overflow: "hidden"
-                                        }}
-                                      >
-                                        {d.value > 0 && (
-                                          <div style={{
-                                            position: "absolute", top: 3, left: "50%", transform: "translateX(-50%)",
-                                            width: "50%", height: "25%", borderRadius: 999,
-                                            backgroundColor: d.highlight ? "rgba(0,229,168,0.5)" : "rgba(0,229,168,0.15)"
-                                          }} />
-                                        )}
-                                      </motion.div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-
-                              {/* Day labels */}
-                              <div style={{ display: "flex", marginTop: 6 }}>
-                                {data.map(d => (
-                                  <div key={d.label} style={{ flex: 1, textAlign: "center", fontSize: 8, fontWeight: 700, color: d.highlight ? "var(--color-primary)" : C.text3 }}>{d.label}</div>
-                                ))}
-                              </div>
-
-                              {/* Legend */}
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                                  <div style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: "rgba(0,229,168,0.5)", border: "1.5px solid var(--color-primary)" }} />
-                                  <span style={{ fontSize: 8, color: C.text2 }}>Minutes of focused study</span>
-                                </div>
-                                <span style={{ fontSize: 8, fontWeight: 800, color: C.text1 }}>Avg: <span style={{ color: "var(--color-primary)" }}>{avgVal} min/day</span></span>
-                              </div>
-                            </div>
-                          </motion.div>
-                        </div>
-
-                        {/* Dot indicators */}
-                        <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 8 }}>
-                          {[0, 1].map(idx => (
-                            <motion.div
-                              key={idx}
-                              onClick={() => setSlideIdx(idx)}
-                              animate={{ width: slideIdx === idx ? 20 : 7, backgroundColor: slideIdx === idx ? "var(--color-primary)" : C.border }}
-                              transition={{ type: "spring", stiffness: 400, damping: 28 }}
-                              style={{ height: 7, borderRadius: 999, cursor: "pointer" }}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })()}
 
                   {/* 3. TODAY'S WORKOUT (CTA) - Single dominant primary action */}
                   <motion.button
@@ -3834,7 +3613,7 @@ export default function App() {
                     }}
                   >
                     <Dumbbell size={16} color="white" />
-                    ▶ TODAY'S WORKOUT
+                    â–¶ TODAY'S WORKOUT
                   </motion.button>
 
                   {/* 4. QUICK ACCESS GRID (Zone-Themed Cards) */}
@@ -3980,7 +3759,7 @@ export default function App() {
                             </div>
 
                             <div style={{ fontSize: 10, color: C.text2, borderTop: `1px solid ${C.border}`, marginTop: 14, paddingTop: 10, fontStyle: "italic", textAlign: "center" }}>
-                              ⚠️ Open Decision: Awaiting Shalem's final go-ahead on anti-comparison rankings policy.
+                              âš ï¸ Open Decision: Awaiting Shalem's final go-ahead on anti-comparison rankings policy.
                             </div>
                           </div>
                         ) : (
@@ -4062,7 +3841,7 @@ export default function App() {
                     tips: "Excellent choice! This meal is packed with healthy monounsaturated fats from avocado and complex carbohydrates from chickpeas."
                   };
                   setScannedFoodResult(mockResult);
-                  triggerAlert("Rex scanned your plate! Avocado & Chickpea Salad identified. 🥑");
+                  triggerAlert("Rex scanned your plate! Avocado & Chickpea Salad identified. ðŸ¥‘");
                 }, 2000);
               };
 
@@ -4174,10 +3953,10 @@ export default function App() {
                   <h3 style={{ fontSize: 14, fontWeight: 800, color: C.text1, margin: "0 0 12px" }}>Today's Meals</h3>
                   <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
                     {[
-                      { type: "Breakfast", icon: "🍳", target: 450, logged: nutritionDaily.meals_logged.includes("breakfast") ? "Oatmeal & Banana" : null },
-                      { type: "Lunch", icon: "🥗", target: 700, logged: nutritionDaily.meals_logged.includes("lunch") ? "Chicken Salad & Rice" : null },
-                      { type: "Dinner", icon: "🥩", target: 600, logged: nutritionDaily.meals_logged.includes("dinner") ? "Salmon & Sweet Potato" : null },
-                      { type: "Snacks", icon: "🍎", target: 250, logged: nutritionDaily.meals_logged.includes("snack") ? "Greek Yogurt & Protein Shake" : null }
+                      { type: "Breakfast", icon: "ðŸ³", target: 450, logged: nutritionDaily.meals_logged.includes("breakfast") ? "Oatmeal & Banana" : null },
+                      { type: "Lunch", icon: "ðŸ¥—", target: 700, logged: nutritionDaily.meals_logged.includes("lunch") ? "Chicken Salad & Rice" : null },
+                      { type: "Dinner", icon: "ðŸ¥©", target: 600, logged: nutritionDaily.meals_logged.includes("dinner") ? "Salmon & Sweet Potato" : null },
+                      { type: "Snacks", icon: "ðŸŽ", target: 250, logged: nutritionDaily.meals_logged.includes("snack") ? "Greek Yogurt & Protein Shake" : null }
                     ].map((meal, idx) => (
                       <Card 
                         key={idx} 
@@ -4218,7 +3997,7 @@ export default function App() {
                         cursor: "pointer", transition: "color 0.2s, background-color 0.2s"
                       }}
                     >
-                      🔍 Analyser
+                      ðŸ” Analyser
                     </motion.button>
                     <motion.button 
                       whileTap={{ scale: 0.95 }}
@@ -4230,7 +4009,7 @@ export default function App() {
                         cursor: "pointer", transition: "color 0.2s, background-color 0.2s"
                       }}
                     >
-                      🥬 Recipe
+                      ðŸ¥¬ Recipe
                     </motion.button>
                     <motion.button 
                       whileTap={{ scale: 0.95 }}
@@ -4242,7 +4021,7 @@ export default function App() {
                         cursor: "pointer", transition: "color 0.2s, background-color 0.2s"
                       }}
                     >
-                      📅 Planner
+                      ðŸ“… Planner
                     </motion.button>
                   </div>
 
@@ -4289,7 +4068,7 @@ export default function App() {
                                   onClick={() => setShowManualForm(!showManualForm)}
                                   style={{ fontSize: 11, color: nutritionAccent, fontWeight: 800, cursor: "pointer", textDecoration: "underline" }}
                                 >
-                                  {showManualForm ? "Hide Manual Form" : "✏️ Log food manually"}
+                                  {showManualForm ? "Hide Manual Form" : "âœï¸ Log food manually"}
                                 </span>
                               </div>
 
@@ -4495,7 +4274,7 @@ export default function App() {
                               }} 
                               onClick={() => {
                                   setRecipeIngredients(prev => [...new Set([...prev, "Oats", "Avocado", "Chicken"])]);
-                                  triggerAlert("Scanned ingredients successfully! 🥬");
+                                  triggerAlert("Scanned ingredients successfully! ðŸ¥¬");
                               }}
                             >
                               {generatingRecipes && <div className="scanning-line"></div>}
@@ -4646,7 +4425,7 @@ export default function App() {
                                 variant="primary" 
                                 onClick={() => {
                                   setMealPlan(generateMockPlan("vegetarian", 2000));
-                                  triggerAlert("Generated a 7-Day Vegetarian Diet Plan! 🥦");
+                                  triggerAlert("Generated a 7-Day Vegetarian Diet Plan! ðŸ¥¦");
                                 }}
                                 style={{ padding: 14 }}
                               >
@@ -4660,14 +4439,14 @@ export default function App() {
                                 <div>
                                   <span style={{ fontSize: 9, fontWeight: 800, color: nutritionAccent, textTransform: "uppercase" }}>Active Weekly Plan</span>
                                   <h4 style={{ fontSize: 14, fontWeight: 900, color: C.text1, margin: "2px 0 0" }}>
-                                    {mealPlan.diet_type.toUpperCase()} • {mealPlan.calorie_target} kcal/day
+                                    {mealPlan.diet_type.toUpperCase()} â€¢ {mealPlan.calorie_target} kcal/day
                                   </h4>
                                 </div>
                                 <Button 
                                   variant="secondary"
                                   onClick={() => {
                                     setMealPlan(generateMockPlan(mealPlan.diet_type, mealPlan.calorie_target));
-                                    triggerAlert("Diet Plan Regenerated! 🔄");
+                                    triggerAlert("Diet Plan Regenerated! ðŸ”„");
                                   }}
                                   style={{ padding: "6px 12px", fontSize: 10, borderRadius: 8 }}
                                 >
@@ -4793,7 +4572,7 @@ export default function App() {
 
                 {/* Dead Center Content */}
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
-                  <div style={{ fontSize: 44 }}>✨</div>
+                  <div style={{ fontSize: 44 }}>âœ¨</div>
                   <div style={{ fontSize: 24, fontWeight: "900", color: C.text1, letterSpacing: "-0.5px" }}>Yet to come</div>
                   <div style={{ fontSize: 12, color: C.text2, textAlign: "center", maxWidth: "80%", lineHeight: 1.4 }}>
                     This feature is currently under active development. Stay tuned for the upcoming release!
@@ -4804,9 +4583,9 @@ export default function App() {
           </AnimatePresence>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
            5-ICON BOTTOM NAVIGATION BAR (FLOATING DOCK)
-           ═══════════════════════════════════════════════════════════ */}
+           â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         <div className="bottom-nav-bar">
           {/* Tab 1: Home */}
           <button className="nav-item" onClick={() => { setTab("home"); setActiveOverlay(null); }} style={{ position: "relative" }}>
