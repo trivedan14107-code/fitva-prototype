@@ -88,6 +88,128 @@ export default function App() {
   });
   const [recentFoodLogs, setRecentFoodLogs] = useState(["Salad", "Chicken Rice", "Protein Shake"]);
   
+  const generateMockPlan = (dietType = "vegetarian", calTarget = 2000) => {
+    const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+    const planDays = {};
+    
+    const mealOptions = {
+      breakfast: [
+        { name: "Oatmeal with Almonds & Berries", calories: 350, protein_g: 12, carbs_g: 50, fats_g: 10 },
+        { name: "Avocado Toast with Poached Egg", calories: 400, protein_g: 14, carbs_g: 35, fats_g: 22 },
+        { name: "Greek Yogurt Parfait with Honey", calories: 300, protein_g: 18, carbs_g: 30, fats_g: 6 },
+        { name: "Protein Smoothie Bowl", calories: 380, protein_g: 25, carbs_g: 45, fats_g: 8 }
+      ],
+      lunch: [
+        { name: "Quinoa Salad with Chickpeas", calories: 550, protein_g: 18, carbs_g: 65, fats_g: 15 },
+        { name: "Tofu & Vegetable Stir Fry", calories: 500, protein_g: 22, carbs_g: 48, fats_g: 18 },
+        { name: "Lentil Soup with Whole Wheat Roll", calories: 480, protein_g: 20, carbs_g: 60, fats_g: 8 },
+        { name: "Paneer Wrap with Mint Chutney", calories: 600, protein_g: 24, carbs_g: 42, fats_g: 26 }
+      ],
+      dinner: [
+        { name: "Sweet Potato & Black Bean Bowl", calories: 600, protein_g: 16, carbs_g: 80, fats_g: 14 },
+        { name: "Grilled Salmon with Asparagus", calories: 650, protein_g: 42, carbs_g: 10, fats_g: 30 },
+        { name: "Paneer Butter Masala & Roti", calories: 680, protein_g: 22, carbs_g: 55, fats_g: 28 },
+        { name: "Brown Rice with Dal & Spinach", calories: 520, protein_g: 18, carbs_g: 70, fats_g: 10 }
+      ],
+      snacks: [
+        { name: "Mixed Nuts & Apple", calories: 200, protein_g: 5, carbs_g: 25, fats_g: 12 },
+        { name: "Hummus & Carrot Sticks", calories: 150, protein_g: 6, carbs_g: 15, fats_g: 8 },
+        { name: "Whey Protein Shake", calories: 180, protein_g: 25, carbs_g: 5, fats_g: 2 },
+        { name: "Rice Cakes with Peanut Butter", calories: 220, protein_g: 7, carbs_g: 20, fats_g: 12 }
+      ]
+    };
+
+    days.forEach(day => {
+      const isVeg = dietType.toLowerCase() === "vegetarian" || dietType.toLowerCase() === "vegan";
+      
+      const bOption = mealOptions.breakfast[Math.floor(Math.random() * mealOptions.breakfast.length)];
+      
+      let lOption = mealOptions.lunch[Math.floor(Math.random() * mealOptions.lunch.length)];
+      if (!isVeg && Math.random() > 0.5) {
+        lOption = { name: "Grilled Chicken & Quinoa", calories: 580, protein_g: 45, carbs_g: 40, fats_g: 12 };
+      }
+      
+      let dOption = mealOptions.dinner[Math.floor(Math.random() * mealOptions.dinner.length)];
+      if (!isVeg && Math.random() > 0.3) {
+        dOption = mealOptions.dinner[1]; // salmon
+      }
+      
+      const sOption = mealOptions.snacks[Math.floor(Math.random() * mealOptions.snacks.length)];
+      
+      planDays[day] = {
+        breakfast: bOption,
+        lunch: lOption,
+        dinner: dOption,
+        snacks: sOption
+      };
+    });
+
+    return {
+      plan_id: "PLAN_" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+      user_id: "UID_REFERENCE",
+      diet_type: dietType,
+      calorie_target: calTarget,
+      week_start_date: "2026-07-06",
+      days: planDays,
+      generated_at: new Date().toISOString(),
+      last_regenerated_at: new Date().toISOString()
+    };
+  };
+
+  const [mealPlan, setMealPlan] = useState(null);
+  const [plannerActiveDay, setPlannerActiveDay] = useState("monday");
+
+  const handleSwapMeal = (day, mealType) => {
+    const mealOptions = {
+      breakfast: [
+        { name: "Oatmeal with Almonds & Berries", calories: 350, protein_g: 12, carbs_g: 50, fats_g: 10 },
+        { name: "Avocado Toast with Poached Egg", calories: 400, protein_g: 14, carbs_g: 35, fats_g: 22 },
+        { name: "Greek Yogurt Parfait with Honey", calories: 300, protein_g: 18, carbs_g: 30, fats_g: 6 },
+        { name: "Protein Smoothie Bowl", calories: 380, protein_g: 25, carbs_g: 45, fats_g: 8 }
+      ],
+      lunch: [
+        { name: "Quinoa Salad with Chickpeas", calories: 550, protein_g: 18, carbs_g: 65, fats_g: 15 },
+        { name: "Tofu & Vegetable Stir Fry", calories: 500, protein_g: 22, carbs_g: 48, fats_g: 18 },
+        { name: "Lentil Soup with Whole Wheat Roll", calories: 480, protein_g: 20, carbs_g: 60, fats_g: 8 },
+        { name: "Paneer Wrap with Mint Chutney", calories: 600, protein_g: 24, carbs_g: 42, fats_g: 26 },
+        { name: "Grilled Chicken & Quinoa", calories: 580, protein_g: 45, carbs_g: 40, fats_g: 12 }
+      ],
+      dinner: [
+        { name: "Sweet Potato & Black Bean Bowl", calories: 600, protein_g: 16, carbs_g: 80, fats_g: 14 },
+        { name: "Grilled Salmon with Asparagus", calories: 650, protein_g: 42, carbs_g: 10, fats_g: 30 },
+        { name: "Paneer Butter Masala & Roti", calories: 680, protein_g: 22, carbs_g: 55, fats_g: 28 },
+        { name: "Brown Rice with Dal & Spinach", calories: 520, protein_g: 18, carbs_g: 70, fats_g: 10 }
+      ],
+      snacks: [
+        { name: "Mixed Nuts & Apple", calories: 200, protein_g: 5, carbs_g: 25, fats_g: 12 },
+        { name: "Hummus & Carrot Sticks", calories: 150, protein_g: 6, carbs_g: 15, fats_g: 8 },
+        { name: "Whey Protein Shake", calories: 180, protein_g: 25, carbs_g: 5, fats_g: 2 },
+        { name: "Rice Cakes with Peanut Butter", calories: 220, protein_g: 7, carbs_g: 20, fats_g: 12 }
+      ]
+    };
+    
+    const options = mealOptions[mealType];
+    let newMeal = options[Math.floor(Math.random() * options.length)];
+    if (mealPlan && mealPlan.days[day] && mealPlan.days[day][mealType] && mealPlan.days[day][mealType].name === newMeal.name) {
+      newMeal = options[(options.indexOf(newMeal) + 1) % options.length];
+    }
+    
+    setMealPlan(prev => {
+      if (!prev) return prev;
+      const updatedDays = { ...prev.days };
+      updatedDays[day] = {
+        ...updatedDays[day],
+        [mealType]: newMeal
+      };
+      return {
+        ...prev,
+        days: updatedDays,
+        last_regenerated_at: new Date().toISOString()
+      };
+    });
+    triggerAlert(`Swapped ${mealType} to: ${newMeal.name}! 🔄`);
+  };
+  
   const handleLogFood = (name, calories, protein = 25, carbs = 45, fats = 10) => {
     setUser(prev => ({ ...prev, calToday: prev.calToday + calories }));
     setNutritionDaily(prev => ({
@@ -1537,13 +1659,42 @@ export default function App() {
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Train Today</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: 12, marginBottom: 20 }}>
                   {/* Workout Progress Card */}
-                  <Card style={{ margin: 0, padding: 14, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <Card 
+                    style={{ 
+                      margin: 0, 
+                      padding: 14, 
+                      display: "flex", 
+                      flexDirection: "column", 
+                      justifyContent: "space-between",
+                      position: "relative",
+                      overflow: "hidden"
+                    }}
+                  >
+                    {/* Full-bleed Background Image */}
+                    <div style={{
+                      position: "absolute",
+                      inset: 0,
+                      backgroundImage: "url('/lower_body_workout_thumbnail.png')",
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      zIndex: 1
+                    }} />
+                    
+                    {/* Dark Gradient Overlay for text readability */}
+                    <div style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: "gradient" in C ? "" : "linear-gradient(to bottom, rgba(11,16,32,0.3) 0%, rgba(11,16,32,0.85) 100%)",
+                      zIndex: 2
+                    }} />
+
+                    {/* Card Content Overlay */}
+                    <div style={{ zIndex: 3, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                         <IconBadge icon={<Activity size={16} />} tone="primary" size={32} />
                         <div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>Workout</div>
-                          <div style={{ fontSize: 10, color: C.text2, marginTop: 2 }}>Legs + Core &bull; 45m &bull; High</div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: "#FFFFFF" }}>Workout</div>
+                          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.7)", marginTop: 2 }}>Legs + Core &bull; 45m &bull; High</div>
                         </div>
                       </div>
                       <Button 
@@ -1555,11 +1706,17 @@ export default function App() {
                       </Button>
                     </div>
 
-                    <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }}>
-                      <ProgressRing value={(user.setsCompleted / user.setsTotal) * 100} size={48} strokeWidth={4} label={`${user.setsCompleted}/${user.setsTotal}`} />
+                    <div style={{ zIndex: 3, marginTop: 14, display: "flex", alignItems: "center", gap: 12 }}>
+                      <ProgressRing 
+                        value={(user.setsCompleted / user.setsTotal) * 100} 
+                        size={48} 
+                        strokeWidth={4} 
+                        label={`${user.setsCompleted}/${user.setsTotal}`} 
+                        textColor="#FFFFFF"
+                      />
                       <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>{user.setsCompleted} of {user.setsTotal} sets</div>
-                        <div style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>Workout progress</div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF" }}>{user.setsCompleted} of {user.setsTotal} sets</div>
+                        <div style={{ fontSize: 9, color: "rgba(255,255,255,0.7)", marginTop: 2 }}>Workout progress</div>
                       </div>
                     </div>
                   </Card>
@@ -1612,7 +1769,10 @@ export default function App() {
 
                     {/* Nutrition Card */}
                     <Card 
-                      onClick={() => setActiveOverlay("nutrition")} 
+                      onClick={() => {
+                        setActiveOverlay("nutrition_zone");
+                        setNutritionTab("analyser");
+                      }} 
                       padding="12px" 
                       style={{ 
                         margin: 0, 
@@ -1621,20 +1781,41 @@ export default function App() {
                         flexDirection: "column", 
                         justifyContent: "space-between",
                         minHeight: 85,
-                        boxSizing: "border-box"
+                        boxSizing: "border-box",
+                        position: "relative",
+                        overflow: "hidden"
                       }}
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      {/* Full-bleed Background Image */}
+                      <div style={{
+                        position: "absolute",
+                        inset: 0,
+                        backgroundImage: "url('/carousel_nutrition_bg.png')",
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        zIndex: 1
+                      }} />
+                      
+                      {/* Dark Gradient Overlay for text readability */}
+                      <div style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "linear-gradient(to bottom, rgba(11,16,32,0.3) 0%, rgba(11,16,32,0.85) 100%)",
+                        zIndex: 2
+                      }} />
+
+                      {/* Card Content Overlay */}
+                      <div style={{ zIndex: 3, display: "flex", alignItems: "center", gap: 6 }}>
                         <IconBadge icon={<ChefHat size={12} />} tone="secondary" size={20} />
                         <div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Nutrition</div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "#FFFFFF" }}>Nutrition</div>
                           <div style={{ fontSize: 8, color: "var(--color-secondary)", fontWeight: 700, marginTop: 1 }}>
                             {nutritionDaily.meals_logged.length} MEALS LOGGED
                           </div>
                         </div>
                       </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", marginTop: 4 }}>
-                        <span style={{ fontSize: 9, color: C.text2 }}>Log today's meals</span>
+                      <div style={{ zIndex: 3, display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", marginTop: 4 }}>
+                        <span style={{ fontSize: 9, color: "rgba(255,255,255,0.7)" }}>Log today's meals</span>
                         <Plus size={12} color="var(--color-secondary)" />
                       </div>
                     </Card>
@@ -2744,7 +2925,7 @@ export default function App() {
             </Sheet>
 
             {/* D. NUTRITION FEATURE OVERLAY (Full App Screen Page) */}
-            {activeOverlay === "nutrition" && (() => {
+            {activeOverlay === "nutrition_deprecated" && (() => {
               const nutritionAccent = color.secondary; /* Align to Blue AI/data zone token */
               const isNewUser = recentFoodLogs.length === 0;
               const presets = isNewUser ? ["Apple", "Oatmeal", "Greek Yogurt"] : recentFoodLogs;
@@ -3614,184 +3795,722 @@ export default function App() {
             )}
 
             {/* E2. NUTRITION ZONE HOME SCREEN OVERLAY */}
-            {activeOverlay === "nutrition_zone" && (
-              <motion.div
-                key="nutrition-zone-screen"
-                initial={{ opacity: 0, y: 960 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 960 }}
-                transition={{ type: "spring", damping: 28 }}
-                style={{
-                  position: "absolute", inset: 0, backgroundColor: C.appBg, zIndex: 1000,
-                  display: "flex", flexDirection: "column", boxSizing: "border-box",
-                  padding: "54px 20px 24px", transition: "background-color 0.3s",
-                  overflowY: "auto"
-                }}
-              >
-                {/* Header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                  <div>
-                    <h1 className="header-title" style={{ margin: 0 }}>Nutrition Zone</h1>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: C.text2 }}>Today, July 7, 2026</span>
-                  </div>
-                  <X 
-                    size={24} 
-                    color={C.text1} 
-                    style={{ cursor: "pointer" }} 
-                    onClick={() => setActiveOverlay(null)} 
-                  />
-                </div>
+            {activeOverlay === "nutrition_zone" && (() => {
+              const nutritionAccent = color.secondary;
+              const isNewUser = recentFoodLogs.length === 0;
+              const presets = isNewUser ? ["Apple", "Oatmeal", "Greek Yogurt"] : recentFoodLogs;
 
-                {/* 1. Summary Card (Momentum Ring + Target Stats) */}
-                <Card padding="20px" style={{ margin: "0 0 20px", display: "flex", gap: 18, alignItems: "center" }}>
-                  <div style={{ position: "relative", width: 80, height: 80, flexShrink: 0 }}>
-                    <ProgressRing 
-                      value={(nutritionDaily.calories_consumed / nutritionDaily.calorie_target) * 100} 
-                      size={80} 
-                      strokeWidth={8} 
-                      color="var(--color-primary)" 
-                      label={`${nutritionDaily.calories_consumed}`}
-                    />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: 10, fontWeight: 800, color: C.text2, textTransform: "uppercase" }}>Calorie Progress</span>
-                    <div style={{ fontSize: 18, fontWeight: 900, color: C.text1, marginTop: 2 }}>
-                      {nutritionDaily.calories_consumed} <span style={{ fontSize: 12, color: C.text2, fontWeight: 500 }}>/ {nutritionDaily.calorie_target} kcal</span>
+              const handleScanPlateClick = () => {
+                setAnalyzingFood(true);
+                setScanConfidence(null);
+                setScannedFoodResult(null);
+
+                // Simulate plate scan
+                setTimeout(() => {
+                  setAnalyzingFood(false);
+                  setScanConfidence(0.92);
+                  
+                  const mockResult = {
+                    name: "Avocado & Chickpea Salad",
+                    grade: "A",
+                    calories: 340,
+                    protein: 12,
+                    carbohydrates: 28,
+                    fat: 20,
+                    fiber: 9,
+                    sugar: 4,
+                    sodium: 320,
+                    tips: "Excellent choice! This meal is packed with healthy monounsaturated fats from avocado and complex carbohydrates from chickpeas."
+                  };
+                  setScannedFoodResult(mockResult);
+                  triggerAlert("Rex scanned your plate! Avocado & Chickpea Salad identified. 🥑");
+                }, 2000);
+              };
+
+              const handlePresetClick = (pName) => {
+                let cal = 150, p = 5, c = 20, f = 4;
+                if (pName === "Salad") { cal = 150; p = 5; c = 20; f = 4; }
+                else if (pName === "Chicken Rice") { cal = 650; p = 45; c = 75; f = 12; }
+                else if (pName === "Protein Shake") { cal = 220; p = 30; c = 8; f = 3; }
+                else if (pName === "Apple") { cal = 80; p = 0; c = 22; f = 0; }
+                else if (pName === "Oatmeal") { cal = 300; p = 10; c = 50; f = 5; }
+                else if (pName === "Greek Yogurt") { cal = 150; p = 15; c = 10; f = 2; }
+                
+                handleLogFood(pName, cal, p, c, f);
+              };
+
+              return (
+                <motion.div
+                  key="nutrition-zone-screen"
+                  initial={{ opacity: 0, y: 960 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 960 }}
+                  transition={{ type: "spring", damping: 28 }}
+                  style={{
+                    position: "absolute", inset: 0, backgroundColor: C.appBg, zIndex: 1000,
+                    display: "flex", flexDirection: "column", boxSizing: "border-box",
+                    padding: "54px 20px 24px", transition: "background-color 0.3s",
+                    overflowY: "auto"
+                  }}
+                >
+                  {/* Header */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                    <div>
+                      <h1 className="header-title" style={{ margin: 0, color: C.text1 }}>Nutrition Zone</h1>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: C.text2 }}>Today, July 7, 2026</span>
                     </div>
-                    {/* Micro Macro Bars */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
-                      {/* Protein */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, fontWeight: 700 }}>
-                          <span style={{ color: C.text1 }}>Protein</span>
-                          <span style={{ color: C.text2 }}>{nutritionDaily.protein_g}g / 150g</span>
-                        </div>
-                        <div style={{ width: "100%", height: 4, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden" }}>
-                          <div style={{ width: `${Math.min((nutritionDaily.protein_g / 150) * 100, 100)}%`, height: "100%", backgroundColor: "var(--color-primary)" }} />
-                        </div>
-                      </div>
-                      {/* Carbs */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, fontWeight: 700 }}>
-                          <span style={{ color: C.text1 }}>Carbs</span>
-                          <span style={{ color: C.text2 }}>{nutritionDaily.carbs_g}g / 220g</span>
-                        </div>
-                        <div style={{ width: "100%", height: 4, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden" }}>
-                          <div style={{ width: `${Math.min((nutritionDaily.carbs_g / 220) * 100, 100)}%`, height: "100%", backgroundColor: "var(--color-secondary)" }} />
-                        </div>
-                      </div>
-                      {/* Fats */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, fontWeight: 700 }}>
-                          <span style={{ color: C.text1 }}>Fats</span>
-                          <span style={{ color: C.text2 }}>{nutritionDaily.fats_g}g / 70g</span>
-                        </div>
-                        <div style={{ width: "100%", height: 4, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden" }}>
-                          <div style={{ width: `${Math.min((nutritionDaily.fats_g / 70) * 100, 100)}%`, height: "100%", backgroundColor: C.text3 }} />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* 2. Quick Actions Row */}
-                <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-                  <Button 
-                    variant="primary" 
-                    onClick={() => {
-                      setNutritionTab("analyser");
-                      setActiveOverlay("nutrition");
-                    }}
-                    style={{ flex: 1, padding: 12, fontSize: 12, borderRadius: 12 }}
-                  >
-                    🔍 Scan Food
-                  </Button>
-                  <Button 
-                    variant="secondary" 
-                    onClick={() => {
-                      setNutritionTab("creator");
-                      setActiveOverlay("nutrition");
-                    }}
-                    style={{ flex: 1, padding: 12, fontSize: 12, borderRadius: 12 }}
-                  >
-                    🥬 Find Recipe
-                  </Button>
-                </div>
-
-                {/* 3. Today's Meals List */}
-                <h3 style={{ fontSize: 14, fontWeight: 800, color: C.text1, margin: "0 0 12px" }}>Today's Meals</h3>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-                  {[
-                    { type: "Breakfast", icon: "🍳", target: 450, logged: nutritionDaily.meals_logged.includes("breakfast") ? "Oatmeal & Banana" : null },
-                    { type: "Lunch", icon: "🥗", target: 700, logged: nutritionDaily.meals_logged.includes("lunch") ? "Chicken Salad & Rice" : null },
-                    { type: "Dinner", icon: "🥩", target: 600, logged: nutritionDaily.meals_logged.includes("dinner") ? "Salmon & Sweet Potato" : null },
-                    { type: "Snacks", icon: "🍎", target: 250, logged: nutritionDaily.meals_logged.includes("snack") ? "Greek Yogurt & Protein Shake" : null }
-                  ].map((meal, idx) => (
-                    <Card 
-                      key={idx} 
-                      onClick={() => {
-                        setNutritionTab("analyser");
-                        setActiveOverlay("nutrition");
+                    <motion.button 
+                      whileTap={{ scale: 0.9 }}
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: "50%",
+                        border: `1px solid ${C.border}`,
+                        backgroundColor: C.surface,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        boxShadow: "var(--shadow-button)",
                       }}
-                      padding="12px 14px"
-                      style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}
+                      onClick={() => setActiveOverlay(null)}
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <span style={{ fontSize: 18 }}>{meal.icon}</span>
-                        <div>
-                          <div style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>{meal.type}</div>
-                          <div style={{ fontSize: 10, color: C.text2, marginTop: 2 }}>
-                            {meal.logged ? meal.logged : `Target: ${meal.target} kcal`}
+                      <X size={16} color={C.text1} />
+                    </motion.button>
+                  </div>
+
+                  {/* 1. Summary Card (Momentum Ring + Target Stats) */}
+                  <Card padding="20px" style={{ margin: "0 0 20px", display: "flex", gap: 20, alignItems: "center", flexShrink: 0 }}>
+                    <div style={{ position: "relative", width: 100, height: 100, flexShrink: 0 }}>
+                      <ProgressRing 
+                        value={(nutritionDaily.calories_consumed / nutritionDaily.calorie_target) * 100} 
+                        size={100} 
+                        strokeWidth={10} 
+                        color="var(--color-primary)" 
+                        label={`${nutritionDaily.calories_consumed}`}
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: C.text2, textTransform: "uppercase" }}>Calorie Progress</span>
+                      <div style={{ fontSize: 20, fontWeight: 900, color: C.text1, marginTop: 2 }}>
+                        {nutritionDaily.calories_consumed} <span style={{ fontSize: 13, color: C.text2, fontWeight: 500 }}>/ {nutritionDaily.calorie_target} kcal</span>
+                      </div>
+                      {/* Micro Macro Bars */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
+                        {/* Protein */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, fontWeight: 700 }}>
+                            <span style={{ color: C.text1 }}>Protein</span>
+                            <span style={{ color: C.text2 }}>{nutritionDaily.protein_g}g / 150g</span>
+                          </div>
+                          <div style={{ width: "100%", height: 6, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
+                            <div style={{ width: `${Math.min((nutritionDaily.protein_g / 150) * 100, 100)}%`, height: "100%", backgroundColor: "var(--color-primary)" }} />
+                          </div>
+                        </div>
+                        {/* Carbs */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, fontWeight: 700 }}>
+                            <span style={{ color: C.text1 }}>Carbs</span>
+                            <span style={{ color: C.text2 }}>{nutritionDaily.carbs_g}g / 220g</span>
+                          </div>
+                          <div style={{ width: "100%", height: 6, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
+                            <div style={{ width: `${Math.min((nutritionDaily.carbs_g / 220) * 100, 100)}%`, height: "100%", backgroundColor: "var(--color-secondary)" }} />
+                          </div>
+                        </div>
+                        {/* Fats */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, fontWeight: 700 }}>
+                            <span style={{ color: C.text1 }}>Fats</span>
+                            <span style={{ color: C.text2 }}>{nutritionDaily.fats_g}g / 70g</span>
+                          </div>
+                          <div style={{ width: "100%", height: 6, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
+                            <div style={{ width: `${Math.min((nutritionDaily.fats_g / 70) * 100, 100)}%`, height: "100%", backgroundColor: C.text3 }} />
                           </div>
                         </div>
                       </div>
-                      {meal.logged ? (
-                        <span style={{ fontSize: 10, color: "var(--color-primary)", fontWeight: 800 }}>LOGGED</span>
-                      ) : (
-                        <Plus size={14} color="var(--color-secondary)" />
-                      )}
-                    </Card>
-                  ))}
-                </div>
+                    </div>
+                  </Card>
 
-                {/* 4. Frequently Logged Section */}
-                <h3 style={{ fontSize: 14, fontWeight: 800, color: C.text1, margin: "0 0 12px" }}>Frequently Logged</h3>
-                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 10, scrollbarWidth: "none" }}>
-                  {[
-                    { name: "Salad", cal: 150, p: 5, c: 20, f: 4, icon: "🥗" },
-                    { name: "Chicken Rice", cal: 650, p: 45, c: 75, f: 12, icon: "🍚" },
-                    { name: "Protein Shake", cal: 220, p: 30, c: 8, f: 3, icon: "🥤" },
-                    { name: "Apple", cal: 80, p: 0, c: 22, f: 0, icon: "🍎" },
-                    { name: "Oatmeal", cal: 300, p: 10, c: 50, f: 5, icon: "🥣" },
-                    { name: "Greek Yogurt", cal: 150, p: 15, c: 10, f: 2, icon: "🍦" }
-                  ].map((food, i) => (
-                    <motion.div
-                      key={i}
+                  {/* 2. Today's Meals List */}
+                  <h3 style={{ fontSize: 14, fontWeight: 800, color: C.text1, margin: "0 0 12px" }}>Today's Meals</h3>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+                    {[
+                      { type: "Breakfast", icon: "🍳", target: 450, logged: nutritionDaily.meals_logged.includes("breakfast") ? "Oatmeal & Banana" : null },
+                      { type: "Lunch", icon: "🥗", target: 700, logged: nutritionDaily.meals_logged.includes("lunch") ? "Chicken Salad & Rice" : null },
+                      { type: "Dinner", icon: "🥩", target: 600, logged: nutritionDaily.meals_logged.includes("dinner") ? "Salmon & Sweet Potato" : null },
+                      { type: "Snacks", icon: "🍎", target: 250, logged: nutritionDaily.meals_logged.includes("snack") ? "Greek Yogurt & Protein Shake" : null }
+                    ].map((meal, idx) => (
+                      <Card 
+                        key={idx} 
+                        onClick={() => {
+                          setNutritionTab("analyser");
+                        }}
+                        padding="12px 14px"
+                        style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span style={{ fontSize: 18 }}>{meal.icon}</span>
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>{meal.type}</div>
+                            <div style={{ fontSize: 10, color: C.text2, marginTop: 2 }}>
+                              {meal.logged ? meal.logged : `Target: ${meal.target} kcal`}
+                            </div>
+                          </div>
+                        </div>
+                        {meal.logged ? (
+                          <span style={{ fontSize: 10, color: "var(--color-primary)", fontWeight: 800 }}>LOGGED</span>
+                        ) : (
+                          <Plus size={14} color="var(--color-secondary)" />
+                        )}
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* 3. Segmented Tab Selector */}
+                  <h3 style={{ fontSize: 14, fontWeight: 800, color: C.text1, margin: "0 0 12px" }}>Quick Actions</h3>
+                  <div style={{ display: "flex", marginBottom: 20, backgroundColor: C.surfaceLight, borderRadius: 14, padding: 4, border: `1px solid ${C.border}` }}>
+                    <motion.button 
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => handleLogFood(food.name, food.cal, food.p, food.c, food.f)}
+                      onClick={() => setNutritionTab("analyser")}
                       style={{
-                        backgroundColor: C.surface,
-                        border: `1.5px solid ${C.border}`,
-                        borderRadius: 14,
-                        padding: "10px 14px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                        whiteSpace: "nowrap",
-                        cursor: "pointer",
-                        boxShadow: "var(--shadow-button)"
+                        flex: 1, padding: "10px 6px", border: "none", borderRadius: 10, fontSize: 11, fontWeight: 700,
+                        backgroundColor: nutritionTab === "analyser" ? C.surface : "transparent",
+                        color: nutritionTab === "analyser" ? nutritionAccent : C.text2,
+                        cursor: "pointer", transition: "color 0.2s, background-color 0.2s"
                       }}
                     >
-                      <span style={{ fontSize: 14 }}>{food.icon}</span>
-                      <div style={{ display: "flex", flexDirection: "column" }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>{food.name}</span>
-                        <span style={{ fontSize: 8, color: C.text2, marginTop: 1 }}>{food.cal} kcal</span>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
+                      🔍 Analyser
+                    </motion.button>
+                    <motion.button 
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setNutritionTab("creator")}
+                      style={{
+                        flex: 1, padding: "10px 6px", border: "none", borderRadius: 10, fontSize: 11, fontWeight: 700,
+                        backgroundColor: nutritionTab === "creator" ? C.surface : "transparent",
+                        color: nutritionTab === "creator" ? nutritionAccent : C.text2,
+                        cursor: "pointer", transition: "color 0.2s, background-color 0.2s"
+                      }}
+                    >
+                      🥬 Recipe
+                    </motion.button>
+                    <motion.button 
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setNutritionTab("planner")}
+                      style={{
+                        flex: 1, padding: "10px 6px", border: "none", borderRadius: 10, fontSize: 11, fontWeight: 700,
+                        backgroundColor: nutritionTab === "planner" ? C.surface : "transparent",
+                        color: nutritionTab === "planner" ? nutritionAccent : C.text2,
+                        cursor: "pointer", transition: "color 0.2s, background-color 0.2s"
+                      }}
+                    >
+                      📅 Planner
+                    </motion.button>
+                  </div>
+
+                  {/* 4. Tab Content Panel */}
+                  <div style={{ position: "relative", marginBottom: 20 }}>
+                    <AnimatePresence mode="wait">
+                      {/* Sub-tab 1: FOOD ANALYSER */}
+                      {nutritionTab === "analyser" && (
+                        <motion.div
+                          key="analyser-panel"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={SPRING}
+                          style={{ display: "flex", flexDirection: "column", gap: 14 }}
+                        >
+                          {!scannedFoodResult ? (
+                            <div className="card-light" style={{ padding: 18, border: `1px solid ${C.border}`, margin: 0 }}>
+                              <h3 style={{ fontSize: 14, fontWeight: 800, color: C.text1, margin: "0 0 4px" }}>Food Scanner</h3>
+                              <p style={{ fontSize: 11, color: C.text2, margin: "0 0 14px" }}>Capture food items to extract dynamic macro data instantly.</p>
+
+                              {/* Scanner visual camera box */}
+                              <div 
+                                className="scanner-frame" 
+                                style={{ 
+                                  marginBottom: 16,
+                                  border: `2.5px dashed ${nutritionAccent}`
+                                }} 
+                                onClick={handleScanPlateClick}
+                              >
+                                {analyzingFood && <div className="scanning-line"></div>}
+                                <Camera size={32} color={nutritionAccent} style={{ marginBottom: 8 }} />
+                                <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>
+                                  Open Camera / Scan Plate
+                                </span>
+                                <span style={{ fontSize: 10, color: C.text2, marginTop: 4 }}>
+                                  or select from recent logs below
+                                </span>
+                              </div>
+
+                              {/* Manual Input form trigger link */}
+                              <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+                                <span 
+                                  onClick={() => setShowManualForm(!showManualForm)}
+                                  style={{ fontSize: 11, color: nutritionAccent, fontWeight: 800, cursor: "pointer", textDecoration: "underline" }}
+                                >
+                                  {showManualForm ? "Hide Manual Form" : "✏️ Log food manually"}
+                                </span>
+                              </div>
+
+                              {/* Manual food logging form panel */}
+                              {showManualForm && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14, borderTop: `1px solid ${C.border}`, paddingTop: 14 }}>
+                                  <input 
+                                    type="text" 
+                                    placeholder="Food Name (e.g. Oatmeal)"
+                                    value={manualFoodName}
+                                    onChange={(e) => setManualFoodName(e.target.value)}
+                                    style={{ padding: 10, borderRadius: 8, border: `1px solid ${C.border}`, backgroundColor: C.surfaceLight, color: C.text1, fontSize: 11 }}
+                                  />
+                                  <div style={{ display: "flex", gap: 10 }}>
+                                    <input 
+                                      type="number" 
+                                      placeholder="Calories (kcal)" 
+                                      value={manualCalories}
+                                      onChange={(e) => setManualCalories(e.target.value)}
+                                      style={{ flex: 1, padding: 10, borderRadius: 8, border: `1px solid ${C.border}`, backgroundColor: C.surfaceLight, color: C.text1, fontSize: 11 }}
+                                    />
+                                    <input 
+                                      type="number" 
+                                      placeholder="Protein (g)" 
+                                      value={manualProtein}
+                                      onChange={(e) => setManualProtein(e.target.value)}
+                                      style={{ flex: 1, padding: 10, borderRadius: 8, border: `1px solid ${C.border}`, backgroundColor: C.surfaceLight, color: C.text1, fontSize: 11 }}
+                                    />
+                                    <input 
+                                      type="number" 
+                                      placeholder="Carbs (g)" 
+                                      value={manualCarbs}
+                                      onChange={(e) => setManualCarbs(e.target.value)}
+                                      style={{ flex: 1, padding: 10, borderRadius: 8, border: `1px solid ${C.border}`, backgroundColor: C.surfaceLight, color: C.text1, fontSize: 11 }}
+                                    />
+                                  </div>
+
+                                  {/* Recalculated values teaser */}
+                                  <div style={{ padding: 12, backgroundColor: C.surfaceLight, borderRadius: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <span style={{ fontSize: 11, color: C.text2 }}>Calculated:</span>
+                                    <span style={{ fontSize: 12, fontWeight: 800, color: nutritionAccent }}>
+                                      {Math.round((parseInt(manualCalories) || 0) * foodMultiplier)} kcal &bull; {Math.round((parseInt(manualProtein) || 0) * foodMultiplier)}g Protein
+                                    </span>
+                                  </div>
+
+                                  <button 
+                                    onClick={() => {
+                                      const name = manualFoodName.trim() || "Manual Log";
+                                      const c = Math.round((parseInt(manualCalories) || 0) * foodMultiplier);
+                                      const p = Math.round((parseInt(manualProtein) || 0) * foodMultiplier);
+                                      const cb = Math.round((parseInt(manualCarbs) || 0) * foodMultiplier);
+                                      handleLogFood(name, c, p || 25, cb || 45, Math.round((p || 25) * 0.2) || 8);
+                                      
+                                      setManualFoodName("");
+                                      setManualCalories("");
+                                      setManualProtein("");
+                                      setManualCarbs("");
+                                      setScanConfidence(null);
+                                      setShowManualForm(false);
+                                      setFoodMultiplier(1);
+                                    }}
+                                    style={{ width: "100%", padding: 12, borderRadius: 10, border: "none", backgroundColor: nutritionAccent, color: "white", fontWeight: 800, fontSize: 12, cursor: "pointer" }}
+                                  >
+                                    Log to Dashboard
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="card-light" style={{ padding: 18, border: `1.5px solid ${nutritionAccent}`, margin: 0, display: "flex", flexDirection: "column", gap: 14 }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <div>
+                                  <span style={{ fontSize: 10, fontWeight: 800, color: nutritionAccent, textTransform: "uppercase" }}>Rex AI Scan Success</span>
+                                  <h4 style={{ fontSize: 16, fontWeight: 900, color: C.text1, margin: "2px 0 0" }}>{scannedFoodResult.name}</h4>
+                                </div>
+                                <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "rgba(0, 168, 107, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: C.accent, fontWeight: 800, fontSize: 14 }}>
+                                  {scannedFoodResult.grade}
+                                </div>
+                              </div>
+
+                              {/* Multiplier / Serving Stepper */}
+                              <div>
+                                <label style={{ fontSize: 10, fontWeight: 800, color: C.text2, textTransform: "uppercase", marginBottom: 6, display: "block" }}>Select Portion Size</label>
+                                <div style={{ display: "flex", gap: 6 }}>
+                                  {[0.5, 1.0, 1.5, 2.0].map((m) => (
+                                    <button 
+                                      key={m} 
+                                      onClick={() => setFoodMultiplier(m)}
+                                      style={{
+                                        flex: 1, padding: "8px 0", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer",
+                                        border: `1.5px solid ${foodMultiplier === m ? nutritionAccent : C.border}`,
+                                        backgroundColor: foodMultiplier === m ? "rgba(0, 229, 168, 0.08)" : "transparent",
+                                        color: foodMultiplier === m ? nutritionAccent : C.text1
+                                      }}
+                                    >
+                                      {m}x
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Recalculated Macros grid */}
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                                <div style={{ backgroundColor: C.surfaceLight, borderRadius: 10, padding: 10, textAlign: "center" }}>
+                                  <div style={{ fontSize: 15, fontWeight: 800, color: C.text1 }}>{Math.round(scannedFoodResult.calories * foodMultiplier)}</div>
+                                  <div style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>Calories</div>
+                                </div>
+                                <div style={{ backgroundColor: C.surfaceLight, borderRadius: 10, padding: 10, textAlign: "center" }}>
+                                  <div style={{ fontSize: 15, fontWeight: 800, color: nutritionAccent }}>{Math.round(scannedFoodResult.protein * foodMultiplier)}g</div>
+                                  <div style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>Protein</div>
+                                </div>
+                                <div style={{ backgroundColor: C.surfaceLight, borderRadius: 10, padding: 10, textAlign: "center" }}>
+                                  <div style={{ fontSize: 15, fontWeight: 800, color: C.blue }}>{Math.round(scannedFoodResult.carbohydrates * foodMultiplier)}g</div>
+                                  <div style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>Carbs</div>
+                                </div>
+                              </div>
+
+                              {/* Detailed sub-nutrition specs */}
+                              <div style={{ display: "flex", flexDirection: "column", gap: 8, borderTop: `1px solid ${C.border}`, paddingTop: 12 }}>
+                                {[
+                                  { label: "Fat", val: `${Math.round(scannedFoodResult.fat * foodMultiplier)}g` },
+                                  { label: "Fiber", val: `${Math.round(scannedFoodResult.fiber * foodMultiplier)}g` },
+                                  { label: "Sugar", val: `${Math.round(scannedFoodResult.sugar * foodMultiplier)}g` },
+                                  { label: "Sodium", val: `${Math.round(scannedFoodResult.sodium * foodMultiplier)}mg` }
+                                ].map((spec, i) => (
+                                  <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                                    <span style={{ color: C.text2 }}>{spec.label}</span>
+                                    <span style={{ fontWeight: 700, color: C.text1 }}>{spec.val}</span>
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* Rex Recommendation */}
+                              <div style={{ display: "flex", gap: 10, backgroundColor: "rgba(0, 229, 168, 0.05)", padding: 12, borderRadius: 12 }}>
+                                <Sparkles size={16} color={nutritionAccent} style={{ flexShrink: 0, marginTop: 1 }} />
+                                <span style={{ fontSize: 10, color: C.text1, lineHeight: 1.4 }}>{scannedFoodResult.tips}</span>
+                              </div>
+
+                              {/* Log Meal CTA */}
+                              <button 
+                                onClick={() => {
+                                  const name = scannedFoodResult.name;
+                                  const c = Math.round(scannedFoodResult.calories * foodMultiplier);
+                                  const p = Math.round((scannedFoodResult.protein || 20) * foodMultiplier);
+                                  const cb = Math.round((scannedFoodResult.carbohydrates || 35) * foodMultiplier);
+                                  const f = Math.round((scannedFoodResult.fat || 8) * foodMultiplier);
+                                  handleLogFood(name, c, p, cb, f);
+                                  
+                                  setScannedFoodResult(null);
+                                  setScanConfidence(null);
+                                  setFoodMultiplier(1);
+                                }}
+                                style={{ width: "100%", padding: 12, borderRadius: 10, border: "none", backgroundColor: nutritionAccent, color: "white", fontWeight: 800, fontSize: 12, cursor: "pointer" }}
+                              >
+                                Log to Dashboard
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Selected presets / Frequently Logged items list */}
+                          <span style={{ fontSize: 12, fontWeight: 800, color: C.text1, marginBottom: 8, display: "block" }}>
+                            Frequently Logged Presets
+                          </span>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+                            {presets.map((pName, i) => (
+                              <motion.button
+                                key={i}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handlePresetClick(pName)}
+                                style={{
+                                  padding: "6px 12px", borderRadius: 12, border: `1px solid ${C.border}`,
+                                  backgroundColor: C.surface, fontSize: 11, fontWeight: 700, color: C.text1, cursor: "pointer",
+                                  boxShadow: "var(--shadow-button)"
+                                }}
+                              >
+                                {pName}
+                              </motion.button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {/* Sub-tab 2: RECIPE CREATOR */}
+                      {nutritionTab === "creator" && (
+                        <motion.div
+                          key="creator-panel"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          transition={SPRING}
+                          style={{ display: "flex", flexDirection: "column", gap: 14 }}
+                        >
+                          <div className="card-light" style={{ padding: 18, border: `1px solid ${C.border}`, margin: 0 }}>
+                            <h3 style={{ fontSize: 14, fontWeight: 800, color: C.text1, margin: "0 0 4px" }}>Recipe Creator</h3>
+                            <p style={{ fontSize: 11, color: C.text2, margin: "0 0 14px" }}>Scan ingredients or search manually to generate custom diet choices.</p>
+
+                            {/* Scanner visual camera box */}
+                            <div 
+                              className="scanner-frame" 
+                              style={{ 
+                                marginBottom: 16,
+                                border: `2px dashed ${nutritionAccent}`
+                              }} 
+                              onClick={() => {
+                                  setRecipeIngredients(prev => [...new Set([...prev, "Oats", "Avocado", "Chicken"])]);
+                                  triggerAlert("Scanned ingredients successfully! 🥬");
+                              }}
+                            >
+                              {generatingRecipes && <div className="scanning-line"></div>}
+                              <Camera size={32} color={nutritionAccent} style={{ marginBottom: 8 }} />
+                              <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>
+                                Open Camera / Scan Raw Ingredients
+                              </span>
+                              <span style={{ fontSize: 10, color: C.text2, marginTop: 4 }}>
+                                (Simulates scanning Oats, Avocado, Chicken)
+                              </span>
+                            </div>
+
+                            {/* Manual Input layout */}
+                            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                              <input
+                                type="text"
+                                value={manualIngredientInput}
+                                onChange={(e) => setManualIngredientInput(e.target.value)}
+                                placeholder="Type ingredient (e.g. egg, fail)..."
+                                onKeyDown={(e) => e.key === "Enter" && handleAddManualIngredient()}
+                                style={{
+                                  flex: 1, padding: "10px 14px", borderRadius: 10, border: `1px solid ${C.border}`,
+                                  backgroundColor: C.surfaceLight, fontSize: 12, outline: "none", color: C.text1
+                                }}
+                              />
+                              {/* Secondary Outline style button */}
+                              <button 
+                                onClick={handleAddManualIngredient} 
+                                style={{ 
+                                  padding: "10px 14px", borderRadius: 10, 
+                                  border: `1.5px solid ${nutritionAccent}`, 
+                                  backgroundColor: "transparent", color: nutritionAccent, 
+                                  fontWeight: 700, fontSize: 12, cursor: "pointer" 
+                                }}
+                              >
+                                Add
+                              </button>
+                            </div>
+
+                            {/* Selected Ingredients tag list - Rendered below input row */}
+                            {recipeIngredients.length > 0 && (
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>
+                                {recipeIngredients.map((ing, i) => (
+                                  <div 
+                                    key={i} 
+                                    style={{ 
+                                      display: "flex", alignItems: "center", gap: 6, 
+                                      padding: "4px 10px", backgroundColor: C.surfaceLight, 
+                                      border: `1.5px solid ${C.border}`, borderRadius: 12, 
+                                      fontSize: 11, fontWeight: 700, color: C.text1 
+                                    }}
+                                  >
+                                    <span>{ing}</span>
+                                    <button 
+                                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: C.text2, display: "flex", alignItems: "center" }} 
+                                      onClick={() => setRecipeIngredients(recipeIngredients.filter(x => x !== ing))}
+                                    >
+                                      <X size={10} />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Generate Recipes solid-filled CTA (disabled if list empty) */}
+                            <Button 
+                              disabled={recipeIngredients.length === 0}
+                              onClick={handleSimulateRecipeGeneration}
+                              fullWidth
+                            >
+                              {generatingRecipes ? "REX IS GENERATING RECIPES..." : "GENERATE REX RECIPES"}
+                            </Button>
+                          </div>
+
+                          {/* AI Recipe Generator Results */}
+                          <AnimatePresence>
+                            {recipesResult && (
+                              <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 15 }}
+                                style={{ display: "flex", flexDirection: "column", gap: 14 }}
+                              >
+                                <h3 style={{ fontSize: 13, fontWeight: 800, color: C.text2, margin: 0, textTransform: "uppercase" }}>Recommended AI Recipes</h3>
+                                {recipesResult.map((recipe, idx) => (
+                                  <div key={idx} className="card-light" style={{ padding: 16, border: `1px solid ${C.border}`, margin: 0 }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                                      <div>
+                                        <h4 style={{ fontSize: 14, fontWeight: 900, color: C.text1, margin: 0 }}>{recipe.title}</h4>
+                                        <div style={{ fontSize: 9, color: C.text2, marginTop: 4, fontWeight: 700 }}>
+                                          {recipe.time} &bull; {recipe.calories} &bull; {recipe.protein} Protein
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Ingredient list */}
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 14 }}>
+                                      {recipe.ingredientsUsed && recipe.ingredientsUsed.map((ing, i) => (
+                                        <span key={i} style={{ fontSize: 10, color: C.text1, display: "flex", alignItems: "center", gap: 6 }}>
+                                          <span style={{ width: 4, height: 4, borderRadius: "50%", backgroundColor: nutritionAccent }} />
+                                          {ing}
+                                        </span>
+                                      ))}
+                                    </div>
+
+                                    {/* Clickable Youtube Link preview box */}
+                                    <a 
+                                      href={recipe.youtube} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        display: "flex", alignItems: "center", gap: 10, textDecoration: "none",
+                                        backgroundColor: "rgba(211, 47, 47, 0.08)", padding: "10px 14px", borderRadius: 10,
+                                        border: "1px solid rgba(211, 47, 47, 0.2)", cursor: "pointer"
+                                      }}
+                                    >
+                                      <Youtube size={16} color={color.error} fill={color.error} />
+                                      <span style={{ fontSize: 11, fontWeight: 700, color: color.error }}>Watch Video Recipe Tutorial</span>
+                                    </a>
+                                  </div>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      )}
+
+                      {/* Sub-tab 3: MEAL PLANNER */}
+                      {nutritionTab === "planner" && (
+                        <motion.div
+                          key="planner-panel"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={SPRING}
+                          style={{ display: "flex", flexDirection: "column", gap: 14 }}
+                        >
+                          {!mealPlan ? (
+                            <div className="card-light" style={{ padding: 20, textAlign: "center", border: `1px solid ${C.border}`, display: "flex", flexDirection: "column", gap: 14, margin: 0 }}>
+                              <ChefHat size={32} color={nutritionAccent} style={{ margin: "0 auto" }} />
+                              <div>
+                                <h3 style={{ fontSize: 15, fontWeight: 900, color: C.text1, margin: 0 }}>Generate 7-Day AI Diet Plan</h3>
+                                <p style={{ fontSize: 11, color: C.text2, margin: "6px 0 0", lineHeight: 1.4 }}>
+                                  Rex AI will generate a personalized weekly schedule matching your onboarding profile settings.
+                                </p>
+                              </div>
+                              <Button 
+                                variant="primary" 
+                                onClick={() => {
+                                  setMealPlan(generateMockPlan("vegetarian", 2000));
+                                  triggerAlert("Generated a 7-Day Vegetarian Diet Plan! 🥦");
+                                }}
+                                style={{ padding: 14 }}
+                              >
+                                GENERATE MY 7-DAY PLAN
+                              </Button>
+                            </div>
+                          ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                              {/* Plan Summary Card */}
+                              <div className="card-light" style={{ padding: 14, border: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", margin: 0 }}>
+                                <div>
+                                  <span style={{ fontSize: 9, fontWeight: 800, color: nutritionAccent, textTransform: "uppercase" }}>Active Weekly Plan</span>
+                                  <h4 style={{ fontSize: 14, fontWeight: 900, color: C.text1, margin: "2px 0 0" }}>
+                                    {mealPlan.diet_type.toUpperCase()} • {mealPlan.calorie_target} kcal/day
+                                  </h4>
+                                </div>
+                                <Button 
+                                  variant="secondary"
+                                  onClick={() => {
+                                    setMealPlan(generateMockPlan(mealPlan.diet_type, mealPlan.calorie_target));
+                                    triggerAlert("Diet Plan Regenerated! 🔄");
+                                  }}
+                                  style={{ padding: "6px 12px", fontSize: 10, borderRadius: 8 }}
+                                >
+                                  Regenerate
+                                </Button>
+                              </div>
+
+                              {/* 7-Day Day Selector */}
+                              <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 6, scrollbarWidth: "none" }}>
+                                {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map(d => {
+                                  const active = plannerActiveDay === d;
+                                  return (
+                                    <button
+                                      key={d}
+                                      onClick={() => setPlannerActiveDay(d)}
+                                      style={{
+                                        padding: "8px 12px",
+                                        borderRadius: 10,
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                        border: active ? `1.5px solid ${nutritionAccent}` : `1.5px solid ${C.border}`,
+                                        backgroundColor: active ? "rgba(91, 140, 255, 0.08)" : "transparent",
+                                        color: active ? nutritionAccent : C.text1,
+                                        cursor: "pointer",
+                                        whiteSpace: "nowrap"
+                                      }}
+                                    >
+                                      {d.charAt(0).toUpperCase() + d.slice(1, 3)}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+
+                              {/* Day's Meals */}
+                              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                {mealPlan.days[plannerActiveDay] && Object.entries(mealPlan.days[plannerActiveDay]).map(([type, meal]) => (
+                                  <div 
+                                    key={type} 
+                                    className="card-light" 
+                                    style={{ 
+                                      padding: 14, 
+                                      border: `1.5px solid ${C.border}`, 
+                                      display: "flex", 
+                                      justifyContent: "space-between", 
+                                      alignItems: "center",
+                                      margin: 0
+                                    }}
+                                  >
+                                    <div>
+                                      <span style={{ fontSize: 9, fontWeight: 800, color: nutritionAccent, textTransform: "uppercase" }}>{type}</span>
+                                      <h5 style={{ fontSize: 12, fontWeight: 900, color: C.text1, margin: "2px 0 0" }}>{meal.name}</h5>
+                                      <span style={{ fontSize: 9, color: C.text2, marginTop: 4, display: "block" }}>
+                                        {meal.calories} kcal &bull; P: {meal.protein_g}g C: {meal.carbs_g}g F: {meal.fats_g}g
+                                      </span>
+                                    </div>
+                                    <button
+                                      onClick={() => handleSwapMeal(plannerActiveDay, type)}
+                                      style={{
+                                        padding: "6px 10px",
+                                        borderRadius: 8,
+                                        border: `1px solid ${nutritionAccent}`,
+                                        backgroundColor: "transparent",
+                                        color: nutritionAccent,
+                                        fontSize: 10,
+                                        fontWeight: 700,
+                                        cursor: "pointer"
+                                      }}
+                                    >
+                                      Swap meal
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+              );
+            })()}
 
             {/* F. GENERIC "YET TO COME" FEATURE OVERLAYS (Rex Coach, Yoga, Skincare, Supplements) */}
             {["rex_coach", "yoga", "skincare", "supplements"].includes(activeOverlay) && (

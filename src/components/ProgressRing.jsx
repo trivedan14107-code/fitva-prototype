@@ -14,6 +14,7 @@ export default function ProgressRing({
   color = colors.primary,
   label = "",
   showLabel = true,
+  textColor = undefined,
 }) {
   const pct = Math.min(Math.max(value / 100, 0), 1);
   const radius = (size - strokeWidth) / 2;
@@ -120,7 +121,7 @@ export default function ProgressRing({
             fontFamily: typography.stats,
             fontSize: `${size * 0.22}px`,
             fontWeight: "700",
-            color: colors.text1,
+            color: textColor || colors.text1,
             pointerEvents: "none",
           }}
         >
