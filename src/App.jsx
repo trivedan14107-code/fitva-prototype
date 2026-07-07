@@ -78,7 +78,29 @@ export default function App() {
   const [isOrbExpanded, setIsOrbExpanded] = useState(false);
   const [activeZoneModal, setActiveZoneModal] = useState(null);
   const [avatarLoadError, setAvatarLoadError] = useState(false);
+  const [nutritionDaily, setNutritionDaily] = useState({
+    calories_consumed: 1240,
+    calorie_target: 2000,
+    protein_g: 68,
+    carbs_g: 140,
+    fats_g: 32,
+    meals_logged: ["breakfast", "lunch"]
+  });
   const [recentFoodLogs, setRecentFoodLogs] = useState(["Salad", "Chicken Rice", "Protein Shake"]);
+  
+  const handleLogFood = (name, calories, protein = 25, carbs = 45, fats = 10) => {
+    setUser(prev => ({ ...prev, calToday: prev.calToday + calories }));
+    setNutritionDaily(prev => ({
+      ...prev,
+      calories_consumed: prev.calories_consumed + calories,
+      protein_g: prev.protein_g + protein,
+      carbs_g: prev.carbs_g + carbs,
+      fats_g: prev.fats_g + fats,
+      meals_logged: [...new Set([...prev.meals_logged, "snack"])]
+    }));
+    setRecentFoodLogs(prev => [...new Set([name, ...prev])].slice(0, 3));
+    triggerAlert(`Logged ${name} (${calories} kcal)!`);
+  };
   const [scanConfidence, setScanConfidence] = useState(null);
   const [scanError, setScanError] = useState(null);
   const [showManualForm, setShowManualForm] = useState(false);
@@ -469,7 +491,7 @@ export default function App() {
   useEffect(() => {
     if (expandedCarouselSlide !== null) return;
     const interval = setInterval(() => {
-      setCarouselIndex(prev => (prev + 1) % 4);
+      setCarouselIndex(prev => (prev + 1) % 5);
     }, 2000);
     return () => clearInterval(interval);
   }, [expandedCarouselSlide]);
@@ -477,7 +499,7 @@ export default function App() {
   const handleDragEnd = (event, info) => {
     const swipeThreshold = 50;
     if (info.offset.x < -swipeThreshold) {
-      setCarouselIndex(prev => Math.min(prev + 1, 3));
+      setCarouselIndex(prev => Math.min(prev + 1, 4));
     } else if (info.offset.x > swipeThreshold) {
       setCarouselIndex(prev => Math.max(prev - 1, 0));
     }
@@ -515,6 +537,32 @@ export default function App() {
           <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Calories & Macros</div>
+                <div style={{ fontSize: 18, fontWeight: 900, color: C.text1, marginTop: 2 }}>
+                  {nutritionDaily.calories_consumed} <span style={{ fontSize: 11, color: C.text2, fontWeight: 500 }}>/ {nutritionDaily.calorie_target} kcal</span>
+                </div>
+              </div>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "var(--badge-primary-bg)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--badge-primary-border)" }}>
+                <ChefHat size={14} color="var(--color-primary)" />
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <ProgressRing value={(nutritionDaily.calories_consumed / nutritionDaily.calorie_target) * 100} size={28} strokeWidth={3} showLabel={false} color="var(--color-primary)" />
+              <div style={{ display: "flex", gap: 6, fontSize: 8, fontWeight: 700, color: C.text2 }}>
+                <span>P: {nutritionDaily.protein_g}g</span>
+                <span>•</span>
+                <span>C: {nutritionDaily.carbs_g}g</span>
+                <span>•</span>
+                <span>F: {nutritionDaily.fats_g}g</span>
+              </div>
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
                 <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Water Intake</div>
                 <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.waterToday}L <span style={{ fontSize: 12, color: C.text2, fontWeight: 500 }}>/ {user.waterGoal}L</span></div>
               </div>
@@ -540,7 +588,7 @@ export default function App() {
             </div>
           </div>
         );
-      case 2:
+      case 3:
         return (
           <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -567,7 +615,7 @@ export default function App() {
             </div>
           </div>
         );
-      case 3:
+      case 4:
         return (
           <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -1456,7 +1504,7 @@ export default function App() {
                         flex: 1, 
                         position: "relative", 
                         overflow: "hidden", 
-                        height: "100%", 
+                        minHeight: 85,
                         display: "flex", 
                         flexDirection: "column", 
                         justifyContent: "space-between",
@@ -1490,6 +1538,35 @@ export default function App() {
                         </div>
                       </div>
                     </Card>
+
+                    {/* Nutrition Card */}
+                    <Card 
+                      onClick={() => setActiveOverlay("nutrition")} 
+                      padding="12px" 
+                      style={{ 
+                        margin: 0, 
+                        flex: 1, 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        justifyContent: "space-between",
+                        minHeight: 85,
+                        boxSizing: "border-box"
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <IconBadge icon={<ChefHat size={12} />} tone="secondary" size={20} />
+                        <div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Nutrition</div>
+                          <div style={{ fontSize: 8, color: "var(--color-secondary)", fontWeight: 700, marginTop: 1 }}>
+                            {nutritionDaily.meals_logged.length} MEALS LOGGED
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", marginTop: 4 }}>
+                        <span style={{ fontSize: 9, color: C.text2 }}>Log today's meals</span>
+                        <Plus size={12} color="var(--color-secondary)" />
+                      </div>
+                    </Card>
                   </div>
                 </div>
 
@@ -1502,7 +1579,13 @@ export default function App() {
                     justifyContent: "space-between", height: 160, overflow: "hidden", 
                     position: "relative", cursor: "pointer", border: `1.5px solid ${C.border}` 
                   }}
-                  onClick={() => setExpandedCarouselSlide(carouselIndex === 0 ? 0 : carouselIndex + 1)}
+                  onClick={() => {
+                    if (carouselIndex === 1) {
+                      setActiveOverlay("nutrition_zone");
+                    } else {
+                      setExpandedCarouselSlide(carouselIndex === 0 ? 0 : carouselIndex);
+                    }
+                  }}
                 >
                   <div style={{ flex: 1, position: "relative" }}>
                     <AnimatePresence mode="wait">
@@ -1525,7 +1608,7 @@ export default function App() {
 
                   {/* Dot Indicators */}
                   <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 4 }}>
-                    {[0, 1, 2, 3].map((idx) => (
+                    {[0, 1, 2, 3, 4].map((idx) => (
                       <div 
                         key={idx}
                         onClick={(e) => {
@@ -2829,9 +2912,9 @@ export default function App() {
                                 onClick={() => {
                                   const name = manualFoodName.trim() || "Manual Log";
                                   const c = Math.round((parseInt(manualCalories) || 0) * foodMultiplier);
-                                  setUser(prev => ({ ...prev, calToday: prev.calToday + c }));
-                                  setRecentFoodLogs(prev => [...new Set([name, ...prev])].slice(0, 3));
-                                  triggerAlert(`Logged ${name} (${c} kcal)!`);
+                                  const p = Math.round((parseInt(manualProtein) || 0) * foodMultiplier);
+                                  const cb = Math.round((parseInt(manualCarbs) || 0) * foodMultiplier);
+                                  handleLogFood(name, c, p || 25, cb || 45, Math.round((p || 25) * 0.2) || 8);
                                   
                                   setManualFoodName("");
                                   setManualCalories("");
@@ -2924,9 +3007,10 @@ export default function App() {
                                 onClick={() => {
                                   const name = scannedFoodResult.name;
                                   const c = Math.round(scannedFoodResult.calories * foodMultiplier);
-                                  setUser(prev => ({ ...prev, calToday: prev.calToday + c }));
-                                  setRecentFoodLogs(prev => [...new Set([name, ...prev])].slice(0, 3));
-                                  triggerAlert(`Logged ${name} (${c} kcal)!`);
+                                  const p = Math.round((scannedFoodResult.protein || 20) * foodMultiplier);
+                                  const cb = Math.round((scannedFoodResult.carbs || 35) * foodMultiplier);
+                                  const f = Math.round((scannedFoodResult.fats || 8) * foodMultiplier);
+                                  handleLogFood(name, c, p, cb, f);
                                   
                                   setScannedFoodResult(null);
                                   setScanConfidence(null);
@@ -3455,6 +3539,186 @@ export default function App() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+              </motion.div>
+            )}
+
+            {/* E2. NUTRITION ZONE HOME SCREEN OVERLAY */}
+            {activeOverlay === "nutrition_zone" && (
+              <motion.div
+                key="nutrition-zone-screen"
+                initial={{ opacity: 0, y: 960 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 960 }}
+                transition={{ type: "spring", damping: 28 }}
+                style={{
+                  position: "absolute", inset: 0, backgroundColor: C.appBg, zIndex: 1000,
+                  display: "flex", flexDirection: "column", boxSizing: "border-box",
+                  padding: "54px 20px 24px", transition: "background-color 0.3s",
+                  overflowY: "auto"
+                }}
+              >
+                {/* Header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                  <div>
+                    <h1 className="header-title" style={{ margin: 0 }}>Nutrition Zone</h1>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: C.text2 }}>Today, July 7, 2026</span>
+                  </div>
+                  <X 
+                    size={24} 
+                    color={C.text1} 
+                    style={{ cursor: "pointer" }} 
+                    onClick={() => setActiveOverlay(null)} 
+                  />
+                </div>
+
+                {/* 1. Summary Card (Momentum Ring + Target Stats) */}
+                <Card padding="20px" style={{ margin: "0 0 20px", display: "flex", gap: 18, alignItems: "center" }}>
+                  <div style={{ position: "relative", width: 80, height: 80, flexShrink: 0 }}>
+                    <ProgressRing 
+                      value={(nutritionDaily.calories_consumed / nutritionDaily.calorie_target) * 100} 
+                      size={80} 
+                      strokeWidth={8} 
+                      color="var(--color-primary)" 
+                      label={`${nutritionDaily.calories_consumed}`}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: C.text2, textTransform: "uppercase" }}>Calorie Progress</span>
+                    <div style={{ fontSize: 18, fontWeight: 900, color: C.text1, marginTop: 2 }}>
+                      {nutritionDaily.calories_consumed} <span style={{ fontSize: 12, color: C.text2, fontWeight: 500 }}>/ {nutritionDaily.calorie_target} kcal</span>
+                    </div>
+                    {/* Micro Macro Bars */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+                      {/* Protein */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, fontWeight: 700 }}>
+                          <span style={{ color: C.text1 }}>Protein</span>
+                          <span style={{ color: C.text2 }}>{nutritionDaily.protein_g}g / 150g</span>
+                        </div>
+                        <div style={{ width: "100%", height: 4, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden" }}>
+                          <div style={{ width: `${Math.min((nutritionDaily.protein_g / 150) * 100, 100)}%`, height: "100%", backgroundColor: "var(--color-primary)" }} />
+                        </div>
+                      </div>
+                      {/* Carbs */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, fontWeight: 700 }}>
+                          <span style={{ color: C.text1 }}>Carbs</span>
+                          <span style={{ color: C.text2 }}>{nutritionDaily.carbs_g}g / 220g</span>
+                        </div>
+                        <div style={{ width: "100%", height: 4, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden" }}>
+                          <div style={{ width: `${Math.min((nutritionDaily.carbs_g / 220) * 100, 100)}%`, height: "100%", backgroundColor: "var(--color-secondary)" }} />
+                        </div>
+                      </div>
+                      {/* Fats */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, fontWeight: 700 }}>
+                          <span style={{ color: C.text1 }}>Fats</span>
+                          <span style={{ color: C.text2 }}>{nutritionDaily.fats_g}g / 70g</span>
+                        </div>
+                        <div style={{ width: "100%", height: 4, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden" }}>
+                          <div style={{ width: `${Math.min((nutritionDaily.fats_g / 70) * 100, 100)}%`, height: "100%", backgroundColor: C.text3 }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* 2. Quick Actions Row */}
+                <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+                  <Button 
+                    variant="primary" 
+                    onClick={() => {
+                      setNutritionTab("analyser");
+                      setActiveOverlay("nutrition");
+                    }}
+                    style={{ flex: 1, padding: 12, fontSize: 12, borderRadius: 12 }}
+                  >
+                    🔍 Scan Food
+                  </Button>
+                  <Button 
+                    variant="secondary" 
+                    onClick={() => {
+                      setNutritionTab("creator");
+                      setActiveOverlay("nutrition");
+                    }}
+                    style={{ flex: 1, padding: 12, fontSize: 12, borderRadius: 12 }}
+                  >
+                    🥬 Find Recipe
+                  </Button>
+                </div>
+
+                {/* 3. Today's Meals List */}
+                <h3 style={{ fontSize: 14, fontWeight: 800, color: C.text1, margin: "0 0 12px" }}>Today's Meals</h3>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+                  {[
+                    { type: "Breakfast", icon: "🍳", target: 450, logged: nutritionDaily.meals_logged.includes("breakfast") ? "Oatmeal & Banana" : null },
+                    { type: "Lunch", icon: "🥗", target: 700, logged: nutritionDaily.meals_logged.includes("lunch") ? "Chicken Salad & Rice" : null },
+                    { type: "Dinner", icon: "🥩", target: 600, logged: nutritionDaily.meals_logged.includes("dinner") ? "Salmon & Sweet Potato" : null },
+                    { type: "Snacks", icon: "🍎", target: 250, logged: nutritionDaily.meals_logged.includes("snack") ? "Greek Yogurt & Protein Shake" : null }
+                  ].map((meal, idx) => (
+                    <Card 
+                      key={idx} 
+                      onClick={() => {
+                        setNutritionTab("analyser");
+                        setActiveOverlay("nutrition");
+                      }}
+                      padding="12px 14px"
+                      style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontSize: 18 }}>{meal.icon}</span>
+                        <div>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>{meal.type}</div>
+                          <div style={{ fontSize: 10, color: C.text2, marginTop: 2 }}>
+                            {meal.logged ? meal.logged : `Target: ${meal.target} kcal`}
+                          </div>
+                        </div>
+                      </div>
+                      {meal.logged ? (
+                        <span style={{ fontSize: 10, color: "var(--color-primary)", fontWeight: 800 }}>LOGGED</span>
+                      ) : (
+                        <Plus size={14} color="var(--color-secondary)" />
+                      )}
+                    </Card>
+                  ))}
+                </div>
+
+                {/* 4. Frequently Logged Section */}
+                <h3 style={{ fontSize: 14, fontWeight: 800, color: C.text1, margin: "0 0 12px" }}>Frequently Logged</h3>
+                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 10, scrollbarWidth: "none" }}>
+                  {[
+                    { name: "Salad", cal: 150, p: 5, c: 20, f: 4, icon: "🥗" },
+                    { name: "Chicken Rice", cal: 650, p: 45, c: 75, f: 12, icon: "🍚" },
+                    { name: "Protein Shake", cal: 220, p: 30, c: 8, f: 3, icon: "🥤" },
+                    { name: "Apple", cal: 80, p: 0, c: 22, f: 0, icon: "🍎" },
+                    { name: "Oatmeal", cal: 300, p: 10, c: 50, f: 5, icon: "🥣" },
+                    { name: "Greek Yogurt", cal: 150, p: 15, c: 10, f: 2, icon: "🍦" }
+                  ].map((food, i) => (
+                    <motion.div
+                      key={i}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleLogFood(food.name, food.cal, food.p, food.c, food.f)}
+                      style={{
+                        backgroundColor: C.surface,
+                        border: `1.5px solid ${C.border}`,
+                        borderRadius: 14,
+                        padding: "10px 14px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        whiteSpace: "nowrap",
+                        cursor: "pointer",
+                        boxShadow: "var(--shadow-button)"
+                      }}
+                    >
+                      <span style={{ fontSize: 14 }}>{food.icon}</span>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>{food.name}</span>
+                        <span style={{ fontSize: 8, color: C.text2, marginTop: 1 }}>{food.cal} kcal</span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </motion.div>
             )}
 
