@@ -41,6 +41,7 @@ const C = {
 };
 
 export default function App() {
+  const SHOW_LEADERBOARD = false;
   // ── App flow: splash → onboarding → avatar_creation → app ──
   const [appFlow, setAppFlow] = useState("splash"); // "splash" | "onboarding" | "avatar_creation" | "app"
   const [onboardingStep, setOnboardingStep] = useState(0);
@@ -418,7 +419,7 @@ export default function App() {
 
     // Collapsed coordinate targets based on tab and active overlay
     let top = "auto";
-    let bottom = "92px"; // Home, Community & base level
+    let bottom = "108px"; // Home, Community & base level (clearing floating bottom nav)
     let left = "auto";
     let right = "20px";
     let width = 48;
@@ -429,7 +430,7 @@ export default function App() {
       bottom = "280px";
       right = "16px";
     } else if (activeOverlay === "nutrition" || activeOverlay === "progress") {
-      bottom = "92px";
+      bottom = "108px";
       right = "24px";
     } else if (tab === "plan") {
       bottom = "240px"; // Middle right on Plan tab
@@ -468,7 +469,7 @@ export default function App() {
   useEffect(() => {
     if (expandedCarouselSlide !== null) return;
     const interval = setInterval(() => {
-      setCarouselIndex(prev => (prev + 1) % 5);
+      setCarouselIndex(prev => (prev + 1) % 4);
     }, 2000);
     return () => clearInterval(interval);
   }, [expandedCarouselSlide]);
@@ -476,7 +477,7 @@ export default function App() {
   const handleDragEnd = (event, info) => {
     const swipeThreshold = 50;
     if (info.offset.x < -swipeThreshold) {
-      setCarouselIndex(prev => Math.min(prev + 1, 4));
+      setCarouselIndex(prev => Math.min(prev + 1, 3));
     } else if (info.offset.x > swipeThreshold) {
       setCarouselIndex(prev => Math.max(prev - 1, 0));
     }
@@ -490,56 +491,26 @@ export default function App() {
             <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Intro Dashboard</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 12px", margin: "6px 0" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <Flame size={12} color={C.accentOrange} />
+                <Flame size={12} color="var(--color-primary)" />
                 <span style={{ fontSize: 11, fontWeight: 800 }}>{user.streak}d</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <Droplet size={12} color={C.blue} />
+                <Droplet size={12} color="var(--color-secondary)" />
                 <span style={{ fontSize: 11, fontWeight: 800 }}>{user.waterToday}L</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <Footprints size={12} color={C.accent} />
+                <Footprints size={12} color="var(--color-primary)" />
                 <span style={{ fontSize: 11, fontWeight: 800 }}>{Math.round(user.stepsToday / 100) / 10}k</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <Zap size={12} color={color.error} />
+                <Zap size={12} color="var(--color-primary)" />
                 <span style={{ fontSize: 11, fontWeight: 800 }}>490 kcal</span>
               </div>
             </div>
-            <span style={{ fontSize: 9, color: C.accent, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Swipe to explore details &gt;</span>
+            <span style={{ fontSize: 9, color: "var(--color-primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Swipe to explore details &gt;</span>
           </div>
         );
       case 1:
-        return (
-          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div>
-                <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Current Streak</div>
-                <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.streak} Days</div>
-              </div>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(255, 95, 31, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Flame size={16} color={C.accentOrange} fill={C.accentOrange} />
-              </div>
-            </div>
-            {/* Mini weekday indicator */}
-            <div style={{ display: "flex", justifyContent: "space-between", margin: "4px 0" }}>
-              {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
-                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-                  <span style={{ fontSize: 8, fontWeight: 700, color: C.text2 }}>{day}</span>
-                  <div style={{
-                    width: 14, height: 14, borderRadius: "50%",
-                    backgroundColor: i < 5 ? color.primary : "transparent",
-                    border: i < 5 ? "none" : `1px solid ${C.border}`,
-                    display: "flex", alignItems: "center", justifyContent: "center"
-                  }}>
-                    {i < 5 && <Check size={8} strokeWidth={4} color="white" />}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case 2:
         return (
           <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -556,8 +527,8 @@ export default function App() {
                 }}
                 style={{ 
                   width: 28, height: 28, borderRadius: "50%", 
-                  backgroundColor: reminderActive ? "rgba(0, 122, 255, 0.2)" : "rgba(255, 255, 255, 0.05)", 
-                  display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer" 
+                  backgroundColor: reminderActive ? "var(--badge-secondary-bg)" : "rgba(255, 255, 255, 0.05)", 
+                  display: "flex", alignItems: "center", justifyContent: "center", border: reminderActive ? "1px solid var(--badge-secondary-border)" : "none", cursor: "pointer" 
                 }}
               >
                 <Bell size={14} color={reminderActive ? C.blue : C.text2} fill={reminderActive ? C.blue : "none"} />
@@ -569,7 +540,7 @@ export default function App() {
             </div>
           </div>
         );
-      case 3:
+      case 2:
         return (
           <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -577,8 +548,8 @@ export default function App() {
                 <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Steps Tracker</div>
                 <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.stepsToday.toLocaleString()}</div>
               </div>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(0, 229, 168, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Footprints size={14} color={C.accent} />
+              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "var(--badge-primary-bg)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--badge-primary-border)" }}>
+                <Footprints size={14} color="var(--color-primary)" />
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 36, paddingBottom: 4 }}>
@@ -588,7 +559,7 @@ export default function App() {
                   style={{ 
                     flex: 1, 
                     height: `${h}%`, 
-                    backgroundColor: i === 4 ? C.accent : "rgba(255,255,255,0.1)", 
+                    backgroundColor: i === 4 ? "var(--color-primary)" : "rgba(255,255,255,0.1)", 
                     borderRadius: 1 
                   }} 
                 />
@@ -596,7 +567,7 @@ export default function App() {
             </div>
           </div>
         );
-      case 4:
+      case 3:
         return (
           <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -604,13 +575,13 @@ export default function App() {
                 <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Calories Burned</div>
                 <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>490 kcal</div>
               </div>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(255, 45, 85, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Zap size={14} color={color.error} />
+              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "var(--badge-primary-bg)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--badge-primary-border)" }}>
+                <Zap size={14} color="var(--color-primary)" />
               </div>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: 9, color: C.text2 }}>Walk: 170 kcal &bull; Work: 320 kcal</span>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", border: `3.5px solid ${color.error}`, borderTopColor: "transparent", transform: "rotate(45deg)" }} />
+              <div style={{ width: 24, height: 24, borderRadius: "50%", border: `3.5px solid var(--color-primary)`, borderTopColor: "transparent", transform: "rotate(45deg)" }} />
             </div>
           </div>
         );
@@ -633,65 +604,65 @@ export default function App() {
         :root {
           /* Default: Light Theme */
           --color-bg: #F0F4F8;
-          --color-surface: #F0F4F8;
+          --color-surface: #FFFFFF;
           --color-surface-raised: #E5ECF4;
-          --color-border: rgba(163, 177, 198, 0.35);
-          --color-text1: #2C3E50;
+          --color-border: rgba(21, 28, 50, 0.08);
+          --color-text1: #151C32;
           --color-text2: #5A738E;
           --color-text3: #8CA0BA;
-          --color-primary: #E5989B;
-          --color-secondary: #8EA4C0;
-          --color-warning: #FFD1B3;
-          --color-error: #FF9A9A;
+          --color-primary: #00E5A8; /* Teal */
+          --color-secondary: #5B8CFF; /* Blue */
+          --color-warning: #5B8CFF;
+          --color-error: #FF5C5C;
           
           --shadow-extruded: 6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0);
           --shadow-recessed: inset 3px 3px 6px rgba(163, 177, 198, 0.45), inset -3px -3px 6px rgba(255, 255, 255, 0.85);
           --shadow-button: 4px 4px 10px rgba(163, 177, 198, 0.55), -4px -4px 10px rgba(255, 255, 255, 1.0);
-          --shadow-button-accent: 4px 4px 10px rgba(229, 152, 155, 0.35);
-          --shadow-button-danger: 4px 4px 10px rgba(255, 154, 154, 0.35);
+          --shadow-button-accent: 4px 4px 10px rgba(91, 140, 255, 0.2);
+          --shadow-button-danger: 4px 4px 10px rgba(255, 92, 92, 0.2);
 
-          --badge-primary-bg: rgba(229, 152, 155, 0.12);
-          --badge-primary-border: rgba(229, 152, 155, 0.22);
-          --badge-secondary-bg: rgba(142, 164, 192, 0.12);
-          --badge-secondary-border: rgba(142, 164, 192, 0.22);
-          --badge-warning-bg: rgba(255, 209, 179, 0.12);
-          --badge-warning-border: rgba(255, 209, 179, 0.22);
-          --badge-error-bg: rgba(255, 154, 154, 0.12);
-          --badge-error-border: rgba(255, 154, 154, 0.22);
-          --badge-neutral-bg: rgba(90, 115, 142, 0.08);
-          --badge-neutral-border: rgba(90, 115, 142, 0.15);
+          --badge-primary-bg: rgba(0, 229, 168, 0.08);
+          --badge-primary-border: rgba(0, 229, 168, 0.15);
+          --badge-secondary-bg: rgba(91, 140, 255, 0.08);
+          --badge-secondary-border: rgba(91, 140, 255, 0.15);
+          --badge-warning-bg: rgba(91, 140, 255, 0.08);
+          --badge-warning-border: rgba(91, 140, 255, 0.15);
+          --badge-error-bg: rgba(255, 92, 92, 0.08);
+          --badge-error-border: rgba(255, 92, 92, 0.15);
+          --badge-neutral-bg: rgba(21, 28, 50, 0.05);
+          --badge-neutral-border: rgba(21, 28, 50, 0.1);
         }
 
         .theme-dark {
           /* Cyber-Neumorphic Dark Theme */
-          --color-bg: #1A1A1E;
-          --color-surface: #1A1A1E;
-          --color-surface-raised: #121215;
-          --color-border: rgba(0, 0, 0, 0.4);
+          --color-bg: #0B1020; /* Dark Navy first background */
+          --color-surface: #151C32; /* Dark Navy surface */
+          --color-surface-raised: #1A233D;
+          --color-border: rgba(0, 0, 0, 0.25);
           --color-text1: #E4E4E7;
           --color-text2: #71717A;
           --color-text3: #52525B;
-          --color-primary: #9D4EDD;
-          --color-secondary: #7B2CBF;
-          --color-warning: #E0AAFF;
-          --color-error: #FF9E00;
+          --color-primary: #00E5A8; /* Teal */
+          --color-secondary: #5B8CFF; /* Blue */
+          --color-warning: #5B8CFF;
+          --color-error: #FF5C5C;
           
-          --shadow-extruded: 6px 6px 14px rgba(0, 0, 0, 0.75), -6px -6px 14px rgba(255, 255, 255, 0.015);
-          --shadow-recessed: inset 3px 3px 6px rgba(0, 0, 0, 0.8), inset -3px -3px 6px rgba(255, 255, 255, 0.03);
-          --shadow-button: 4px 4px 10px rgba(0, 0, 0, 0.65), -4px -4px 10px rgba(255, 255, 255, 0.012);
-          --shadow-button-accent: 4px 4px 10px rgba(157, 78, 221, 0.25);
-          --shadow-button-danger: 4px 4px 10px rgba(255, 158, 0, 0.15);
+          --shadow-extruded: 6px 6px 14px rgba(0, 0, 0, 0.45), -6px -6px 14px rgba(255, 255, 255, 0.015);
+          --shadow-recessed: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.02);
+          --shadow-button: 4px 4px 10px rgba(0, 0, 0, 0.4), -4px -4px 10px rgba(255, 255, 255, 0.012);
+          --shadow-button-accent: 4px 4px 10px rgba(0, 229, 168, 0.15);
+          --shadow-button-danger: 4px 4px 10px rgba(255, 92, 92, 0.15);
 
-          --badge-primary-bg: rgba(157, 78, 221, 0.15);
-          --badge-primary-border: rgba(157, 78, 221, 0.25);
-          --badge-secondary-bg: rgba(123, 44, 191, 0.15);
-          --badge-secondary-border: rgba(123, 44, 191, 0.25);
-          --badge-warning-bg: rgba(224, 170, 255, 0.15);
-          --badge-warning-border: rgba(224, 170, 255, 0.25);
-          --badge-error-bg: rgba(255, 158, 0, 0.15);
-          --badge-error-border: rgba(255, 158, 0, 0.25);
-          --badge-neutral-bg: rgba(255, 255, 255, 0.06);
-          --badge-neutral-border: rgba(255, 255, 255, 0.12);
+          --badge-primary-bg: rgba(0, 229, 168, 0.1);
+          --badge-primary-border: rgba(0, 229, 168, 0.2);
+          --badge-secondary-bg: rgba(91, 140, 255, 0.1);
+          --badge-secondary-border: rgba(91, 140, 255, 0.2);
+          --badge-warning-bg: rgba(91, 140, 255, 0.1);
+          --badge-warning-border: rgba(91, 140, 255, 0.2);
+          --badge-error-bg: rgba(255, 92, 92, 0.1);
+          --badge-error-border: rgba(255, 92, 92, 0.2);
+          --badge-neutral-bg: rgba(255, 255, 255, 0.05);
+          --badge-neutral-border: rgba(255, 255, 255, 0.1);
         }
 
         html, body, #root {
@@ -1403,101 +1374,45 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Rebalanced Welcome Section & Current Streak */}
-                <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 16, marginBottom: 20 }}>
-                  <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                    <div style={{ fontSize: 22, fontWeight: 500, color: C.text2 }}>Good Morning,</div>
-                    <div style={{ fontSize: 38, fontWeight: 900, color: C.text1, margin: "2px 0 6px" }}>{user.name}</div>
-                    <div style={{ fontSize: 13, color: C.text2, lineHeight: 1.4 }}>
-                      Let's build the strongest version of you. 🎯
-                    </div>
-                  </div>
-
-                  {/* Interactive Carousel Card */}
-                  <div 
-                    className="card-light" 
-                    style={{ 
-                      padding: 14, margin: 0, display: "flex", flexDirection: "column", 
-                      justifyContent: "space-between", height: 160, overflow: "hidden", 
-                      position: "relative", cursor: "pointer", border: `1px solid ${C.border}` 
-                    }}
-                    onClick={() => setExpandedCarouselSlide(carouselIndex)}
-                  >
-                    <div style={{ flex: 1, position: "relative" }}>
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={carouselIndex}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          transition={{ duration: 0.2 }}
-                          drag="x"
-                          dragConstraints={{ left: 0, right: 0 }}
-                          dragElastic={0.2}
-                          onDragEnd={handleDragEnd}
-                          style={{ height: "100%", width: "100%" }}
-                        >
-                          {renderCarouselSlide(carouselIndex)}
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
-
-                    {/* Dot Indicators */}
-                    <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 4 }}>
-                      {[0, 1, 2, 3, 4].map((idx) => (
-                        <div 
-                          key={idx}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCarouselIndex(idx);
-                          }}
-                          style={{
-                            width: 6, height: 6, borderRadius: "50%",
-                            backgroundColor: carouselIndex === idx ? C.accent : "rgba(255,255,255,0.2)",
-                            transition: "background-color 0.2s",
-                            cursor: "pointer"
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-
-                {/* Sparkling tagline Banner */}
-                <div className="card-light" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 14, marginBottom: 20 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "rgba(0,168,107,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Sparkles size={16} color={C.accent} />
-                    </div>
+                {/* Static Streak Card (Single-Focus Hero Pattern) */}
+                <Card 
+                  padding="16px" 
+                  style={{ 
+                    marginBottom: 20, 
+                    border: `1.5px solid var(--color-border)`,
+                    background: "var(--color-surface)"
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                     <div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Discipline today, strength tomorrow.</div>
-                      <div style={{ fontSize: 11, color: C.text2, marginTop: 2 }}>Your future self is counting on you.</div>
+                      <div style={{ fontSize: 10, fontWeight: 800, color: C.text2, textTransform: "uppercase", letterSpacing: "0.5px" }}>Current Streak</div>
+                      <div style={{ fontSize: 24, fontWeight: 900, color: C.text1, marginTop: 4 }}>{user.streak} Days</div>
+                    </div>
+                    <div style={{ width: 36, height: 36, borderRadius: "50%", backgroundColor: "var(--badge-primary-bg)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--badge-primary-border)" }}>
+                      <Flame size={18} color="var(--color-primary)" fill="var(--color-primary)" />
                     </div>
                   </div>
-                  <ArrowRight size={16} color={C.text2} style={{ cursor: "pointer" }} />
-                </div>
-
-                {/* 4 Action Cards Grid */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
-                  {[
-                    { label: "Workout", icon: <Dumbbell size={16} />, tone: "primary", action: () => setTab("plan") },
-                    { label: "Nutrition", icon: <ChefHat size={16} />, tone: "secondary", action: () => setActiveOverlay("nutrition") },
-                    { label: "Progress", icon: <TrendingUp size={16} />, tone: "secondary", action: () => setActiveOverlay("progress") },
-                    { label: "Rex AI Coach", icon: <Sparkles size={16} />, tone: "secondary", action: () => setActiveOverlay("rex_coach") },
-                  ].map((act, i) => (
-                    <Card
-                      key={act.label}
-                      index={i}
-                      onClick={act.action}
-                      padding="10px"
-                      style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}
-                    >
-                      <IconBadge icon={act.icon} tone={act.tone} size={32} />
-                      <div style={{ fontSize: 13, fontWeight: 700, color: C.text1, marginTop: "6px" }}>{act.label}</div>
-                    </Card>
-                  ))}
-                </div>
+                  {/* Mini weekday consistency indicator */}
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, i) => (
+                      <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                        <span style={{ fontSize: 9, fontWeight: 700, color: C.text2 }}>{day}</span>
+                        <div style={{
+                          width: 22, height: 22, borderRadius: "50%",
+                          backgroundColor: i < 5 ? "var(--color-primary)" : "transparent",
+                          border: i < 5 ? "none" : `1.5px solid var(--color-border)`,
+                          display: "flex", alignItems: "center", justifyContent: "center"
+                        }}>
+                          {i < 5 ? (
+                            <Check size={12} strokeWidth={4} color="var(--color-bg)" />
+                          ) : (
+                            <span style={{ fontSize: 9, color: C.text3, fontWeight: "700" }}>{day[0]}</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
 
                 {/* Train Today Section */}
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Train Today</h3>
@@ -1534,34 +1449,84 @@ export default function App() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {/* Yoga */}
                     <Card onClick={() => setActiveOverlay("yoga")} padding="10px" style={{ margin: 0, flex: 1, display: "flex", alignItems: "center", gap: 8 }}>
-                      <IconBadge icon={<Plus size={12} />} tone="secondary" size={24} />
+                      <IconBadge icon={<Plus size={12} />} tone="primary" size={24} />
                       <div>
                         <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Yoga</div>
-                        <div style={{ fontSize: 8, color: color.secondary, fontWeight: 700, marginTop: 2 }}>RECOVERY</div>
+                        <div style={{ fontSize: 8, color: color.primary, fontWeight: 700, marginTop: 2 }}>RECOVERY</div>
                       </div>
                     </Card>
                   </div>
                 </div>
 
+                {/* Daily Metrics Carousel (Swipeable below the fold) */}
+                <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12, marginTop: 24 }}>Daily Metrics</h3>
+                <div 
+                  className="card-light" 
+                  style={{ 
+                    padding: 16, margin: "0 0 20px", display: "flex", flexDirection: "column", 
+                    justifyContent: "space-between", height: 160, overflow: "hidden", 
+                    position: "relative", cursor: "pointer", border: `1.5px solid ${C.border}` 
+                  }}
+                  onClick={() => setExpandedCarouselSlide(carouselIndex === 0 ? 0 : carouselIndex + 1)}
+                >
+                  <div style={{ flex: 1, position: "relative" }}>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={carouselIndex}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.2 }}
+                        drag="x"
+                        dragConstraints={{ left: 0, right: 0 }}
+                        dragElastic={0.2}
+                        onDragEnd={handleDragEnd}
+                        style={{ height: "100%", width: "100%" }}
+                      >
+                        {renderCarouselSlide(carouselIndex)}
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
 
+                  {/* Dot Indicators */}
+                  <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 4 }}>
+                    {[0, 1, 2, 3].map((idx) => (
+                      <div 
+                        key={idx}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCarouselIndex(idx);
+                        }}
+                        style={{
+                          width: 6, height: 6, borderRadius: "50%",
+                          backgroundColor: carouselIndex === idx ? C.accent : "rgba(255,255,255,0.2)",
+                          transition: "background-color 0.2s",
+                          cursor: "pointer"
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
 
                 {/* Community & Health section lists */}
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Community & Health</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <Card onClick={() => setTab("leaderboard")} padding="12px 14px" style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <IconBadge icon={<Trophy size={14} />} tone="primary" size={28} />
-                      <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Leaderboard</span>
-                    </div>
-                    <span style={{ fontSize: 10, color: color.primary, fontWeight: 700 }}>RANK #24</span>
-                  </Card>
+                  {SHOW_LEADERBOARD && (
+                    <Card onClick={() => setTab("leaderboard")} padding="12px 14px" style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <IconBadge icon={<Trophy size={14} />} tone="primary" size={28} />
+                        <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Leaderboard</span>
+                      </div>
+                      <span style={{ fontSize: 10, color: color.primary, fontWeight: 700 }}>RANK #24</span>
+                    </Card>
+                  )}
 
                   <Card onClick={() => setActiveOverlay("supplements")} padding="12px 14px" style={{ margin: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <IconBadge icon={<ShoppingBag size={14} />} tone="warning" size={28} />
+                      <IconBadge icon={<ShoppingBag size={14} />} tone="secondary" size={28} />
                       <span style={{ fontSize: 12, fontWeight: 700, color: C.text1 }}>Supplements</span>
                     </div>
-                    <span style={{ fontSize: 10, color: color.warning, fontWeight: 700 }}>STOCKED</span>
+                    <span style={{ fontSize: 10, color: color.secondary, fontWeight: 700 }}>STOCKED</span>
                   </Card>
                 </div>
               </motion.div>
@@ -1645,7 +1610,7 @@ export default function App() {
                       }}>
                         72%
                       </div>
-                      <img src={appTheme === "dark" ? "/neon_architecture.png" : "/hand_cream_lifestyle.png"} alt="Trainer" style={{ width: 100, height: 115, objectFit: "contain", marginTop: 24 }} />
+                      <img src="/body_builder_trainer.png" alt="Trainer" style={{ width: 100, height: 115, objectFit: "contain", marginTop: 24 }} />
                     </div>
                   </div>
 
@@ -1724,7 +1689,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 11, fontWeight: "700", opacity: 0.9 }}>Glutes / Squats / Hamstrings</div>
                         </div>
-                        <img src={appTheme === "dark" ? "/neon_architecture.png" : "/fairy_lights_jar.png"} alt="Lower Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
+                        <img src="/total_attack.png" alt="Lower Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
                       </div>
                     </div>
 
@@ -1770,7 +1735,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 11, fontWeight: "700", opacity: 0.9 }}>Chest / Shoulders / Triceps</div>
                         </div>
-                        <img src={appTheme === "dark" ? "/purple_smoke.png" : "/fairy_lights_jar.png"} alt="Upper Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
+                        <img src="/chest_workout.png" alt="Upper Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
                       </div>
                     </div>
                   </div>
@@ -2014,7 +1979,7 @@ export default function App() {
                 {/* Cinematic Hero Image Background */}
                 <div style={{
                   position: "absolute", inset: 0,
-                  backgroundImage: appTheme === "dark" ? "url('/neon_architecture.png')" : "url('/hand_cream_lifestyle.png')",
+                  backgroundImage: "url('/body_builder_trainer.png')",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   zIndex: 1
@@ -2226,26 +2191,26 @@ export default function App() {
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                  <Card onClick={() => { setCarouselIndex(1); setExpandedCarouselSlide(1); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <Flame size={20} color={C.accentOrange} fill={C.accentOrange} />
+                  <Card onClick={() => { setExpandedCarouselSlide(1); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Flame size={20} color="var(--color-primary)" fill="var(--color-primary)" />
                     <span style={{ fontSize: 11, color: C.text2, marginTop: 6 }}>Streak</span>
                     <span style={{ fontSize: 16, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.streak} Days</span>
                   </Card>
 
-                  <Card onClick={() => { setCarouselIndex(2); setExpandedCarouselSlide(2); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <Droplet size={20} color={C.blue} fill={C.blue} />
+                  <Card onClick={() => { setCarouselIndex(1); setExpandedCarouselSlide(2); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Droplet size={20} color="var(--color-secondary)" fill="var(--color-secondary)" />
                     <span style={{ fontSize: 11, color: C.text2, marginTop: 6 }}>Water Log</span>
                     <span style={{ fontSize: 16, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.waterToday}L / {user.waterGoal}L</span>
                   </Card>
 
-                  <Card onClick={() => { setCarouselIndex(3); setExpandedCarouselSlide(3); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <Footprints size={20} color={C.accent} />
+                  <Card onClick={() => { setCarouselIndex(2); setExpandedCarouselSlide(3); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Footprints size={20} color="var(--color-primary)" />
                     <span style={{ fontSize: 11, color: C.text2, marginTop: 6 }}>Steps</span>
                     <span style={{ fontSize: 16, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.stepsToday.toLocaleString()}</span>
                   </Card>
 
-                  <Card onClick={() => { setCarouselIndex(4); setExpandedCarouselSlide(4); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <Zap size={20} color={color.error} />
+                  <Card onClick={() => { setCarouselIndex(3); setExpandedCarouselSlide(4); }} padding="14px" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Zap size={20} color="var(--color-primary)" />
                     <span style={{ fontSize: 11, color: C.text2, marginTop: 6 }}>Energy Balance</span>
                     <span style={{ fontSize: 16, fontWeight: 900, color: C.text1, marginTop: 2 }}>490 kcal</span>
                   </Card>
@@ -2591,7 +2556,7 @@ export default function App() {
 
             {/* D. NUTRITION FEATURE OVERLAY (Full App Screen Page) */}
             {activeOverlay === "nutrition" && (() => {
-              const nutritionAccent = color.primary; /* TEMP: awaiting confirmed zone accent from product owner */
+              const nutritionAccent = color.secondary; /* Align to Blue AI/data zone token */
               const isNewUser = recentFoodLogs.length === 0;
               const presets = isNewUser ? ["Apple", "Oatmeal", "Greek Yogurt"] : recentFoodLogs;
 
@@ -3192,11 +3157,11 @@ export default function App() {
 
                   {/* <RexBubble> speech text */}
                   <div className="card-light" style={{ display: "flex", gap: 10, padding: 14, margin: "0 0 16px", border: `1px solid ${C.border}`, position: "relative" }}>
-                    <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(156,39,176,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <Sparkles size={14} color={color.secondary} />
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "var(--badge-secondary-bg)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "1px solid var(--badge-secondary-border)" }}>
+                      <Sparkles size={14} color="var(--color-secondary)" />
                     </div>
                     <div>
-                      <div style={{ fontSize: 10, fontWeight: "800", color: color.secondary, textTransform: "uppercase", marginBottom: 2 }}>Rex AI Companion</div>
+                      <div style={{ fontSize: 10, fontWeight: "800", color: "var(--color-secondary)", textTransform: "uppercase", marginBottom: 2 }}>Rex AI Companion</div>
                       <p style={{ fontSize: 11, color: C.text1, margin: 0, lineHeight: 1.4 }}>
                         "Welcome back, Arjun! Ready to conquer today's Recommended Workout? Let's keep that 12-day streak glowing!"
                       </p>
@@ -3207,17 +3172,17 @@ export default function App() {
                   <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
                     {/* Metric 1: Streak */}
                     <div className="card-light" style={{ flex: 1, margin: 0, padding: 12, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", border: `1px solid ${C.border}` }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(255,95,31,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6 }}>
-                        <TrendingUp size={14} color={C.accentOrange} />
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "var(--badge-primary-bg)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6, border: "1px solid var(--badge-primary-border)" }}>
+                        <TrendingUp size={14} color="var(--color-primary)" />
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: 900, color: C.accentOrange }}>{user.streak} Days</span>
+                      <span style={{ fontSize: 13, fontWeight: 900, color: C.text1 }}>{user.streak} Days</span>
                       <span style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>Current Streak</span>
                     </div>
 
                     {/* Metric 2: Calories */}
                     <div className="card-light" style={{ flex: 1, margin: 0, padding: 12, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", border: `1px solid ${C.border}` }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(0,168,107,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6 }}>
-                        <ChefHat size={14} color={C.accent} />
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "var(--badge-primary-bg)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6, border: "1px solid var(--badge-primary-border)" }}>
+                        <ChefHat size={14} color="var(--color-primary)" />
                       </div>
                       <span style={{ fontSize: 13, fontWeight: 900, color: C.text1 }}>{user.calToday} kcal</span>
                       <span style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>of {user.calGoal} Target</span>
@@ -3225,8 +3190,8 @@ export default function App() {
 
                     {/* Metric 3: Water Ring */}
                     <div className="card-light" style={{ flex: 1, margin: 0, padding: 12, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", border: `1px solid ${C.border}` }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(0,122,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6 }}>
-                        <ShoppingBag size={14} color={color.secondary} />
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "var(--badge-secondary-bg)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6, border: "1px solid var(--badge-secondary-border)" }}>
+                        <ShoppingBag size={14} color="var(--color-secondary)" />
                       </div>
                       <span style={{ fontSize: 13, fontWeight: 900, color: C.text1 }}>{user.waterToday}L</span>
                       <span style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>of {user.waterGoal}L Goal</span>
@@ -3554,16 +3519,18 @@ export default function App() {
           </button>
 
           {/* Tab 5: Leaderboard */}
-          <button className="nav-item" onClick={() => { setTab("leaderboard"); setActiveOverlay(null); }} style={{ position: "relative" }}>
-            <div style={{
-              width: 48, height: 48, borderRadius: "50%",
-              backgroundColor: tab === "leaderboard" ? "var(--badge-primary-bg)" : "transparent",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "all 0.2s"
-            }}>
-              <Trophy size={24} color={tab === "leaderboard" ? C.accent : C.text2} />
-            </div>
-          </button>
+          {SHOW_LEADERBOARD && (
+            <button className="nav-item" onClick={() => { setTab("leaderboard"); setActiveOverlay(null); }} style={{ position: "relative" }}>
+              <div style={{
+                width: 48, height: 48, borderRadius: "50%",
+                backgroundColor: tab === "leaderboard" ? "var(--badge-primary-bg)" : "transparent",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                transition: "all 0.2s"
+              }}>
+                <Trophy size={24} color={tab === "leaderboard" ? C.accent : C.text2} />
+              </div>
+            </button>
+          )}
 
           {/* Tab 6: Profile */}
           <button className="nav-item" onClick={() => { setTab("profile"); setActiveOverlay(null); }} style={{ position: "relative" }}>
