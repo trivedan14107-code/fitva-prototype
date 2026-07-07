@@ -2240,34 +2240,43 @@ export default function App() {
                     <Edit3 size={20} style={{ cursor: "pointer", color: C.text2 }} onClick={() => triggerAlert("Editing profile is locked in beta.")} />
                   </div>
 
-                  {/* Pro Theme Toggle Switcher */}
+                  {/* Apple-style Toggle Switch */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                     <span style={{ fontSize: 11, fontWeight: "800", color: C.text2, letterSpacing: "0.5px" }}>PROFILE THEME</span>
-                    <div style={{ display: "flex", gap: 4, backgroundColor: C.surfaceLight, borderRadius: 12, padding: 3, border: `1px solid ${C.border}` }}>
-                      <button 
-                        onClick={() => setAppTheme("light")}
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: isDark ? "rgba(255,255,255,0.35)" : C.text1, transition: "color 0.3s" }}>Light</span>
+                      {/* iOS Switch Track */}
+                      <div
+                        onClick={() => setAppTheme(isDark ? "light" : "dark")}
                         style={{
-                          padding: "6px 12px", border: "none", borderRadius: 8, fontSize: 11, fontWeight: "800",
-                          backgroundColor: !isDark ? C.surface : "transparent",
-                          color: !isDark ? C.accent : color.text2,
-                          cursor: "pointer", boxShadow: !isDark ? "0 2px 4px rgba(0,0,0,0.05)" : "none",
-                          transition: "all 0.2s"
+                          width: 51,
+                          height: 31,
+                          borderRadius: 999,
+                          backgroundColor: isDark ? "#00E5A8" : "rgba(120,120,128,0.24)",
+                          position: "relative",
+                          cursor: "pointer",
+                          transition: "background-color 0.3s cubic-bezier(0.4,0,0.2,1)",
+                          flexShrink: 0,
+                          boxShadow: isDark ? "0 0 0 0 transparent" : "inset 0 0 0 1px rgba(0,0,0,0.1)",
                         }}
                       >
-                        Light
-                      </button>
-                      <button 
-                        onClick={() => setAppTheme("dark")}
-                        style={{
-                          padding: "6px 12px", border: "none", borderRadius: 8, fontSize: 11, fontWeight: "800",
-                          backgroundColor: isDark ? (isDark ? color.bg : C.surface) : "transparent",
-                          color: isDark ? color.primary : C.text2,
-                          cursor: "pointer", boxShadow: isDark ? "0 2px 4px rgba(0,0,0,0.15)" : "none",
-                          transition: "all 0.2s"
-                        }}
-                      >
-                        Dark
-                      </button>
+                        {/* Animated Thumb */}
+                        <motion.div
+                          layout
+                          transition={{ type: "spring", stiffness: 500, damping: 38, mass: 0.8 }}
+                          style={{
+                            position: "absolute",
+                            top: 2,
+                            left: isDark ? 22 : 2,
+                            width: 27,
+                            height: 27,
+                            borderRadius: "50%",
+                            backgroundColor: "#FFFFFF",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.14)",
+                          }}
+                        />
+                      </div>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: isDark ? C.text1 : "rgba(0,0,0,0.3)", transition: "color 0.3s" }}>Dark</span>
                     </div>
                   </div>
 
