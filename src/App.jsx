@@ -506,130 +506,201 @@ export default function App() {
   };
 
   const renderCarouselSlide = (idx) => {
+    const bgImages = {
+      0: "/carousel_overview_bg.png",
+      1: "/carousel_nutrition_bg.png",
+      2: "/carousel_water_bg.png",
+      3: "/carousel_steps_bg.png",
+      4: "/carousel_energy_bg.png"
+    };
+
+    const currentBg = bgImages[idx];
+
+    const slideWrapperStyle = {
+      position: "relative",
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      boxSizing: "border-box"
+    };
+
+    const bgOverlayStyle = {
+      position: "absolute",
+      top: -16,
+      left: -16,
+      right: -16,
+      bottom: -16,
+      backgroundImage: `url('${currentBg}')`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      zIndex: 1
+    };
+
+    const gradientOverlayStyle = {
+      position: "absolute",
+      top: -16,
+      left: -16,
+      right: -16,
+      bottom: -16,
+      background: "linear-gradient(135deg, rgba(11, 16, 32, 0.85) 0%, rgba(21, 28, 50, 0.92) 100%)",
+      zIndex: 2
+    };
+
+    const contentWrapperStyle = {
+      position: "relative",
+      zIndex: 3,
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      justifyContent: "space-between"
+    };
+
     switch (idx) {
       case 0:
         return (
-          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Intro Dashboard</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 12px", margin: "6px 0" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <Flame size={12} color="var(--color-primary)" />
-                <span style={{ fontSize: 11, fontWeight: 800 }}>{user.streak}d</span>
+          <div style={slideWrapperStyle}>
+            <div style={bgOverlayStyle} />
+            <div style={gradientOverlayStyle} />
+            <div style={contentWrapperStyle}>
+              <div style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.6)", textTransform: "uppercase" }}>Intro Dashboard</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 12px", margin: "6px 0" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Flame size={12} color="var(--color-primary)" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: "#FFFFFF" }}>{user.streak}d</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Droplet size={12} color="var(--color-secondary)" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: "#FFFFFF" }}>{user.waterToday}L</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Footprints size={12} color="var(--color-primary)" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: "#FFFFFF" }}>{Math.round(user.stepsToday / 100) / 10}k</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Zap size={12} color="var(--color-primary)" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: "#FFFFFF" }}>490 kcal</span>
+                </div>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <Droplet size={12} color="var(--color-secondary)" />
-                <span style={{ fontSize: 11, fontWeight: 800 }}>{user.waterToday}L</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <Footprints size={12} color="var(--color-primary)" />
-                <span style={{ fontSize: 11, fontWeight: 800 }}>{Math.round(user.stepsToday / 100) / 10}k</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <Zap size={12} color="var(--color-primary)" />
-                <span style={{ fontSize: 11, fontWeight: 800 }}>490 kcal</span>
-              </div>
+              <span style={{ fontSize: 9, color: "var(--color-primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Swipe to explore details &gt;</span>
             </div>
-            <span style={{ fontSize: 9, color: "var(--color-primary)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Swipe to explore details &gt;</span>
           </div>
         );
       case 1:
         return (
-          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div>
-                <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Calories & Macros</div>
-                <div style={{ fontSize: 18, fontWeight: 900, color: C.text1, marginTop: 2 }}>
-                  {nutritionDaily.calories_consumed} <span style={{ fontSize: 11, color: C.text2, fontWeight: 500 }}>/ {nutritionDaily.calorie_target} kcal</span>
+          <div style={slideWrapperStyle}>
+            <div style={bgOverlayStyle} />
+            <div style={gradientOverlayStyle} />
+            <div style={contentWrapperStyle}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.6)", textTransform: "uppercase" }}>Calories & Macros</div>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: "#FFFFFF", marginTop: 2 }}>
+                    {nutritionDaily.calories_consumed} <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>/ {nutritionDaily.calorie_target} kcal</span>
+                  </div>
+                </div>
+                <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
+                  <ChefHat size={14} color="var(--color-primary)" />
                 </div>
               </div>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "var(--badge-primary-bg)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--badge-primary-border)" }}>
-                <ChefHat size={14} color="var(--color-primary)" />
-              </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <ProgressRing value={(nutritionDaily.calories_consumed / nutritionDaily.calorie_target) * 100} size={28} strokeWidth={3} showLabel={false} color="var(--color-primary)" />
-              <div style={{ display: "flex", gap: 6, fontSize: 8, fontWeight: 700, color: C.text2 }}>
-                <span>P: {nutritionDaily.protein_g}g</span>
-                <span>•</span>
-                <span>C: {nutritionDaily.carbs_g}g</span>
-                <span>•</span>
-                <span>F: {nutritionDaily.fats_g}g</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <ProgressRing value={(nutritionDaily.calories_consumed / nutritionDaily.calorie_target) * 100} size={28} strokeWidth={3} showLabel={false} color="var(--color-primary)" />
+                <div style={{ display: "flex", gap: 6, fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.8)" }}>
+                  <span>P: {nutritionDaily.protein_g}g</span>
+                  <span>•</span>
+                  <span>C: {nutritionDaily.carbs_g}g</span>
+                  <span>•</span>
+                  <span>F: {nutritionDaily.fats_g}g</span>
+                </div>
               </div>
             </div>
           </div>
         );
       case 2:
         return (
-          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div>
-                <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Water Intake</div>
-                <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.waterToday}L <span style={{ fontSize: 12, color: C.text2, fontWeight: 500 }}>/ {user.waterGoal}L</span></div>
+          <div style={slideWrapperStyle}>
+            <div style={bgOverlayStyle} />
+            <div style={gradientOverlayStyle} />
+            <div style={contentWrapperStyle}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.6)", textTransform: "uppercase" }}>Water Intake</div>
+                  <div style={{ fontSize: 22, fontWeight: 900, color: "#FFFFFF", marginTop: 2 }}>{user.waterToday}L <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>/ {user.waterGoal}L</span></div>
+                </div>
+                <motion.button 
+                  whileTap={{ scale: 0.9 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setReminderActive(!reminderActive);
+                    triggerAlert(!reminderActive ? "Water reminder set! 🔔" : "Water reminder disabled! 🔔");
+                  }}
+                  style={{ 
+                    width: 28, height: 28, borderRadius: "50%", 
+                    backgroundColor: reminderActive ? "rgba(91, 140, 255, 0.2)" : "rgba(255, 255, 255, 0.08)", 
+                    display: "flex", alignItems: "center", justifyContent: "center", border: reminderActive ? "1px solid rgba(91, 140, 255, 0.4)" : "none", cursor: "pointer" 
+                  }}
+                >
+                  <Bell size={14} color={reminderActive ? C.blue : "rgba(255,255,255,0.6)"} fill={reminderActive ? C.blue : "none"} />
+                </motion.button>
               </div>
-              <motion.button 
-                whileTap={{ scale: 0.9 }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setReminderActive(!reminderActive);
-                  triggerAlert(!reminderActive ? "Water reminder set! 🔔" : "Water reminder disabled! 🔔");
-                }}
-                style={{ 
-                  width: 28, height: 28, borderRadius: "50%", 
-                  backgroundColor: reminderActive ? "var(--badge-secondary-bg)" : "rgba(255, 255, 255, 0.05)", 
-                  display: "flex", alignItems: "center", justifyContent: "center", border: reminderActive ? "1px solid var(--badge-secondary-border)" : "none", cursor: "pointer" 
-                }}
-              >
-                <Bell size={14} color={reminderActive ? C.blue : C.text2} fill={reminderActive ? C.blue : "none"} />
-              </motion.button>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <ProgressRing value={(user.waterToday / user.waterGoal) * 100} size={28} strokeWidth={3} showLabel={false} color={C.blue} />
-              <span style={{ fontSize: 10, color: C.text2 }}>Target: {Math.round((user.waterToday / user.waterGoal) * 100)}% done</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <ProgressRing value={(user.waterToday / user.waterGoal) * 100} size={28} strokeWidth={3} showLabel={false} color={C.blue} />
+                <span style={{ fontSize: 10, color: "rgba(255,255,255,0.7)" }}>Target: {Math.round((user.waterToday / user.waterGoal) * 100)}% done</span>
+              </div>
             </div>
           </div>
         );
       case 3:
         return (
-          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div>
-                <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Steps Tracker</div>
-                <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>{user.stepsToday.toLocaleString()}</div>
+          <div style={slideWrapperStyle}>
+            <div style={bgOverlayStyle} />
+            <div style={gradientOverlayStyle} />
+            <div style={contentWrapperStyle}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.6)", textTransform: "uppercase" }}>Steps Tracker</div>
+                  <div style={{ fontSize: 22, fontWeight: 900, color: "#FFFFFF", marginTop: 2 }}>{user.stepsToday.toLocaleString()}</div>
+                </div>
+                <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
+                  <Footprints size={14} color="var(--color-primary)" />
+                </div>
               </div>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "var(--badge-primary-bg)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--badge-primary-border)" }}>
-                <Footprints size={14} color="var(--color-primary)" />
+              <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 36, paddingBottom: 4 }}>
+                {[30, 45, 25, 60, 80, 50, 40].map((h, i) => (
+                  <div 
+                    key={i} 
+                    style={{ 
+                      flex: 1, 
+                      height: `${h}%`, 
+                      backgroundColor: i === 4 ? "var(--color-primary)" : "rgba(255,255,255,0.25)", 
+                      borderRadius: 1 
+                    }} 
+                  />
+                ))}
               </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 36, paddingBottom: 4 }}>
-              {[30, 45, 25, 60, 80, 50, 40].map((h, i) => (
-                <div 
-                  key={i} 
-                  style={{ 
-                    flex: 1, 
-                    height: `${h}%`, 
-                    backgroundColor: i === 4 ? "var(--color-primary)" : "rgba(255,255,255,0.1)", 
-                    borderRadius: 1 
-                  }} 
-                />
-              ))}
             </div>
           </div>
         );
       case 4:
         return (
-          <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div>
-                <div style={{ fontSize: 9, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Calories Burned</div>
-                <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, marginTop: 2 }}>490 kcal</div>
+          <div style={slideWrapperStyle}>
+            <div style={bgOverlayStyle} />
+            <div style={gradientOverlayStyle} />
+            <div style={contentWrapperStyle}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.6)", textTransform: "uppercase" }}>Calories Burned</div>
+                  <div style={{ fontSize: 22, fontWeight: 900, color: "#FFFFFF", marginTop: 2 }}>490 kcal</div>
+                </div>
+                <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
+                  <Zap size={14} color="var(--color-primary)" />
+                </div>
               </div>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", backgroundColor: "var(--badge-primary-bg)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--badge-primary-border)" }}>
-                <Zap size={14} color="var(--color-primary)" />
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 9, color: "rgba(255,255,255,0.7)" }}>Walk: 170 kcal &bull; Work: 320 kcal</span>
+                <div style={{ width: 24, height: 24, borderRadius: "50%", border: `3.5px solid var(--color-primary)`, borderTopColor: "transparent", transform: "rotate(45deg)" }} />
               </div>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 9, color: C.text2 }}>Walk: 170 kcal &bull; Work: 320 kcal</span>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", border: `3.5px solid var(--color-primary)`, borderTopColor: "transparent", transform: "rotate(45deg)" }} />
             </div>
           </div>
         );
