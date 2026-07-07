@@ -1448,15 +1448,17 @@ export default function App() {
                   {/* Side Recovery Actions */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {/* Yoga */}
-                    <Card onClick={() => setActiveOverlay("yoga")} padding="10px" style={{ margin: 0, flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", overflow: "hidden" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <IconBadge icon={<Plus size={12} />} tone="primary" size={24} />
+                    <Card onClick={() => setActiveOverlay("yoga")} padding="12px" style={{ margin: 0, flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", boxSizing: "border-box", overflow: "hidden" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <IconBadge icon={<Plus size={12} />} tone="primary" size={20} />
                         <div>
                           <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Yoga</div>
-                          <div style={{ fontSize: 8, color: color.primary, fontWeight: 700, marginTop: 2 }}>RECOVERY</div>
+                          <div style={{ fontSize: 8, color: color.primary, fontWeight: 700, marginTop: 1 }}>RECOVERY</div>
                         </div>
                       </div>
-                      <img src="/yoga_recovery_thumbnail.png" alt="Yoga Recovery" style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover" }} />
+                      <div style={{ width: "100%", height: 60, borderRadius: 12, overflow: "hidden", marginTop: 8 }}>
+                        <img src="/yoga_recovery_thumbnail.png" alt="Yoga Recovery" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
                     </Card>
                   </div>
                 </div>
@@ -1692,7 +1694,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 11, fontWeight: "700", opacity: 0.9 }}>Glutes / Squats / Hamstrings</div>
                         </div>
-                        <img src="/lower_body_workout_thumbnail.png" alt="Lower Body Workout" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "16px", marginRight: -4, marginBottom: -4 }} />
+                        <img src="/lower_body_workout_thumbnail.png" alt="Lower Body Workout" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "16px", margin: 0 }} />
                       </div>
                     </div>
 
@@ -1738,7 +1740,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 11, fontWeight: "700", opacity: 0.9 }}>Chest / Shoulders / Triceps</div>
                         </div>
-                        <img src="/upper_body_workout_thumbnail.png" alt="Upper Body Workout" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "16px", marginRight: -4, marginBottom: -4 }} />
+                        <img src="/upper_body_workout_thumbnail.png" alt="Upper Body Workout" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "16px", margin: 0 }} />
                       </div>
                     </div>
                   </div>
