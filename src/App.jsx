@@ -17,6 +17,7 @@ import ProgressRing from "./components/ProgressRing";
 import Sheet from "./components/Sheet";
 import IconBadge from "./components/IconBadge";
 import CelebrationBurst from "./components/CelebrationBurst";
+import TiltCard from "./components/TiltCard";
 import { color, typography, space } from "./design/tokens";
 
 /* ═══════════════════════════════════════════════════════════
@@ -1658,17 +1659,12 @@ export default function App() {
                 {/* Train Today Section */}
                 <h3 style={{ fontSize: 15, fontWeight: 800, color: C.text1, marginBottom: 12 }}>Train Today</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: 12, marginBottom: 20 }}>
-                  {/* Workout Progress Card */}
-                  <Card 
-                    style={{ 
-                      margin: 0, 
-                      padding: 14, 
-                      display: "flex", 
-                      flexDirection: "column", 
-                      justifyContent: "space-between",
-                      position: "relative",
-                      overflow: "hidden"
-                    }}
+                  {/* Workout Progress Card – 3D Tilt */}
+                  <TiltCard
+                    style={{ margin: 0, minHeight: 140 }}
+                    padding="14px"
+                    tiltStrength={10}
+                    scaleOnHover={1.035}
                   >
                     {/* Full-bleed Background Image */}
                     <div style={{
@@ -1677,15 +1673,17 @@ export default function App() {
                       backgroundImage: "url('/lower_body_workout_thumbnail.png')",
                       backgroundSize: "cover",
                       backgroundPosition: "center",
-                      zIndex: 1
+                      zIndex: 1,
+                      borderRadius: "inherit"
                     }} />
                     
                     {/* Dark Gradient Overlay for text readability */}
                     <div style={{
                       position: "absolute",
                       inset: 0,
-                      background: "gradient" in C ? "" : "linear-gradient(to bottom, rgba(11,16,32,0.3) 0%, rgba(11,16,32,0.85) 100%)",
-                      zIndex: 2
+                      background: "linear-gradient(to bottom, rgba(11,16,32,0.3) 0%, rgba(11,16,32,0.85) 100%)",
+                      zIndex: 2,
+                      borderRadius: "inherit"
                     }} />
 
                     {/* Card Content Overlay */}
@@ -1719,7 +1717,7 @@ export default function App() {
                         <div style={{ fontSize: 9, color: "rgba(255,255,255,0.7)", marginTop: 2 }}>Workout progress</div>
                       </div>
                     </div>
-                  </Card>
+                  </TiltCard>
 
                   {/* Side Recovery Actions */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
