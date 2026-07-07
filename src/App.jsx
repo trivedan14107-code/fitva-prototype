@@ -79,6 +79,7 @@ export default function App() {
   const [isOrbExpanded, setIsOrbExpanded] = useState(false);
   const [activeZoneModal, setActiveZoneModal] = useState(null);
   const [avatarLoadError, setAvatarLoadError] = useState(false);
+  const [progressChartMode, setProgressChartMode] = useState("week"); // "week" | "month"
   const [nutritionDaily, setNutritionDaily] = useState({
     calories_consumed: 1240,
     calorie_target: 2000,
@@ -3574,6 +3575,194 @@ export default function App() {
                       <span style={{ fontSize: 13, fontWeight: 900, color: C.text1 }}>{user.waterToday}L</span>
                       <span style={{ fontSize: 9, color: C.text2, marginTop: 2 }}>of {user.waterGoal}L Goal</span>
                     </div>
+                  </div>
+
+                  {/* ── CURRENT STREAK TRACKER ────────────────────── */}
+                  <div style={{
+                    background: "linear-gradient(135deg, rgba(0,229,168,0.08) 0%, rgba(91,140,255,0.06) 100%)",
+                    border: `1.5px solid rgba(0,229,168,0.18)`,
+                    borderRadius: 20,
+                    padding: "14px 16px",
+                    marginBottom: 14
+                  }}>
+                    {/* Header row */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                      <div>
+                        <div style={{ fontSize: 9, fontWeight: 800, color: "var(--color-primary)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: 2 }}>Current Streak</div>
+                        <div style={{ fontSize: 22, fontWeight: 900, color: C.text1, lineHeight: 1 }}>{user.streak} Days</div>
+                      </div>
+                      <div style={{
+                        width: 40, height: 40, borderRadius: "50%",
+                        background: "radial-gradient(circle, rgba(0,229,168,0.25) 0%, rgba(0,229,168,0.05) 100%)",
+                        border: "1.5px solid rgba(0,229,168,0.35)",
+                        display: "flex", alignItems: "center", justifyContent: "center"
+                      }}>
+                        <Flame size={18} color="var(--color-primary)" />
+                      </div>
+                    </div>
+
+                    {/* Day chips */}
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((day, i) => {
+                        const isActive = i < 5; // Mon-Fri active
+                        const isToday = i === 4;
+                        return (
+                          <div key={day} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+                            <div style={{
+                              fontSize: 9, fontWeight: 700,
+                              color: isActive ? "var(--color-primary)" : C.text3,
+                              letterSpacing: "0.3px"
+                            }}>{day}</div>
+                            <motion.div
+                              initial={{ scale: 0.6, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ delay: i * 0.05, type: "spring", stiffness: 400, damping: 20 }}
+                              style={{
+                                width: 28, height: 28, borderRadius: "50%",
+                                backgroundColor: isActive ? "var(--color-primary)" : "rgba(255,255,255,0.04)",
+                                border: isActive ? "none" : `1.5px solid ${C.border}`,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                boxShadow: isActive && isToday ? "0 0 10px rgba(0,229,168,0.5)" : "none"
+                              }}
+                            >
+                              {isActive
+                                ? <Check size={13} strokeWidth={3} color="#0B1020" />
+                                : <span style={{ fontSize: 9, color: C.text3, fontWeight: 700 }}>{day[0]}</span>
+                              }
+                            </motion.div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* ── YOUR PROGRESS BAR CHART ───────────────────── */}
+                  <div style={{
+                    backgroundColor: C.surface,
+                    border: `1.5px solid ${C.border}`,
+                    borderRadius: 20,
+                    padding: "16px",
+                    marginBottom: 16
+                  }}>
+                    {/* Chart Header */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+                      <div>
+                        <div style={{ fontSize: 16, fontWeight: 900, color: C.text1 }}>Your progress</div>
+                        <div style={{ fontSize: 10, color: C.text2, marginTop: 3, maxWidth: 160, lineHeight: 1.4 }}>See how your focus changes across the week.</div>
+                      </div>
+                      {/* Week / Month Toggle */}
+                      <div style={{
+                        display: "flex", gap: 2, backgroundColor: C.bg,
+                        borderRadius: 999, padding: 3, border: `1px solid ${C.border}`
+                      }}>
+                        {["week","month"].map(mode => (
+                          <motion.button
+                            key={mode}
+                            onClick={() => setProgressChartMode(mode)}
+                            whileTap={{ scale: 0.94 }}
+                            style={{
+                              padding: "5px 13px", borderRadius: 999, border: "none",
+                              fontSize: 11, fontWeight: 700, cursor: "pointer",
+                              backgroundColor: progressChartMode === mode ? "var(--color-primary)" : "transparent",
+                              color: progressChartMode === mode ? "#0B1020" : C.text2,
+                              transition: "all 0.25s"
+                            }}
+                          >
+                            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Capsule Bar Chart */}
+                    {(() => {
+                      const weekData = [
+                        { label: "Mon", value: 56 },
+                        { label: "Tue", value: 32 },
+                        { label: "Wed", value: 68, highlight: true },
+                        { label: "Thu", value: 44 },
+                        { label: "Fri", value: 52 },
+                        { label: "Sat", value: 20 },
+                        { label: "Sun", value: 0 },
+                      ];
+                      const monthData = [
+                        { label: "W1", value: 58 },
+                        { label: "W2", value: 72, highlight: true },
+                        { label: "W3", value: 45 },
+                        { label: "W4", value: 63 },
+                      ];
+                      const data = progressChartMode === "week" ? weekData : monthData;
+                      const maxVal = Math.max(...data.map(d => d.value));
+                      const avgVal = Math.round(data.filter(d => d.value > 0).reduce((a, b) => a + b.value, 0) / data.filter(d => d.value > 0).length);
+                      const chartH = 120;
+
+                      return (
+                        <>
+                          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-around", height: chartH, gap: 6, marginBottom: 10 }}>
+                            {data.map((d, i) => {
+                              const barH = d.value > 0 ? Math.max((d.value / maxVal) * chartH, 18) : 18;
+                              return (
+                                <div key={d.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flex: 1 }}>
+                                  {/* Value label above bar */}
+                                  {d.value > 0 && (
+                                    <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                                      <span style={{ fontSize: 10, fontWeight: 800, color: d.highlight ? "var(--color-primary)" : C.text2 }}>{d.value}</span>
+                                      {d.highlight && <div style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: "var(--color-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}><TrendingUp size={8} color="#0B1020" /></div>}
+                                    </div>
+                                  )}
+
+                                  {/* Capsule bar */}
+                                  <motion.div
+                                    initial={{ scaleY: 0 }}
+                                    animate={{ scaleY: 1 }}
+                                    transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 24 }}
+                                    style={{
+                                      width: "100%",
+                                      height: barH,
+                                      borderRadius: 999,
+                                      background: d.highlight
+                                        ? "linear-gradient(to top, rgba(0,229,168,0.3) 0%, rgba(0,229,168,0.9) 100%)"
+                                        : d.value > 0
+                                          ? "linear-gradient(to top, rgba(0,229,168,0.08) 0%, rgba(0,229,168,0.35) 100%)"
+                                          : "rgba(255,255,255,0.04)",
+                                      border: d.highlight ? "1.5px solid rgba(0,229,168,0.6)" : `1px solid ${C.border}`,
+                                      transformOrigin: "bottom",
+                                      position: "relative",
+                                      overflow: "hidden"
+                                    }}
+                                  >
+                                    {/* Inner lighter cap at top */}
+                                    {d.value > 0 && (
+                                      <div style={{
+                                        position: "absolute", top: 4, left: "50%", transform: "translateX(-50%)",
+                                        width: "55%", height: "28%", borderRadius: 999,
+                                        backgroundColor: d.highlight ? "rgba(0,229,168,0.55)" : "rgba(0,229,168,0.18)"
+                                      }} />
+                                    )}
+                                  </motion.div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Day Labels */}
+                          <div style={{ display: "flex", justifyContent: "space-around" }}>
+                            {data.map(d => (
+                              <div key={d.label} style={{ flex: 1, textAlign: "center", fontSize: 9, fontWeight: 700, color: d.highlight ? "var(--color-primary)" : C.text3 }}>{d.label}</div>
+                            ))}
+                          </div>
+
+                          {/* Legend row */}
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "rgba(0,229,168,0.5)", border: "1.5px solid var(--color-primary)" }} />
+                              <span style={{ fontSize: 9, color: C.text2, fontWeight: 600 }}>Minutes of focused study</span>
+                            </div>
+                            <span style={{ fontSize: 9, fontWeight: 800, color: C.text1 }}>Average per day: <span style={{ color: "var(--color-primary)" }}>{avgVal} min</span></span>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
 
                   {/* 3. TODAY'S WORKOUT (CTA) - Single dominant primary action */}
