@@ -35,9 +35,9 @@ const C = {
   text1: color.text1,
   text2: color.text2,
   text3: color.text3,
-  shadow: "6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0)",
-  btnShadow: "4px 4px 10px rgba(163, 177, 198, 0.55), -4px -4px 10px rgba(255, 255, 255, 1.0)",
-  nutritionShadow: "6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0)"
+  shadow: "var(--shadow-extruded)",
+  btnShadow: "var(--shadow-button)",
+  nutritionShadow: "var(--shadow-extruded)"
 };
 
 export default function App() {
@@ -647,11 +647,11 @@ export default function App() {
           --color-warning: #5B8CFF;
           --color-error: #FF5C5C;
           
-          --shadow-extruded: 6px 6px 14px rgba(0, 0, 0, 0.45), -6px -6px 14px rgba(255, 255, 255, 0.015);
-          --shadow-recessed: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.02);
-          --shadow-button: 4px 4px 10px rgba(0, 0, 0, 0.4), -4px -4px 10px rgba(255, 255, 255, 0.012);
-          --shadow-button-accent: 4px 4px 10px rgba(0, 229, 168, 0.15);
-          --shadow-button-danger: 4px 4px 10px rgba(255, 92, 92, 0.15);
+          --shadow-extruded: 6px 6px 14px rgba(0, 0, 0, 0.55), -6px -6px 14px rgba(0, 0, 0, 0.0);
+          --shadow-recessed: inset 3px 3px 6px rgba(0, 0, 0, 0.6), inset -3px -3px 6px rgba(0, 0, 0, 0.0);
+          --shadow-button: 4px 4px 10px rgba(0, 0, 0, 0.5), -4px -4px 10px rgba(0, 0, 0, 0.0);
+          --shadow-button-accent: 4px 4px 10px rgba(0, 229, 168, 0.08);
+          --shadow-button-danger: 4px 4px 10px rgba(255, 92, 92, 0.08);
 
           --badge-primary-bg: rgba(0, 229, 168, 0.1);
           --badge-primary-border: rgba(0, 229, 168, 0.2);
@@ -819,7 +819,7 @@ export default function App() {
           align-items: center;
           z-index: 99;
           box-sizing: border-box;
-          box-shadow: 6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 1.0);
+          box-shadow: var(--shadow-extruded);
           transition: background-color 0.3s, border-color 0.3s;
         }
 
@@ -1448,12 +1448,15 @@ export default function App() {
                   {/* Side Recovery Actions */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {/* Yoga */}
-                    <Card onClick={() => setActiveOverlay("yoga")} padding="10px" style={{ margin: 0, flex: 1, display: "flex", alignItems: "center", gap: 8 }}>
-                      <IconBadge icon={<Plus size={12} />} tone="primary" size={24} />
-                      <div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Yoga</div>
-                        <div style={{ fontSize: 8, color: color.primary, fontWeight: 700, marginTop: 2 }}>RECOVERY</div>
+                    <Card onClick={() => setActiveOverlay("yoga")} padding="10px" style={{ margin: 0, flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", overflow: "hidden" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <IconBadge icon={<Plus size={12} />} tone="primary" size={24} />
+                        <div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Yoga</div>
+                          <div style={{ fontSize: 8, color: color.primary, fontWeight: 700, marginTop: 2 }}>RECOVERY</div>
+                        </div>
                       </div>
+                      <img src="/yoga_recovery_thumbnail.png" alt="Yoga Recovery" style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover" }} />
                     </Card>
                   </div>
                 </div>
@@ -1689,7 +1692,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 11, fontWeight: "700", opacity: 0.9 }}>Glutes / Squats / Hamstrings</div>
                         </div>
-                        <img src="/total_attack.png" alt="Lower Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
+                        <img src="/lower_body_workout_thumbnail.png" alt="Lower Body Workout" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "16px", marginRight: -4, marginBottom: -4 }} />
                       </div>
                     </div>
 
@@ -1735,7 +1738,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 11, fontWeight: "700", opacity: 0.9 }}>Chest / Shoulders / Triceps</div>
                         </div>
-                        <img src="/chest_workout.png" alt="Upper Body Workout" style={{ width: 110, height: 110, objectFit: "contain", marginRight: -10, marginBottom: -10 }} />
+                        <img src="/upper_body_workout_thumbnail.png" alt="Upper Body Workout" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "16px", marginRight: -4, marginBottom: -4 }} />
                       </div>
                     </div>
                   </div>
