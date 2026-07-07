@@ -42,6 +42,26 @@ const C = {
   nutritionShadow: "var(--shadow-extruded)"
 };
 
+// FITVA Premium Brand Logo Icon (crops the F symbol from the uploaded logo image)
+function FitvaLogoIcon({ size = 28, style = {} }) {
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        backgroundImage: "url('/fitva_logo.jpg')",
+        backgroundSize: "280% 280%",
+        backgroundPosition: "50% 28%",
+        flexShrink: 0,
+        boxShadow: "0 4px 12px rgba(0, 229, 168, 0.2)",
+        border: "1.5px solid rgba(0, 229, 168, 0.15)",
+        ...style
+      }}
+    />
+  );
+}
+
 export default function App() {
   const SHOW_LEADERBOARD = false;
   // â”€â”€ App flow: splash â†’ onboarding â†’ avatar_creation â†’ app â”€â”€
@@ -1260,50 +1280,41 @@ export default function App() {
             key="splash"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            transition={{ duration: 0.6 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.5 }}
             style={{
               position: "fixed", inset: 0, zIndex: 9999,
-              background: `linear-gradient(160deg, ${color.bg} 0%, ${color.surface} 40%, ${color.bg} 100%)`,
+              background: "#0B1020",
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              gap: 24, overflow: "hidden"
+              overflow: "hidden"
             }}
           >
-            {/* Glowing orb behind logo */}
+            {/* Ambient background glow */}
+            <div style={{
+              position: "absolute", width: "150%", height: "150%",
+              background: "radial-gradient(circle, rgba(91,140,255,0.08) 0%, rgba(0,229,168,0.05) 50%, transparent 100%)",
+              pointerEvents: "none", zIndex: 0
+            }} />
+            
             <motion.div
-              animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
-              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-              style={{
-                position: "absolute", width: 260, height: 260, borderRadius: "50%",
-                background: "radial-gradient(circle, rgba(0,229,168,0.25) 0%, transparent 70%)",
-                pointerEvents: "none"
-              }}
-            />
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+              transition={{ type: "spring", stiffness: 100, damping: 18, delay: 0.1 }}
+              style={{ zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}
             >
-              <div style={{ width: 80, height: 80, borderRadius: 24, background: `linear-gradient(135deg, ${color.primary} 0%, ${color.secondary} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 12px 40px rgba(0,229,168,0.4)" }}>
-                <Zap size={36} color={color.text1} />
-              </div>
+              <img 
+                src="/fitva_logo.jpg" 
+                alt="FITVA Logo" 
+                style={{ 
+                  width: 340, 
+                  maxWidth: "85%", 
+                  height: "auto", 
+                  borderRadius: 24, 
+                  boxShadow: "0 25px 60px rgba(0, 229, 168, 0.25)",
+                  border: "1.5px solid rgba(0, 229, 168, 0.15)"
+                }} 
+              />
             </motion.div>
-            <motion.h1
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              style={{ fontSize: 32, fontWeight: 900, color: color.text1, margin: 0, letterSpacing: 4 }}
-            >
-              FITVA
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.6 }}
-              transition={{ delay: 0.8 }}
-              style={{ fontSize: 12, color: color.text2, fontWeight: 600, letterSpacing: 2, margin: 0 }}
-            >
-              YOUR AI FITNESS COMPANION
-            </motion.p>
           </motion.div>
         )}
 
@@ -1604,7 +1615,10 @@ export default function App() {
                     </div>
                     <div>
                       <div style={{ fontSize: 11, fontWeight: 700, color: C.text2, textTransform: "uppercase" }}>Hello, Arjun</div>
-                      <div style={{ fontSize: 20, fontWeight: 800, color: C.text1 }}>FITVA</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <FitvaLogoIcon size={18} />
+                        <div style={{ fontSize: 20, fontWeight: 800, color: C.text1, letterSpacing: "0.5px" }}>FITVA</div>
+                      </div>
                     </div>
                   </div>
                   <div style={{ display: "flex", gap: 14 }}>
